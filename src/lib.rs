@@ -64,6 +64,7 @@ fn create_sprite(
         mesh: meshes.add(geometry.into()),
         sprite: Sprite {
             size: Vec2::new(1.0, 1.0),
+            ..Default::default()
         },
         translation,
         ..Default::default()

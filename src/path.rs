@@ -49,7 +49,16 @@ impl PathBuilder {
         self.0.cubic_bezier_to(control_1, control_2, point);
     }
 
-    // TODO: Implement arc.
+    /// Adds an arc by specifying a `center`, radii, and `angle` and `rotation`,
+    /// both in radians.
+    pub fn arc(&mut self, center: Point, radius_x: f32, radius_y: f32, angle: f32, rotation: f32) {
+        self.0.arc(
+            center,
+            lyon::math::vector(radius_x, radius_y),
+            lyon::math::Angle { radians: angle },
+            lyon::math::Angle { radians: rotation },
+        )
+    }
 
     /// Builds the path.
     pub fn build(self) -> Path {

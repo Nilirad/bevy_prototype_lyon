@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
+use std::f32::consts::{FRAC_PI_6, PI};
 
 fn main() {
     App::build()
@@ -32,6 +33,17 @@ fn setup(
     builder.line_to(point(-450.0, -300.0));
     builder.line_to(point(-450.0, -200.0));
     builder.close(); // This draws a line to (-200.0, -200.0).
+
+    // Finally, let's draw an arc. A line is drawn if the current position is
+    // outside the arc.
+    builder.move_to(point(-400.0, 300.0));
+    builder.arc(
+        point(-200.0, 100.0),
+        300.0,
+        150.0,
+        -PI, // use negative angles for a clockwise arc.
+        FRAC_PI_6,
+    );
 
     // Calling `PathBuilder::build` will return a `Path` ready to be used to create
     // Bevy entities.

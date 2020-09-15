@@ -57,7 +57,7 @@ fn create_sprite(
     material: Handle<ColorMaterial>,
     meshes: &mut ResMut<Assets<Mesh>>,
     geometry: Geometry,
-    translation: Translation,
+    translation: Vec3,
 ) -> SpriteComponents {
     SpriteComponents {
         material,
@@ -66,7 +66,7 @@ fn create_sprite(
             size: Vec2::new(1.0, 1.0),
             ..Default::default()
         },
-        translation,
+        transform: Transform::from_translation(translation),
         ..Default::default()
     }
 }

@@ -76,7 +76,7 @@ impl Path {
         &self,
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
-        translation: Translation,
+        translation: Vec3,
         options: &FillOptions,
     ) -> SpriteComponents {
         let mut tessellator = FillTessellator::new();
@@ -99,7 +99,7 @@ impl Path {
         &self,
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
-        translation: Translation,
+        translation: Vec3,
         options: &StrokeOptions,
     ) -> SpriteComponents {
         let mut tessellator = StrokeTessellator::new();

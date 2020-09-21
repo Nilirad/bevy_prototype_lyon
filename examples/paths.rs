@@ -56,7 +56,7 @@ fn setup(
             path.stroke(
                 red,
                 &mut meshes,
-                Vec3::new(0.0, 0.0, 0.0).into(),
+                Vec3::new(0.0, 0.0, 0.0),
                 &StrokeOptions::default()
                     .with_line_width(5.0)
                     .with_line_cap(LineCap::Round)
@@ -67,7 +67,7 @@ fn setup(
         .spawn(path.fill(
             blue,
             &mut meshes,
-            Vec3::new(400.0, 0.0, 0.0).into(),
+            Vec3::new(400.0, 0.0, 0.0),
             &FillOptions::default(),
         ));
     // Calling `Path::stroke` or `Path::fill`, returns a `SpriteComponents`

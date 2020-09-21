@@ -43,7 +43,7 @@ pub fn primitive(
     meshes: &mut ResMut<Assets<Mesh>>,
     shape_type: ShapeType,
     tessellation_mode: TessellationMode,
-    translation: Translation,
+    translation: Vec3,
 ) -> SpriteComponents {
     let mut geometry = Geometry(VertexBuffers::new());
     match tessellation_mode {

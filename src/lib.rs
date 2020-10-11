@@ -4,7 +4,10 @@
 //! integrate with Bevy. It's far from perfect, but it's a first attempt to draw
 //! 2D shapes in Bevy.
 
-use bevy::{prelude::*, render::mesh::{VertexAttribute, Indices}};
+use bevy::{
+    prelude::*,
+    render::mesh::{Indices, VertexAttribute},
+};
 use lyon::tessellation::VertexBuffers;
 
 pub mod basic_shapes;

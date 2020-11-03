@@ -4,7 +4,7 @@ use std::f32::consts::{FRAC_PI_6, PI};
 
 fn main() {
     App::build()
-        .add_default_plugins()
+        .add_plugins(DefaultPlugins)
         .add_startup_system(setup.system())
         .run();
 }

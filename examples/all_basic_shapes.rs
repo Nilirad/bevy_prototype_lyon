@@ -3,7 +3,7 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::build()
-        .add_default_plugins()
+        .add_plugins(DefaultPlugins)
         .add_startup_system(setup.system())
         .run();
 }
@@ -25,7 +25,7 @@ fn setup(
         .spawn(Camera2dComponents::default())
         // Fill Circle
         .spawn(primitive(
-            red,
+            red.clone(),
             &mut meshes,
             ShapeType::Circle(60.0),
             TessellationMode::Fill(&FillOptions::default()),
@@ -33,7 +33,7 @@ fn setup(
         ))
         // Stroke Circle
         .spawn(primitive(
-            green,
+            green.clone(),
             &mut meshes,
             ShapeType::Circle(40.0),
             TessellationMode::Stroke(&StrokeOptions::default()
@@ -43,7 +43,7 @@ fn setup(
         ))
         // Stroke Triangle
         .spawn(primitive(
-            blue,
+            blue.clone(),
             &mut meshes,
             ShapeType::Triangle(
                 (0.0, 0.0).into(),
@@ -59,7 +59,7 @@ fn setup(
         ))
         // Fill Quad
         .spawn(primitive(
-            green,
+            green.clone(),
             &mut meshes,
             ShapeType::Quad(
                 (-60.0, 30.0).into(),
@@ -72,7 +72,7 @@ fn setup(
         ))
         // Stroke Quad
         .spawn(primitive(
-            blue,
+            blue.clone(),
             &mut meshes,
             ShapeType::Quad(
                 (-50.0, 50.0).into(),
@@ -85,7 +85,7 @@ fn setup(
         ))
         // Fill Rectangle
         .spawn(primitive(
-            blue,
+            blue.clone(),
             &mut meshes,
             ShapeType::Rectangle { width: 200.0, height: 125.0},
             TessellationMode::Fill(&FillOptions::default()),
@@ -93,7 +93,7 @@ fn setup(
         ))
         // Fill Rounded Rectangle
         .spawn(primitive(
-            green,
+            green.clone(),
             &mut meshes,
             ShapeType::RoundedRectangle { width: 50.0, height: 70.0, border_radius: 15.0 },
             TessellationMode::Fill(&FillOptions::default()),
@@ -101,7 +101,7 @@ fn setup(
         ))
         // Stroke Ellipse
         .spawn(primitive(
-            blue,
+            blue.clone(),
             &mut meshes,
             ShapeType::Ellipse { radius_x: 150.0, radius_y: 50.0 },
             TessellationMode::Stroke(&StrokeOptions::default()
@@ -111,7 +111,7 @@ fn setup(
         ))
         // Stroke Quad
         .spawn(primitive(
-            green,
+            green.clone(),
             &mut meshes,
             ShapeType::Quad(
                 (0.0,0.0).into(),
@@ -128,7 +128,7 @@ fn setup(
         ))
         // Stroke Rectangle
         .spawn(primitive(
-            green,
+            green.clone(),
             &mut meshes,
             ShapeType::Rectangle { width: 320.0, height: 180.0 },
             TessellationMode::Stroke(&StrokeOptions::default()
@@ -137,7 +137,7 @@ fn setup(
             Vec3::new(-500.0, 150.0, 0.0),
         ))
         .spawn(primitive(
-            red,
+            red.clone(),
             &mut meshes,
             ShapeType::RoundedRectangle {
                 width: 150.0 * 1.618,
@@ -151,7 +151,7 @@ fn setup(
         ))
         // Stroke Polyline
         .spawn(primitive(
-            red,
+            red.clone(),
             &mut meshes,
             ShapeType::Polyline {
                 points: vec![
@@ -167,7 +167,7 @@ fn setup(
         ))
         // Fill Polyline
         .spawn(primitive(
-            green,
+            green.clone(),
             &mut meshes,
             ShapeType::Polyline {
                 points: vec![

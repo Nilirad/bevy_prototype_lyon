@@ -6,7 +6,7 @@
 
 use bevy::{
     prelude::*,
-    render::mesh::{Indices, VertexAttribute},
+    render::mesh::Indices,
 };
 use lyon::tessellation::VertexBuffers;
 
@@ -36,9 +36,8 @@ impl From<Geometry> for Mesh {
     fn from(geometry: Geometry) -> Self {
         let num_vertices = geometry.0.vertices.len();
         let mut mesh = Self::new(bevy::render::pipeline::PrimitiveTopology::TriangleList);
-        mesh.indices = Some(Indices::U32(geometry.0.indices));
-        mesh.attributes
-            .push(VertexAttribute::position(geometry.0.vertices));
+        mesh.set_indices(Some(Indices::U32(geometry.0.indices)));
+        mesh.set_attribute(Mesh::ATTRIBUTE_POSITION, geometry.0.vertices.into());
 
         let mut normals: Vec<[f32; 3]> = Vec::new();
         let mut uvs: Vec<[f32; 2]> = Vec::new();
@@ -47,8 +46,8 @@ impl From<Geometry> for Mesh {
             uvs.push([0.0, 0.0]);
         }
 
-        mesh.attributes.push(VertexAttribute::normal(normals));
-        mesh.attributes.push(VertexAttribute::uv(uvs));
+        mesh.set_attribute(Mesh::ATTRIBUTE_NORMAL, normals.into());
+        mesh.set_attribute(Mesh::ATTRIBUTE_UV_0, uvs.into());
 
         mesh
     }

@@ -11,5 +11,5 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy" }
+bevy = "0.3.0"
 lyon = "0.16.0"

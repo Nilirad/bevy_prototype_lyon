@@ -8,12 +8,16 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 Here the [**lyon**](https://docs.rs/lyon/0.16.0/lyon/) crate is used to generate that custom mesh.
 
+### What's new in 0.1.3
+
+This version of `bevy_prototype_lyon` adds support to `bevy 0.3.0`.
+
 ## Usage
 
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.1.1"
+bevy_prototype_lyon = "0.1.3"
 ```
 
 Then, you can start by drawing simple shapes:
@@ -39,7 +43,7 @@ fn setup(
     commands
         .spawn(Camera2dComponents::default())
         .spawn(primitive(
-            material,
+            material.clone(),
             &mut meshes,
             ShapeType::Circle(60.0),
             TessellationMode::Fill(&FillOptions::default())

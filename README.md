@@ -28,7 +28,7 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::build()
-        .add_default_plugins()
+        .add_plugins(DefaultPlugins)
         .add_startup_system(setup.system())
         .run();
 }
@@ -46,7 +46,7 @@ fn setup(
             material.clone(),
             &mut meshes,
             ShapeType::Circle(60.0),
-            TessellationMode::Fill(&FillOptions::default())
+            TessellationMode::Fill(&FillOptions::default()),
             Vec3::new(0.0, 0.0, 0.0).into(),
         ));
 }

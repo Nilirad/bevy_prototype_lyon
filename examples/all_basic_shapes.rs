@@ -4,12 +4,12 @@ use bevy_prototype_lyon::prelude::*;
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
-        .add_startup_system(setup.system())
+        .add_startup_system(setup)
         .run();
 }
 
 fn setup(
-    mut commands: Commands,
+    commands: &mut Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
@@ -22,7 +22,7 @@ fn setup(
     // `basic_shapes::primitive` function, that returns a `SpriteComponents`, which
     // is very good even for drawing any kind of flat mesh.
     commands
-        .spawn(Camera2dComponents::default())
+        .spawn(Camera2dBundle::default())
         // Fill Circle
         .spawn(primitive(
             red.clone(),

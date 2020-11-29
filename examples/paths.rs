@@ -5,12 +5,12 @@ use std::f32::consts::{FRAC_PI_6, PI};
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
-        .add_startup_system(setup.system())
+        .add_startup_system(setup)
         .run();
 }
 
 fn setup(
-    mut commands: Commands,
+    commands: &mut Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
@@ -50,7 +50,7 @@ fn setup(
     let path = builder.build();
 
     commands
-        .spawn(Camera2dComponents::default())
+        .spawn(Camera2dBundle::default())
         // Let's draw the path by calling `Path::stroke`.
         .spawn(
             path.stroke(

@@ -66,19 +66,19 @@ impl PathBuilder {
     }
 }
 
-/// Contains path data that can be used to get a `SpriteComponents` bundle with
+/// Contains path data that can be used to get a `SpriteBundle` bundle with
 /// a custom shape. Check out [`PathBuilder`](PathBuilder) to construct it.
 pub struct Path(path::Path);
 
 impl Path {
-    /// Returns a `SpriteComponents` with the filled path as the mesh.
+    /// Returns a `SpriteBundle` with the filled path as the mesh.
     pub fn fill(
         &self,
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         translation: Vec3,
         options: &FillOptions,
-    ) -> SpriteComponents {
+    ) -> SpriteBundle {
         let mut tessellator = FillTessellator::new();
         let mut geometry = Geometry(VertexBuffers::new());
         tessellator
@@ -94,14 +94,14 @@ impl Path {
         create_sprite(material, meshes, geometry, translation)
     }
 
-    /// Returns a `SpriteComponents` with the stroked path as the mesh.
+    /// Returns a `SpriteBundle` with the stroked path as the mesh.
     pub fn stroke(
         &self,
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         translation: Vec3,
         options: &StrokeOptions,
-    ) -> SpriteComponents {
+    ) -> SpriteBundle {
         let mut tessellator = StrokeTessellator::new();
         let mut geometry = Geometry(VertexBuffers::new());
         tessellator

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use std::f32::consts::{FRAC_PI_6, PI};
 
+#[bevy_main]
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
@@ -10,7 +11,7 @@ fn main() {
 }
 
 fn setup(
-    mut commands: Commands,
+    commands: &mut Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
@@ -50,7 +51,7 @@ fn setup(
     let path = builder.build();
 
     commands
-        .spawn(Camera2dComponents::default())
+        .spawn(Camera2dBundle::default())
         // Let's draw the path by calling `Path::stroke`.
         .spawn(
             path.stroke(
@@ -70,6 +71,6 @@ fn setup(
             Vec3::new(400.0, 0.0, 0.0),
             &FillOptions::default(),
         ));
-    // Calling `Path::stroke` or `Path::fill`, returns a `SpriteComponents`
+    // Calling `Path::stroke` or `Path::fill`, returns a `SpriteBundle`
     // bundle, which can be fed into Bevy's ECS system as `Entities`.
 }

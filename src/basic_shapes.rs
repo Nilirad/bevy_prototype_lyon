@@ -36,7 +36,7 @@ pub enum ShapeType {
     //ConvexPolyline(Vec<Point>), // TODO: Too much of an hassle to implement.
 }
 
-/// Returns a `SpriteComponents` bundle using the given [`ShapeType`](ShapeType)
+/// Returns a `SpriteBundle` bundle using the given [`ShapeType`](ShapeType)
 /// and [`TessellationMode`](crate::TessellationMode).
 pub fn primitive(
     material: Handle<ColorMaterial>,
@@ -44,7 +44,7 @@ pub fn primitive(
     shape_type: ShapeType,
     tessellation_mode: TessellationMode,
     translation: Vec3,
-) -> SpriteComponents {
+) -> SpriteBundle {
     let mut geometry = Geometry(VertexBuffers::new());
     match tessellation_mode {
         TessellationMode::Fill(options) => {

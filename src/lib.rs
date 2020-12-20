@@ -37,7 +37,7 @@ impl From<Geometry> for Mesh {
         let num_vertices = geometry.0.vertices.len();
         let mut mesh = Self::new(bevy::render::pipeline::PrimitiveTopology::TriangleList);
         mesh.set_indices(Some(Indices::U32(geometry.0.indices)));
-        mesh.set_attribute(Mesh::ATTRIBUTE_POSITION, geometry.0.vertices.into());
+        mesh.set_attribute(Mesh::ATTRIBUTE_POSITION, geometry.0.vertices);
 
         let mut normals: Vec<[f32; 3]> = Vec::new();
         let mut uvs: Vec<[f32; 2]> = Vec::new();
@@ -46,22 +46,22 @@ impl From<Geometry> for Mesh {
             uvs.push([0.0, 0.0]);
         }
 
-        mesh.set_attribute(Mesh::ATTRIBUTE_NORMAL, normals.into());
-        mesh.set_attribute(Mesh::ATTRIBUTE_UV_0, uvs.into());
+        mesh.set_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
+        mesh.set_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
 
         mesh
     }
 }
 
-/// Returns a `SpriteComponents` bundle with the given [`Geometry`](Geometry)
+/// Returns a `SpriteBundle` bundle with the given [`Geometry`](Geometry)
 /// and `ColorMaterial`.
 fn create_sprite(
     material: Handle<ColorMaterial>,
     meshes: &mut ResMut<Assets<Mesh>>,
     geometry: Geometry,
     translation: Vec3,
-) -> SpriteComponents {
-    SpriteComponents {
+) -> SpriteBundle {
+    SpriteBundle {
         material,
         mesh: meshes.add(geometry.into()),
         sprite: Sprite {

@@ -4,13 +4,19 @@
 
 ## How does it work?
 
-Currently Bevy does not support drawing custom shapes in an easy way. This crate uses Bevy's [`SpriteComponents`](https://docs.rs/bevy/0.1.3/bevy/prelude/struct.SpriteComponents.html) bundle and replaces its default quad mesh with a custom mesh.
+Currently Bevy does not support drawing custom shapes in an easy way. This crate uses Bevy's [`SpriteBundle`](https://docs.rs/bevy/0.4.0/bevy/prelude/struct.SpriteBundle.html) bundle and replaces its default quad mesh with a custom mesh.
 
-Here the [**lyon**](https://docs.rs/lyon/0.16.0/lyon/) crate is used to generate that custom mesh.
+Here the [**lyon**](https://docs.rs/lyon/0.16.2/lyon/) crate is used to generate that custom mesh.
 
-### What's new in 0.1.3
+### Changelog
 
-This version of `bevy_prototype_lyon` adds support to `bevy 0.3.0`.
+#### dev
+
+- adds support to `bevy 0.4.0`.
+
+#### 0.1.3
+
+- adds support to `bevy 0.3.0`.
 
 ## Usage
 
@@ -34,14 +40,14 @@ fn main() {
 }
 
 fn setup(
-    mut commands: Commands,
+    commands: &mut Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
     let material = materials.add(Color::rgb(0.8, 0.0, 0.0).into());
 
     commands
-        .spawn(Camera2dComponents::default())
+        .spawn(Camera2dBundle::default())
         .spawn(primitive(
             material.clone(),
             &mut meshes,

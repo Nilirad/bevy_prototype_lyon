@@ -11,8 +11,8 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = {version = "0.4.0", default-features = false, features=["render"]}
-lyon = "0.16.2"
+bevy = {version = "0.4", default-features = false, features=["render"]}
+lyon = "0.16"
 
 [dev-dependencies]
-bevy = {version = "0.4.0", default-features = true}
+bevy = {version = "0.4", default-features = true}

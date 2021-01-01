@@ -58,4 +58,4 @@ fn setup(
 }
 ```
 
-Don't forget to try out the examples to learn more!
+Don't forget to check out the [examples](examples/) to learn more!

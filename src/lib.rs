@@ -4,10 +4,7 @@
 //! integrate with Bevy. It's far from perfect, but it's a first attempt to draw
 //! 2D shapes in Bevy.
 
-use bevy::{
-    prelude::*,
-    render::mesh::Indices,
-};
+use bevy::{prelude::*, render::mesh::Indices};
 use lyon::tessellation::VertexBuffers;
 
 pub mod basic_shapes;
@@ -39,12 +36,8 @@ impl From<Geometry> for Mesh {
         mesh.set_indices(Some(Indices::U32(geometry.0.indices)));
         mesh.set_attribute(Mesh::ATTRIBUTE_POSITION, geometry.0.vertices);
 
-        let mut normals: Vec<[f32; 3]> = Vec::new();
-        let mut uvs: Vec<[f32; 2]> = Vec::new();
-        for _ in 0..num_vertices {
-            normals.push([0.0, 0.0, 0.0]);
-            uvs.push([0.0, 0.0]);
-        }
+        let normals: Vec<[f32; 3]> = vec![[0.0, 0.0, 0.0]; num_vertices];
+        let uvs: Vec<[f32; 2]> = vec![[0.0, 0.0]; num_vertices];
 
         mesh.set_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
         mesh.set_attribute(Mesh::ATTRIBUTE_UV_0, uvs);

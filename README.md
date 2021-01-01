@@ -10,7 +10,7 @@ Here the [**lyon**](https://docs.rs/lyon/0.16.2/lyon/) crate is used to generate
 
 ### Changelog
 
-#### dev
+#### 0.1.4
 
 - adds support to `bevy 0.4.0`.
 
@@ -23,7 +23,7 @@ Here the [**lyon**](https://docs.rs/lyon/0.16.2/lyon/) crate is used to generate
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.1.3"
+bevy_prototype_lyon = "0.1.4"
 ```
 
 Then, you can start by drawing simple shapes:

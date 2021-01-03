@@ -43,7 +43,7 @@ fn setup(
             Vec3::new(-150.0, 100.0, 0.0),
         ))
         // Stroke Triangle
-        .spawn(primitive(
+        /* .spawn(primitive(
             blue.clone(),
             &mut meshes,
             ShapeType::Triangle(
@@ -57,9 +57,9 @@ fn setup(
                 .with_line_cap(LineCap::Round)
             ),
             Vec3::new(-100.0, -50.0, 0.0),
-        ))
+        )) */
         // Fill Quad
-        .spawn(primitive(
+        /* .spawn(primitive(
             green.clone(),
             &mut meshes,
             ShapeType::Quad(
@@ -70,9 +70,9 @@ fn setup(
             ),
             TessellationMode::Fill(&FillOptions::default()),
             Vec3::new(250.0, 200.0, 0.0),
-        ))
+        )) */
         // Stroke Quad
-        .spawn(primitive(
+        /* .spawn(primitive(
             blue.clone(),
             &mut meshes,
             ShapeType::Quad(
@@ -83,7 +83,7 @@ fn setup(
             ),
             TessellationMode::Stroke(&StrokeOptions::default().with_line_width(3.0)),
             Vec3::new(0.0, 0.0, 0.0),
-        ))
+        )) */
         // Fill Rectangle
         .spawn(primitive(
             blue.clone(),
@@ -93,13 +93,13 @@ fn setup(
             Vec3::new(-500.0, -300.0, 0.0),
         ))
         // Fill Rounded Rectangle
-        .spawn(primitive(
+        /* .spawn(primitive(
             green.clone(),
             &mut meshes,
             ShapeType::RoundedRectangle { width: 50.0, height: 70.0, border_radius: 15.0 },
             TessellationMode::Fill(&FillOptions::default()),
             Vec3::new(200.0, -150.0, 0.0),
-        ))
+        )) */
         // Stroke Ellipse
         .spawn(primitive(
             blue.clone(),
@@ -111,7 +111,7 @@ fn setup(
             Vec3::new(0.0, -150.0, 0.0),
         ))
         // Stroke Quad
-        .spawn(primitive(
+        /* .spawn(primitive(
             green.clone(),
             &mut meshes,
             ShapeType::Quad(
@@ -126,7 +126,7 @@ fn setup(
                 .with_line_width(5.0)
             ),
             Vec3::new(300.0, -200.0, 0.0),
-        ))
+        )) */
         // Stroke Rectangle
         .spawn(primitive(
             green.clone(),
@@ -137,7 +137,7 @@ fn setup(
             ),
             Vec3::new(-500.0, 150.0, 0.0),
         ))
-        .spawn(primitive(
+        /* .spawn(primitive(
             red.clone(),
             &mut meshes,
             ShapeType::RoundedRectangle {
@@ -149,12 +149,12 @@ fn setup(
                 .with_line_width(3.0),
             ),
             Vec3::new(-600.0, -100.0, 0.0),
-        ))
+        )) */
         // Stroke Polyline
         .spawn(primitive(
             red.clone(),
             &mut meshes,
-            ShapeType::Polyline {
+            ShapeType::Polygon {
                 points: vec![
                     (0.0, 0.0).into(),
                     (120.0, 30.0).into(),
@@ -170,7 +170,7 @@ fn setup(
         .spawn(primitive(
             green.clone(),
             &mut meshes,
-            ShapeType::Polyline {
+            ShapeType::Polygon {
                 points: vec![
                     (0.0, 0.0).into(),
                     (30.0, -60.0).into(),

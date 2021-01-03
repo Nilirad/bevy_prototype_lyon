@@ -5,7 +5,7 @@
 //! 2D shapes in Bevy.
 
 use bevy::{prelude::*, render::mesh::Indices};
-use lyon::tessellation::VertexBuffers;
+use lyon_tessellation::{FillOptions, StrokeOptions, VertexBuffers};
 
 pub mod basic_shapes;
 pub mod path;
@@ -18,10 +18,7 @@ pub mod prelude {
         path::{Path, PathBuilder},
         TessellationMode,
     };
-    pub use lyon::{
-        math::point,
-        tessellation::{FillOptions, LineCap, LineJoin, StrokeOptions},
-    };
+    pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
 }
 
 /// A memory buffer that lyon will fill with vertex and index data. It is not
@@ -68,6 +65,6 @@ fn create_sprite(
 
 /// Determines if a shape or path must be filled or stroked.
 pub enum TessellationMode<'options> {
-    Fill(&'options lyon::tessellation::FillOptions),
-    Stroke(&'options lyon::tessellation::StrokeOptions),
+    Fill(&'options FillOptions),
+    Stroke(&'options StrokeOptions),
 }

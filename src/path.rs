@@ -2,23 +2,29 @@
 
 use crate::{create_sprite, Geometry};
 use bevy::prelude::*;
-use lyon::{
+use lyon_tessellation::{
+    math::{self, Point},
+    path::{self, builder::WithSvg, path::Builder},
+    BuffersBuilder, FillOptions, FillTessellator, FillVertex, StrokeOptions, StrokeTessellator,
+    StrokeVertex, VertexBuffers,
+};
+/* use lyon::{
     math::Point,
     path::{self, Builder},
     tessellation::{
         BuffersBuilder, FillAttributes, FillOptions, FillTessellator, StrokeAttributes,
         StrokeOptions, StrokeTessellator, VertexBuffers,
     },
-};
+}; */
 
 /// Used to construct a [`Path`](Path) using the builder pattern.
-pub struct PathBuilder(pub Builder);
+pub struct PathBuilder(pub WithSvg<Builder>);
 
 impl PathBuilder {
     /// Creates a new `PathBuilder` and moves its current postition to
     /// `position`.
     pub fn new() -> Self {
-        Self(path::Path::builder())
+        Self(WithSvg::new(Builder::new()))
     }
 
     /// Moves the current position of the path without adding any drawing
@@ -54,9 +60,9 @@ impl PathBuilder {
     pub fn arc(&mut self, center: Point, radius_x: f32, radius_y: f32, angle: f32, rotation: f32) {
         self.0.arc(
             center,
-            lyon::math::vector(radius_x, radius_y),
-            lyon::math::Angle { radians: angle },
-            lyon::math::Angle { radians: rotation },
+            math::vector(radius_x, radius_y),
+            math::Angle { radians: angle },
+            math::Angle { radians: rotation },
         )
     }
 
@@ -85,8 +91,8 @@ impl Path {
             .tessellate_path(
                 self.0.as_slice(),
                 options,
-                &mut BuffersBuilder::new(&mut geometry.0, |pos: Point, _: FillAttributes| {
-                    [pos.x, pos.y, 0.0]
+                &mut BuffersBuilder::new(&mut geometry.0, |vertex: FillVertex| {
+                    [vertex.position().x, vertex.position().y, 0.0]
                 }),
             )
             .unwrap();
@@ -108,8 +114,8 @@ impl Path {
             .tessellate_path(
                 self.0.as_slice(),
                 options,
-                &mut BuffersBuilder::new(&mut geometry.0, |pos: Point, _: StrokeAttributes| {
-                    [pos.x, pos.y, 0.0]
+                &mut BuffersBuilder::new(&mut geometry.0, |vertex: StrokeVertex| {
+                    [vertex.position().x, vertex.position().y, 0.0]
                 }),
             )
             .unwrap();

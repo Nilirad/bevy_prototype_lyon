@@ -26,7 +26,7 @@ Here the [**lyon**](https://docs.rs/lyon/0.16.2/lyon/) crate is used to generate
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.1.4"
+bevy_prototype_lyon = "0.1.5"
 ```
 
 Then, you can start by drawing simple shapes:
@@ -49,15 +49,13 @@ fn setup(
 ) {
     let material = materials.add(Color::rgb(0.8, 0.0, 0.0).into());
 
-    commands
-        .spawn(Camera2dBundle::default())
-        .spawn(primitive(
-            material.clone(),
-            &mut meshes,
-            ShapeType::Circle(60.0),
-            TessellationMode::Fill(&FillOptions::default()),
-            Vec3::new(0.0, 0.0, 0.0).into(),
-        ));
+    commands.spawn(Camera2dBundle::default()).spawn(primitive(
+        material.clone(),
+        &mut meshes,
+        ShapeType::Circle(60.0),
+        TessellationMode::Fill(&FillOptions::default()),
+        Vec3::new(0.0, 0.0, 0.0).into(),
+    ));
 }
 ```
 

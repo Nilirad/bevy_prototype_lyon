@@ -12,7 +12,7 @@ version = "0.1.4"
 
 [dependencies]
 bevy = {version = "0.4", default-features = false, features = ["render"]}
-lyon = "0.16"
+lyon_tessellation = "0.17"
 
 [dev-dependencies]
 bevy = {version = "0.4", default-features = true}

@@ -10,12 +10,15 @@ Here the [**lyon**](https://docs.rs/lyon/0.16.2/lyon/) crate is used to generate
 
 ### Changelog
 
-#### 0.1.4
+#### 0.1.5
+- updated dependency to `lyon_tessellation v0.17`
+- with `lyon_tessellation v0.17`, unfortunately rectangles with rounded borders are no longer supported.
+- `Quad`, `Triangle` and `Polyline` have been substituted by a general-purpose `Polygon` shape.
 
+#### 0.1.4
 - adds support to `bevy 0.4.0`.
 
 #### 0.1.3
-
 - adds support to `bevy 0.3.0`.
 
 ## Usage

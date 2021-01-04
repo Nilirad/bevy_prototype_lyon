@@ -1,0 +1,39 @@
+use bevy::prelude::*;
+use bevy_prototype_lyon::prelude::*;
+
+const TRANSPARENT_RED: Color = Color::rgba_linear(1.0, 0.0, 0.0, 0.5);
+const TRANSPARENT_GREEN: Color = Color::rgba_linear(0.0, 1.0, 0.0, 0.5);
+const TRANSPARENT_BLUE: Color = Color::rgba_linear(0.0, 0.0, 1.0, 0.5);
+const CIRCLE_RADIUS: f32 = 100.0;
+const PI_2: f32 = 2.0 * std::f32::consts::PI;
+
+#[bevy_main]
+fn main() {
+    App::build()
+        .add_plugins(DefaultPlugins)
+        .add_resource(ClearColor(Color::BLACK))
+        .add_startup_system(startup.system())
+        .run();
+}
+
+fn startup(
+    commands: &mut Commands,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+) {
+    commands.spawn(Camera2dBundle::default());
+
+    let colors = vec![TRANSPARENT_RED, TRANSPARENT_GREEN, TRANSPARENT_BLUE];
+    let num_colors = colors.len();
+    for (i, color) in colors.into_iter().enumerate() {
+        let x = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).cos();
+        let y = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).sin();
+        commands.spawn(primitive(
+            materials.add(ColorMaterial::color(color)),
+            &mut meshes,
+            ShapeType::Circle(CIRCLE_RADIUS),
+            TessellationMode::Fill(&FillOptions::default()),
+            Vec3::new(x, y, 0.0),
+        ));
+    }
+}

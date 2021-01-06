@@ -14,9 +14,9 @@ fn startup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let shape = Circle {
-        radius: 100.0,
-        center: Vec2::new(20.0, 20.0),
+    let shape = Ellipse {
+        radii: Vec2::new(100.0, 200.0),
+        ..Default::default()
     };
 
     let mut tessellator = Tessellator::new();

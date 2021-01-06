@@ -14,17 +14,16 @@ fn startup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let rect = Rectangle {
-        width: 100.0,
-        height: 100.0,
-        origin: RectangleOrigin::Center,
+    let shape = Circle {
+        radius: 100.0,
+        center: Vec2::new(20.0, 20.0),
     };
 
     let mut tessellator = Tessellator::new();
 
     commands
         .spawn(Camera2dBundle::default())
-        .spawn(rect.generate_sprite(
+        .spawn(shape.generate_sprite(
             materials.add(ColorMaterial::color(Color::RED)),
             &mut meshes,
             &mut tessellator,

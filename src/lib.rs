@@ -10,13 +10,14 @@ use lyon_tessellation::{
 };
 
 pub mod basic_shapes;
+pub mod conversions;
 pub mod path;
 
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
 /// convenient imports.
 pub mod prelude {
     pub use crate::{
-        basic_shapes::{primitive, Rectangle, RectangleOrigin, ShapeType},
+        basic_shapes::{primitive, Circle, Rectangle, RectangleOrigin, ShapeType},
         path::{Path, PathBuilder},
         ShapeSprite, TessellationMode, Tessellator,
     };

@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use lyon_tessellation::FillTessellator;
 
 #[bevy_main]
 fn main() {
@@ -18,18 +17,20 @@ fn startup(
     let rect = Rectangle {
         width: 100.0,
         height: 100.0,
-        origin: RectangleOrigin::TopLeft,
+        origin: RectangleOrigin::Center,
     };
 
-    let mut tessellator = FillTessellator::new();
+    let mut tessellator = Tessellator::new();
 
-    commands.spawn(Camera2dBundle::default()).spawn(rect.fill(
-        materials.add(ColorMaterial::color(Color::RED)),
-        &mut meshes,
-        &mut tessellator,
-        Transform::default(),
-        &FillOptions::default(),
-    ));
+    commands
+        .spawn(Camera2dBundle::default())
+        .spawn(rect.generate_sprite(
+            materials.add(ColorMaterial::color(Color::RED)),
+            &mut meshes,
+            &mut tessellator,
+            &TessellationMode::Stroke(&StrokeOptions::default()),
+            Transform::default(),
+        ));
 
     commands.spawn(primitive(
         materials.add(ColorMaterial::color(Color::BLUE)),

@@ -26,7 +26,7 @@ fn setup(
             materials.add(ColorMaterial::color(Color::AQUAMARINE)),
             &mut meshes,
             &mut tessellator,
-            &TessellationMode::Fill(&FillOptions::default()),
+            TessellationMode::Fill(FillOptions::default()),
             Transform::default(),
         ));
 }

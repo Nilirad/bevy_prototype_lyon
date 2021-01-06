@@ -67,9 +67,9 @@ fn create_sprite(
 }
 
 /// Determines if a shape or path must be filled or stroked.
-pub enum TessellationMode<'options> {
-    Fill(&'options FillOptions),
-    Stroke(&'options StrokeOptions),
+pub enum TessellationMode {
+    Fill(FillOptions),
+    Stroke(StrokeOptions),
 }
 
 /// A couple of `lyon` fill and stroke tessellators.
@@ -113,7 +113,7 @@ pub trait ShapeSprite {
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         tessellator: &mut Tessellator,
-        mode: &TessellationMode,
+        mode: TessellationMode,
         transform: Transform,
     ) -> SpriteBundle;
 }

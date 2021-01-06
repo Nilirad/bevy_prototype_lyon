@@ -50,7 +50,7 @@ impl ShapeSprite for RectangleShape {
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         tessellator: &mut Tessellator,
-        mode: &TessellationMode,
+        mode: TessellationMode,
         transform: Transform,
     ) -> SpriteBundle {
         let mut geometry = Geometry(VertexBuffers::new());
@@ -75,7 +75,7 @@ impl ShapeSprite for RectangleShape {
                     .unwrap()
                     .tessellate_rectangle(
                         &Rect::new(origin, Size::new(self.width, self.height)),
-                        options,
+                        &options,
                         output,
                     )
                     .unwrap();
@@ -91,7 +91,7 @@ impl ShapeSprite for RectangleShape {
                     .unwrap()
                     .tessellate_rectangle(
                         &Rect::new(origin, Size::new(self.width, self.height)),
-                        options,
+                        &options,
                         output,
                     )
                     .unwrap();
@@ -126,7 +126,7 @@ impl ShapeSprite for CircleShape {
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         tessellator: &mut Tessellator,
-        mode: &TessellationMode,
+        mode: TessellationMode,
         transform: Transform,
     ) -> SpriteBundle {
         let mut geometry = Geometry(VertexBuffers::new());
@@ -140,7 +140,7 @@ impl ShapeSprite for CircleShape {
                     .fill
                     .as_mut()
                     .unwrap()
-                    .tessellate_circle(self.center.to_lyon_point(), self.radius, options, output)
+                    .tessellate_circle(self.center.to_lyon_point(), self.radius, &options, output)
                     .unwrap();
             }
             TessellationMode::Stroke(options) => {
@@ -152,7 +152,7 @@ impl ShapeSprite for CircleShape {
                     .stroke
                     .as_mut()
                     .unwrap()
-                    .tessellate_circle(self.center.to_lyon_point(), self.radius, options, output)
+                    .tessellate_circle(self.center.to_lyon_point(), self.radius, &options, output)
                     .unwrap();
             }
         }
@@ -184,7 +184,7 @@ impl ShapeSprite for EllipseShape {
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         tessellator: &mut Tessellator,
-        mode: &TessellationMode,
+        mode: TessellationMode,
         transform: Transform,
     ) -> SpriteBundle {
         let mut geometry = Geometry(VertexBuffers::new());
@@ -203,7 +203,7 @@ impl ShapeSprite for EllipseShape {
                         self.radii.to_lyon_vector(),
                         Angle::zero(),
                         Winding::Positive,
-                        options,
+                        &options,
                         output,
                     )
                     .unwrap();
@@ -222,7 +222,7 @@ impl ShapeSprite for EllipseShape {
                         self.radii.to_lyon_vector(),
                         Angle::zero(),
                         Winding::Positive,
-                        options,
+                        &options,
                         output,
                     )
                     .unwrap();
@@ -254,7 +254,7 @@ impl ShapeSprite for PolygonShape {
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         tessellator: &mut Tessellator,
-        mode: &TessellationMode,
+        mode: TessellationMode,
         transform: Transform,
     ) -> SpriteBundle {
         let mut geometry = Geometry(VertexBuffers::new());
@@ -278,7 +278,7 @@ impl ShapeSprite for PolygonShape {
                     .fill
                     .as_mut()
                     .unwrap()
-                    .tessellate_polygon(polygon, options, output)
+                    .tessellate_polygon(polygon, &options, output)
                     .unwrap();
             }
             TessellationMode::Stroke(options) => {
@@ -290,7 +290,7 @@ impl ShapeSprite for PolygonShape {
                     .stroke
                     .as_mut()
                     .unwrap()
-                    .tessellate_polygon(polygon, options, output)
+                    .tessellate_polygon(polygon, &options, output)
                     .unwrap();
             }
         }

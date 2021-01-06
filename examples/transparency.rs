@@ -38,7 +38,7 @@ fn startup(
             materials.add(ColorMaterial::color(color)),
             &mut meshes,
             &mut tessellator,
-            &TessellationMode::Fill(&FillOptions::default()),
+            TessellationMode::Fill(FillOptions::default()),
             Transform {
                 translation: Vec3::new(x, y, 0.0),
                 rotation: Quat::identity(),

@@ -5,7 +5,7 @@
 //! 2D shapes in Bevy.
 
 use bevy::{prelude::*, render::mesh::Indices};
-use lyon_tessellation::{FillOptions, StrokeOptions, VertexBuffers};
+use lyon_tessellation::{FillOptions, FillTessellator, StrokeOptions, VertexBuffers};
 
 pub mod basic_shapes;
 pub mod path;
@@ -14,9 +14,9 @@ pub mod path;
 /// convenient imports.
 pub mod prelude {
     pub use crate::{
-        basic_shapes::{primitive, ShapeType},
+        basic_shapes::{primitive, Rectangle, ShapeType},
         path::{Path, PathBuilder},
-        TessellationMode,
+        ShapeSprite, TessellationMode,
     };
     pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
 }
@@ -67,4 +67,18 @@ fn create_sprite(
 pub enum TessellationMode<'options> {
     Fill(&'options FillOptions),
     Stroke(&'options StrokeOptions),
+}
+
+/// Shape structs that implement this trait can be transformed into a
+/// `SpriteBundle`. See [`basic_shapes`] module for examples.
+pub trait ShapeSprite {
+    fn fill(
+        &self,
+        material: Handle<ColorMaterial>,
+        meshes: &mut ResMut<Assets<Mesh>>,
+        tessellator: &mut FillTessellator,
+        transform: Transform,
+        fill_options: &FillOptions,
+    ) -> SpriteBundle;
+    //fn stroke(stroke_options: &StrokeOptions) -> SpriteBundle;
 }

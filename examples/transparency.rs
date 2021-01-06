@@ -23,17 +23,27 @@ fn startup(
 ) {
     commands.spawn(Camera2dBundle::default());
 
+    let mut tessellator = Tessellator::only_fill();
+    let circle = CircleShape {
+        radius: CIRCLE_RADIUS,
+        ..Default::default()
+    };
+
     let colors = vec![TRANSPARENT_RED, TRANSPARENT_GREEN, TRANSPARENT_BLUE];
     let num_colors = colors.len();
     for (i, color) in colors.into_iter().enumerate() {
         let x = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).cos();
         let y = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).sin();
-        commands.spawn(primitive(
+        commands.spawn(circle.generate_sprite(
             materials.add(ColorMaterial::color(color)),
             &mut meshes,
-            ShapeType::Circle(CIRCLE_RADIUS),
-            TessellationMode::Fill(&FillOptions::default()),
-            Vec3::new(x, y, 0.0),
+            &mut tessellator,
+            &TessellationMode::Fill(&FillOptions::default()),
+            Transform {
+                translation: Vec3::new(x, y, 0.0),
+                rotation: Quat::identity(),
+                scale: Vec3::one(),
+            },
         ));
     }
 }

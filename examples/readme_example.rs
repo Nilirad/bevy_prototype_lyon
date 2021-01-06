@@ -13,13 +13,20 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let material = materials.add(Color::rgb(0.8, 0.0, 0.0).into());
+    let circle = CircleShape {
+        radius: 100.0,
+        ..Default::default()
+    };
 
-    commands.spawn(Camera2dBundle::default()).spawn(primitive(
-        material.clone(),
-        &mut meshes,
-        ShapeType::Circle(60.0),
-        TessellationMode::Fill(&FillOptions::default()),
-        Vec3::new(0.0, 0.0, 0.0).into(),
-    ));
+    let mut tessellator = Tessellator::only_fill();
+
+    commands
+        .spawn(Camera2dBundle::default())
+        .spawn(circle.generate_sprite(
+            materials.add(ColorMaterial::color(Color::AQUAMARINE)),
+            &mut meshes,
+            &mut tessellator,
+            &TessellationMode::Fill(&FillOptions::default()),
+            Transform::default(),
+        ));
 }

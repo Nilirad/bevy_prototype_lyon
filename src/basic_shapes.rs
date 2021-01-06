@@ -32,11 +32,21 @@ impl Default for RectangleOrigin {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rectangle {
     pub width: f32,
     pub height: f32,
     pub origin: RectangleOrigin,
+}
+
+impl Default for Rectangle {
+    fn default() -> Self {
+        Self {
+            width: 1.0,
+            height: 1.0,
+            origin: RectangleOrigin::default(),
+        }
+    }
 }
 
 impl ShapeSprite for Rectangle {

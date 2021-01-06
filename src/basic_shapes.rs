@@ -36,13 +36,13 @@ impl Default for RectangleOrigin {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Rectangle {
+pub struct RectangleShape {
     pub width: f32,
     pub height: f32,
     pub origin: RectangleOrigin,
 }
 
-impl Default for Rectangle {
+impl Default for RectangleShape {
     fn default() -> Self {
         Self {
             width: 1.0,
@@ -52,7 +52,7 @@ impl Default for Rectangle {
     }
 }
 
-impl ShapeSprite for Rectangle {
+impl ShapeSprite for RectangleShape {
     fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
@@ -111,7 +111,7 @@ impl ShapeSprite for Rectangle {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Circle {
+pub struct CircleShape {
     /// Distance of the border of the circle from the center.
     pub radius: f32,
     /// The position of the center of the circle, relative to the world
@@ -119,7 +119,7 @@ pub struct Circle {
     pub center: Vec2,
 }
 
-impl Default for Circle {
+impl Default for CircleShape {
     fn default() -> Self {
         Self {
             radius: 1.0,
@@ -128,7 +128,7 @@ impl Default for Circle {
     }
 }
 
-impl ShapeSprite for Circle {
+impl ShapeSprite for CircleShape {
     fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
@@ -170,14 +170,14 @@ impl ShapeSprite for Circle {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Ellipse {
+pub struct EllipseShape {
     pub radii: Vec2,
     /// The position of the center of the ellipse, relative to the world
     /// [`Translation`] of the [`SpriteBundle`].
     pub center: Vec2,
 }
 
-impl Default for Ellipse {
+impl Default for EllipseShape {
     fn default() -> Self {
         Self {
             radii: Vec2::one(),
@@ -186,7 +186,7 @@ impl Default for Ellipse {
     }
 }
 
-impl ShapeSprite for Ellipse {
+impl ShapeSprite for EllipseShape {
     fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,

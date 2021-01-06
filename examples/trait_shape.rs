@@ -18,6 +18,7 @@ fn startup(
     let rect = Rectangle {
         width: 100.0,
         height: 100.0,
+        origin: RectangleOrigin::TopLeft,
     };
 
     let mut tessellator = FillTessellator::new();
@@ -28,5 +29,13 @@ fn startup(
         &mut tessellator,
         Transform::default(),
         &FillOptions::default(),
+    ));
+
+    commands.spawn(primitive(
+        materials.add(ColorMaterial::color(Color::BLUE)),
+        &mut meshes,
+        ShapeType::Circle(10.0),
+        TessellationMode::Fill(&FillOptions::default()),
+        Vec3::new(0.0, 0.0, 0.0),
     ));
 }

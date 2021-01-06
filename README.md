@@ -10,6 +10,9 @@ Here the [**lyon**](https://docs.rs/lyon/0.16.2/lyon/) crate is used to generate
 
 ### Changelog
 
+#### `master` branch
+- New API based on `trait ShapeSprite` instead of the old `primitive` function.
+
 #### 0.1.5
 - updated dependency to `lyon_tessellation v0.17`
 - with `lyon_tessellation v0.17`, unfortunately rectangles with rounded borders are no longer supported.

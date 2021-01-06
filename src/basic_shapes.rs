@@ -241,6 +241,72 @@ impl ShapeSprite for Ellipse {
     }
 }
 
+#[derive(Debug, PartialEq)]
+pub struct PolygonShape {
+    pub points: Vec<Vec2>,
+    pub closed: bool,
+}
+
+impl Default for PolygonShape {
+    fn default() -> Self {
+        Self {
+            points: Vec::new(),
+            closed: true,
+        }
+    }
+}
+
+impl ShapeSprite for PolygonShape {
+    fn generate_sprite(
+        &self,
+        material: Handle<ColorMaterial>,
+        meshes: &mut ResMut<Assets<Mesh>>,
+        tessellator: &mut Tessellator,
+        mode: &TessellationMode,
+        transform: Transform,
+    ) -> SpriteBundle {
+        let mut geometry = Geometry(VertexBuffers::new());
+
+        let points = self
+            .points
+            .iter()
+            .map(|p| p.to_lyon_point())
+            .collect::<Vec<Point>>();
+        let polygon: Polygon<Point> = Polygon {
+            points: points.as_slice(),
+            closed: self.closed,
+        };
+
+        match mode {
+            TessellationMode::Fill(options) => {
+                let ref mut output = BuffersBuilder::new(&mut geometry.0, |vertex: FillVertex| {
+                    [vertex.position().x, vertex.position().y, 0.0]
+                });
+                tessellator
+                    .fill
+                    .as_mut()
+                    .unwrap()
+                    .tessellate_polygon(polygon, options, output)
+                    .unwrap();
+            }
+            TessellationMode::Stroke(options) => {
+                let ref mut output =
+                    BuffersBuilder::new(&mut geometry.0, |vertex: StrokeVertex| {
+                        [vertex.position().x, vertex.position().y, 0.0]
+                    });
+                tessellator
+                    .stroke
+                    .as_mut()
+                    .unwrap()
+                    .tessellate_polygon(polygon, options, output)
+                    .unwrap();
+            }
+        }
+
+        create_sprite(material, meshes, geometry, transform.translation)
+    }
+}
+
 /// Returns a `SpriteBundle` bundle using the given [`ShapeType`](ShapeType)
 /// and [`TessellationMode`](crate::TessellationMode).
 pub fn primitive(

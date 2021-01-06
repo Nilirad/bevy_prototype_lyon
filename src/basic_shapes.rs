@@ -1,12 +1,11 @@
 //! Common shapes, like rectangles, ellipses, triangles and more.
 
-use crate::{create_sprite, Geometry, ShapeSprite, TessellationMode};
+use crate::{create_sprite, Geometry, ShapeSprite, TessellationMode, Tessellator};
 use bevy::prelude::*;
 use lyon_tessellation::{
     math::{Point, Rect, Size},
     path::{Polygon, Winding},
-    BuffersBuilder, FillOptions, FillTessellator, FillVertex, StrokeTessellator, StrokeVertex,
-    VertexBuffers,
+    BuffersBuilder, FillTessellator, FillVertex, StrokeTessellator, StrokeVertex, VertexBuffers,
 };
 
 /// Basic shapes descriptors, used in [`primitive`](primitive).
@@ -17,6 +16,7 @@ pub enum ShapeType {
     Polygon { points: Vec<Point>, closed: bool },
 }
 
+/// Defines where the origin, or pivot of the `Rectangle` should be positioned.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RectangleOrigin {
     Center,
@@ -40,18 +40,15 @@ pub struct Rectangle {
 }
 
 impl ShapeSprite for Rectangle {
-    fn fill(
+    fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
-        tessellator: &mut FillTessellator,
+        tessellator: &mut Tessellator,
+        mode: &TessellationMode,
         transform: Transform,
-        fill_options: &FillOptions,
     ) -> SpriteBundle {
         let mut geometry = Geometry(VertexBuffers::new());
-        let ref mut output = BuffersBuilder::new(&mut geometry.0, |vertex: FillVertex| {
-            [vertex.position().x, vertex.position().y, 0.0]
-        });
 
         use RectangleOrigin::*;
         let origin = match self.origin {
@@ -62,20 +59,42 @@ impl ShapeSprite for Rectangle {
             TopLeft => Point::new(0.0, -self.height),
         };
 
-        tessellator
-            .tessellate_rectangle(
-                &Rect::new(origin, Size::new(self.width, self.height)),
-                fill_options,
-                output,
-            )
-            .unwrap();
+        match mode {
+            TessellationMode::Fill(options) => {
+                let ref mut output = BuffersBuilder::new(&mut geometry.0, |vertex: FillVertex| {
+                    [vertex.position().x, vertex.position().y, 0.0]
+                });
+                tessellator
+                    .fill
+                    .as_mut()
+                    .unwrap()
+                    .tessellate_rectangle(
+                        &Rect::new(origin, Size::new(self.width, self.height)),
+                        options,
+                        output,
+                    )
+                    .unwrap();
+            }
+            TessellationMode::Stroke(options) => {
+                let ref mut output =
+                    BuffersBuilder::new(&mut geometry.0, |vertex: StrokeVertex| {
+                        [vertex.position().x, vertex.position().y, 0.0]
+                    });
+                tessellator
+                    .stroke
+                    .as_mut()
+                    .unwrap()
+                    .tessellate_rectangle(
+                        &Rect::new(origin, Size::new(self.width, self.height)),
+                        options,
+                        output,
+                    )
+                    .unwrap();
+            }
+        }
 
         create_sprite(material, meshes, geometry, transform.translation)
     }
-
-    /* fn stroke(stroke_options: &StrokeOptions) -> SpriteBundle {
-        todo!()
-    } */
 }
 
 /// Returns a `SpriteBundle` bundle using the given [`ShapeType`](ShapeType)

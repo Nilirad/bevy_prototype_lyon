@@ -5,7 +5,9 @@
 //! 2D shapes in Bevy.
 
 use bevy::{prelude::*, render::mesh::Indices};
-use lyon_tessellation::{FillOptions, FillTessellator, StrokeOptions, VertexBuffers};
+use lyon_tessellation::{
+    FillOptions, FillTessellator, StrokeOptions, StrokeTessellator, VertexBuffers,
+};
 
 pub mod basic_shapes;
 pub mod path;
@@ -16,7 +18,7 @@ pub mod prelude {
     pub use crate::{
         basic_shapes::{primitive, Rectangle, RectangleOrigin, ShapeType},
         path::{Path, PathBuilder},
-        ShapeSprite, TessellationMode,
+        ShapeSprite, TessellationMode, Tessellator,
     };
     pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
 }
@@ -69,16 +71,48 @@ pub enum TessellationMode<'options> {
     Stroke(&'options StrokeOptions),
 }
 
+/// A couple of `lyon` fill and stroke tessellators.
+pub struct Tessellator {
+    pub fill: Option<FillTessellator>,
+    pub stroke: Option<StrokeTessellator>,
+}
+
+impl Tessellator {
+    /// Returns two new tessellators, one for fill and one for stroke.
+    pub fn new() -> Self {
+        Self {
+            fill: Some(FillTessellator::new()),
+            stroke: Some(StrokeTessellator::new()),
+        }
+    }
+
+    /// Returns a new fill tessellator.
+    pub fn only_fill() -> Self {
+        Self {
+            fill: Some(FillTessellator::new()),
+            stroke: None,
+        }
+    }
+
+    /// Returns a new stroke tessellator.
+    pub fn only_stroke() -> Self {
+        Self {
+            fill: None,
+            stroke: Some(StrokeTessellator::new()),
+        }
+    }
+}
+
 /// Shape structs that implement this trait can be transformed into a
 /// `SpriteBundle`. See [`basic_shapes`] module for examples.
 pub trait ShapeSprite {
-    fn fill(
+    /// Returns a `SpriteBundle` with a custom mesh.
+    fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
-        tessellator: &mut FillTessellator,
+        tessellator: &mut Tessellator,
+        mode: &TessellationMode,
         transform: Transform,
-        fill_options: &FillOptions,
     ) -> SpriteBundle;
-    //fn stroke(stroke_options: &StrokeOptions) -> SpriteBundle;
 }

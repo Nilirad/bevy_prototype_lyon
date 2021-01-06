@@ -14,7 +14,7 @@ pub mod path;
 /// convenient imports.
 pub mod prelude {
     pub use crate::{
-        basic_shapes::{primitive, Rectangle, ShapeType},
+        basic_shapes::{primitive, Rectangle, RectangleOrigin, ShapeType},
         path::{Path, PathBuilder},
         ShapeSprite, TessellationMode,
     };

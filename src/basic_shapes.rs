@@ -17,18 +17,26 @@ pub enum ShapeType {
     Polygon { points: Vec<Point>, closed: bool },
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RectangleOrigin {
+    Center,
     BottomLeft,
     BottomRight,
     TopRight,
     TopLeft,
-    Center,
 }
 
+impl Default for RectangleOrigin {
+    fn default() -> Self {
+        Self::Center
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct Rectangle {
     pub width: f32,
     pub height: f32,
-    //pub origin: RectangleOrigin,
+    pub origin: RectangleOrigin,
 }
 
 impl ShapeSprite for Rectangle {
@@ -45,9 +53,18 @@ impl ShapeSprite for Rectangle {
             [vertex.position().x, vertex.position().y, 0.0]
         });
 
+        use RectangleOrigin::*;
+        let origin = match self.origin {
+            Center => Point::new(-self.width / 2.0, -self.height / 2.0),
+            BottomLeft => Point::new(0.0, 0.0),
+            BottomRight => Point::new(-self.width, 0.0),
+            TopRight => Point::new(-self.width, -self.height),
+            TopLeft => Point::new(0.0, -self.height),
+        };
+
         tessellator
             .tessellate_rectangle(
-                &Rect::new(Point::zero(), Size::new(self.width, self.height)),
+                &Rect::new(origin, Size::new(self.width, self.height)),
                 fill_options,
                 output,
             )

@@ -2,7 +2,9 @@
 
 use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
-    create_sprite, Geometry, ShapeDescriptor, ShapeSprite, TessellationMode, Tessellator,
+    create_sprite,
+    shape_plugin::ShapeDescriptor,
+    Geometry, ShapeSprite, TessellationMode, Tessellator,
 };
 use bevy::prelude::*;
 use lyon_tessellation::{

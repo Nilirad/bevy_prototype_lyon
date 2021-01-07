@@ -12,6 +12,7 @@ use lyon_tessellation::{
 pub mod basic_shapes;
 pub mod conversions;
 pub mod path;
+pub mod shape_plugin;
 
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
 /// convenient imports.
@@ -19,45 +20,10 @@ pub mod prelude {
     pub use crate::{
         basic_shapes::{CircleShape, EllipseShape, PolygonShape, RectangleOrigin, RectangleShape},
         path::{Path, PathBuilder},
-        ShapePlugin, ShapeSprite, TessellationMode, Tessellator,
+        shape_plugin::ShapePlugin,
+        ShapeSprite, TessellationMode, Tessellator,
     };
     pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
-}
-
-pub struct ShapePlugin;
-
-impl Plugin for ShapePlugin {
-    fn build(&self, app: &mut AppBuilder) {
-        let tessellator = Tessellator::new();
-        app.add_resource(tessellator)
-            .add_system_to_stage(stage::POST_UPDATE, shapesprite_maker.system());
-    }
-}
-
-pub struct ShapeDescriptor {
-    pub shape: Box<dyn ShapeSprite + Send + Sync>,
-    pub material: Handle<ColorMaterial>,
-    pub mode: TessellationMode,
-    pub transform: Transform,
-}
-
-fn shapesprite_maker(
-    commands: &mut Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut tessellator: ResMut<Tessellator>,
-    query: Query<(Entity, &ShapeDescriptor)>,
-) {
-    for (entity, shape_descriptor) in query.iter() {
-        commands
-            .spawn(shape_descriptor.shape.generate_sprite(
-                shape_descriptor.material.clone(),
-                &mut meshes,
-                &mut tessellator,
-                shape_descriptor.mode.clone(),
-                shape_descriptor.transform,
-            ))
-            .despawn(entity);
-    }
 }
 
 /// A memory buffer that lyon will fill with vertex and index data. It is not

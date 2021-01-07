@@ -2,9 +2,7 @@
 
 use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
-    create_sprite,
-    shape_plugin::ShapeDescriptor,
-    Geometry, ShapeSprite, TessellationMode, Tessellator,
+    create_sprite, Geometry, ShapeSprite, TessellationMode, Tessellator,
 };
 use bevy::prelude::*;
 use lyon_tessellation::{
@@ -111,24 +109,6 @@ pub struct CircleShape {
     /// The position of the center of the circle, relative to the world
     /// [`Translation`] of the [`SpriteBundle`].
     pub center: Vec2,
-}
-
-impl CircleShape {
-    pub fn draw(
-        &self,
-        material: Handle<ColorMaterial>,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> (ShapeDescriptor,) {
-        let desc = ShapeDescriptor {
-            shape: Box::new(self.clone()),
-            material: material.clone(),
-            mode,
-            transform,
-        };
-
-        (desc,)
-    }
 }
 
 impl Default for CircleShape {

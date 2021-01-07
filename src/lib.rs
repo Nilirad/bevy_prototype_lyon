@@ -8,6 +8,7 @@ use bevy::{prelude::*, render::mesh::Indices};
 use lyon_tessellation::{
     FillOptions, FillTessellator, StrokeOptions, StrokeTessellator, VertexBuffers,
 };
+use shape_plugin::ShapeDescriptor;
 
 pub mod basic_shapes;
 pub mod conversions;
@@ -119,4 +120,23 @@ pub trait ShapeSprite {
         mode: TessellationMode,
         transform: Transform,
     ) -> SpriteBundle;
+
+    fn draw(
+        &self,
+        material: Handle<ColorMaterial>,
+        mode: TessellationMode,
+        transform: Transform,
+    ) -> (ShapeDescriptor,)
+    where
+        Self: Sync + Send + Sized + Copy + 'static,
+    {
+        let desc = ShapeDescriptor {
+            shape: Box::new(self.clone()),
+            material: material.clone(),
+            mode,
+            transform,
+        };
+
+        (desc,)
+    }
 }

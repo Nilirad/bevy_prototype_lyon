@@ -4,15 +4,18 @@
 //! integrate with Bevy. It's far from perfect, but it's a first attempt to draw
 //! 2D shapes in Bevy.
 
-use bevy::{prelude::*, render::mesh::Indices};
+use bevy::{
+    prelude::*,
+    render::{mesh::Indices, pipeline::PrimitiveTopology},
+};
 use lyon_tessellation::{
-    FillOptions, FillTessellator, StrokeOptions, StrokeTessellator, VertexBuffers,
+    FillOptions, FillTessellator, FillVertexConstructor, StrokeOptions, StrokeTessellator,
+    StrokeVertexConstructor, VertexBuffers,
 };
 use shape_plugin::ShapeDescriptor;
 
 pub mod basic_shapes;
 pub mod conversions;
-pub mod path;
 pub mod shape_plugin;
 
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
@@ -20,46 +23,84 @@ pub mod shape_plugin;
 pub mod prelude {
     pub use crate::{
         basic_shapes::{CircleShape, EllipseShape, PolygonShape, RectangleOrigin, RectangleShape},
-        path::{Path, PathBuilder},
         shape_plugin::ShapePlugin,
         ShapeSprite, TessellationMode, Tessellator,
     };
     pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
 }
 
-/// A memory buffer that lyon will fill with vertex and index data. It is not
-/// ready for Bevy consumption, so it must be converted first.
-struct Geometry(pub VertexBuffers<[f32; 3], u32>);
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Vertex {
+    position: [f32; 3],
+    normal: [f32; 3],
+    uv: [f32; 2],
+}
 
-/// Converts a lyon buffer into a bevy mesh.
-impl From<Geometry> for Mesh {
-    fn from(geometry: Geometry) -> Self {
-        let num_vertices = geometry.0.vertices.len();
-        let mut mesh = Self::new(bevy::render::pipeline::PrimitiveTopology::TriangleList);
-        mesh.set_indices(Some(Indices::U32(geometry.0.indices)));
-        mesh.set_attribute(Mesh::ATTRIBUTE_POSITION, geometry.0.vertices);
+struct VertexConstructor;
 
-        let normals: Vec<[f32; 3]> = vec![[0.0, 0.0, 0.0]; num_vertices];
-        let uvs: Vec<[f32; 2]> = vec![[0.0, 0.0]; num_vertices];
-
-        mesh.set_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
-        mesh.set_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
-
-        mesh
+impl FillVertexConstructor<Vertex> for VertexConstructor {
+    fn new_vertex(&mut self, vertex: lyon_tessellation::FillVertex) -> Vertex {
+        Vertex {
+            position: [vertex.position().x, vertex.position().y, 0.0],
+            normal: [0.0, 0.0, 1.0],
+            uv: vertex.position().to_array(),
+        }
     }
 }
 
-/// Returns a `SpriteBundle` bundle with the given [`Geometry`](Geometry)
-/// and `ColorMaterial`.
-fn create_sprite(
+impl StrokeVertexConstructor<Vertex> for VertexConstructor {
+    fn new_vertex(&mut self, vertex: lyon_tessellation::StrokeVertex) -> Vertex {
+        Vertex {
+            position: [vertex.position().x, vertex.position().y, 0.0],
+            normal: [0.0, 0.0, 1.0],
+            uv: vertex.position().to_array(),
+        }
+    }
+}
+
+pub type IndexType = u32;
+pub type Buffers = VertexBuffers<Vertex, IndexType>;
+
+fn build_mesh(buffers: &Buffers) -> Mesh {
+    let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+    mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
+    mesh.set_attribute(
+        Mesh::ATTRIBUTE_POSITION,
+        buffers
+            .vertices
+            .iter()
+            .map(|v| v.position)
+            .collect::<Vec<[f32; 3]>>(),
+    );
+    mesh.set_attribute(
+        Mesh::ATTRIBUTE_NORMAL,
+        buffers
+            .vertices
+            .iter()
+            .map(|v| v.normal)
+            .collect::<Vec<[f32; 3]>>(),
+    );
+    mesh.set_attribute(
+        Mesh::ATTRIBUTE_UV_0,
+        buffers
+            .vertices
+            .iter()
+            .map(|v| v.uv)
+            .collect::<Vec<[f32; 2]>>(),
+    );
+
+    mesh
+}
+
+fn new_create_sprite(
     material: Handle<ColorMaterial>,
     meshes: &mut ResMut<Assets<Mesh>>,
-    geometry: Geometry,
+    buffers: Buffers,
     translation: Vec3,
 ) -> SpriteBundle {
     SpriteBundle {
         material,
-        mesh: meshes.add(geometry.into()),
+        mesh: meshes.add(build_mesh(&buffers)),
         sprite: Sprite {
             size: Vec2::new(1.0, 1.0),
             ..Default::default()

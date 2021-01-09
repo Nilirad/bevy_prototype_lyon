@@ -23,7 +23,7 @@ fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>
         material,
         TessellationMode::Fill(FillOptions::default()),
         Transform {
-            translation: Vec3::new(800.0, 0.0, 0.0),
+            translation: Vec3::new(200.0, 0.0, 0.0),
             ..Default::default()
         },
     ));

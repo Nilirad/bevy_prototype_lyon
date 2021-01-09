@@ -11,19 +11,15 @@ const PI_2: f32 = 2.0 * std::f32::consts::PI;
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
+        .add_plugin(ShapePlugin)
         .add_resource(ClearColor(Color::BLACK))
         .add_startup_system(startup.system())
         .run();
 }
 
-fn startup(
-    commands: &mut Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-) {
+fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
     commands.spawn(Camera2dBundle::default());
 
-    let mut tessellator = Tessellator::only_fill();
     let circle = CircleShape {
         radius: CIRCLE_RADIUS,
         ..Default::default()
@@ -34,15 +30,12 @@ fn startup(
     for (i, color) in colors.into_iter().enumerate() {
         let x = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).cos();
         let y = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).sin();
-        commands.spawn(circle.generate_sprite(
+        commands.spawn(circle.draw(
             materials.add(ColorMaterial::color(color)),
-            &mut meshes,
-            &mut tessellator,
             TessellationMode::Fill(FillOptions::default()),
             Transform {
                 translation: Vec3::new(x, y, 0.0),
-                rotation: Quat::identity(),
-                scale: Vec3::one(),
+                ..Default::default()
             },
         ));
     }

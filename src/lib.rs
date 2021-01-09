@@ -9,8 +9,8 @@ use bevy::{
     render::{mesh::Indices, pipeline::PrimitiveTopology},
 };
 use lyon_tessellation::{
-    FillOptions, FillTessellator, FillVertexConstructor, StrokeOptions, StrokeTessellator,
-    StrokeVertexConstructor, VertexBuffers,
+    path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertexConstructor, StrokeOptions,
+    StrokeTessellator, StrokeVertexConstructor, VertexBuffers,
 };
 use shape_plugin::ShapeDescriptor;
 
@@ -179,5 +179,54 @@ pub trait ShapeSprite {
         };
 
         (desc,)
+    }
+
+    fn fill(
+        &self,
+        path: &Path,
+        buffers: &mut Buffers,
+        options: &FillOptions,
+        tessellator: &mut FillTessellator,
+    ) {
+        tessellator
+            .tessellate_path(
+                path,
+                options,
+                &mut BuffersBuilder::new(buffers, VertexConstructor),
+            )
+            .unwrap();
+    }
+
+    fn stroke(
+        &self,
+        path: &Path,
+        buffers: &mut Buffers,
+        options: &StrokeOptions,
+        tessellator: &mut StrokeTessellator,
+    ) {
+        tessellator
+            .tessellate_path(
+                path,
+                options,
+                &mut BuffersBuilder::new(buffers, VertexConstructor),
+            )
+            .unwrap();
+    }
+
+    fn tessellate(
+        &self,
+        path: &Path,
+        buffers: &mut Buffers,
+        mode: TessellationMode,
+        tessellator: &mut Tessellator,
+    ) {
+        match mode {
+            TessellationMode::Fill(ref options) => {
+                self.fill(path, buffers, options, tessellator.fill.as_mut().unwrap());
+            }
+            TessellationMode::Stroke(ref options) => {
+                self.stroke(path, buffers, options, tessellator.stroke.as_mut().unwrap());
+            }
+        }
     }
 }

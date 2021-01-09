@@ -2,13 +2,12 @@
 
 use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
-    create_sprite, Buffers, ShapeSprite, TessellationMode, Tessellator, VertexConstructor,
+    create_sprite, Buffers, ShapeSprite, TessellationMode, Tessellator,
 };
 use bevy::prelude::*;
 use lyon_tessellation::{
     math::{Angle, Point, Rect, Size},
-    path::{Polygon, Winding},
-    BuffersBuilder,
+    path::{path::Builder, traits::PathBuilder, Polygon, Winding},
 };
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
@@ -64,32 +63,14 @@ impl ShapeSprite for RectangleShape {
             TopLeft => Point::new(0.0, -self.height),
         };
 
-        match mode {
-            TessellationMode::Fill(options) => {
-                tessellator
-                    .fill
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_rectangle(
-                        &Rect::new(origin, Size::new(self.width, self.height)),
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-            TessellationMode::Stroke(options) => {
-                tessellator
-                    .stroke
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_rectangle(
-                        &Rect::new(origin, Size::new(self.width, self.height)),
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-        }
+        let mut path_builder = Builder::new();
+        path_builder.add_rectangle(
+            &Rect::new(origin, Size::new(self.width, self.height)),
+            Winding::Positive,
+        );
+        let path = path_builder.build();
+
+        self.tessellate(&path, &mut buffers, mode, tessellator);
 
         create_sprite(material, meshes, buffers, transform)
     }
@@ -124,34 +105,11 @@ impl ShapeSprite for CircleShape {
     ) -> SpriteBundle {
         let mut buffers = Buffers::new();
 
-        match mode {
-            TessellationMode::Fill(options) => {
-                tessellator
-                    .fill
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_circle(
-                        self.center.to_lyon_point(),
-                        self.radius,
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-            TessellationMode::Stroke(options) => {
-                tessellator
-                    .stroke
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_circle(
-                        self.center.to_lyon_point(),
-                        self.radius,
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-        }
+        let mut path_builder = Builder::new();
+        path_builder.add_circle(self.center.to_lyon_point(), self.radius, Winding::Positive);
+        let path = path_builder.build();
+
+        self.tessellate(&path, &mut buffers, mode, tessellator);
 
         create_sprite(material, meshes, buffers, transform)
     }
@@ -185,38 +143,16 @@ impl ShapeSprite for EllipseShape {
     ) -> SpriteBundle {
         let mut buffers = Buffers::new();
 
-        match mode {
-            TessellationMode::Fill(options) => {
-                tessellator
-                    .fill
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_ellipse(
-                        self.center.to_lyon_point(),
-                        self.radii.to_lyon_vector(),
-                        Angle::zero(),
-                        Winding::Positive,
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-            TessellationMode::Stroke(options) => {
-                tessellator
-                    .stroke
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_ellipse(
-                        self.center.to_lyon_point(),
-                        self.radii.to_lyon_vector(),
-                        Angle::zero(),
-                        Winding::Positive,
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-        }
+        let mut path_builder = Builder::new();
+        path_builder.add_ellipse(
+            self.center.to_lyon_point(),
+            self.radii.to_lyon_vector(),
+            Angle::zero(),
+            Winding::Positive,
+        );
+        let path = path_builder.build();
+
+        self.tessellate(&path, &mut buffers, mode, tessellator);
 
         create_sprite(material, meshes, buffers, transform)
     }
@@ -258,32 +194,11 @@ impl ShapeSprite for PolygonShape {
             closed: self.closed,
         };
 
-        match mode {
-            TessellationMode::Fill(options) => {
-                tessellator
-                    .fill
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_polygon(
-                        polygon,
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-            TessellationMode::Stroke(options) => {
-                tessellator
-                    .stroke
-                    .as_mut()
-                    .unwrap()
-                    .tessellate_polygon(
-                        polygon,
-                        &options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap();
-            }
-        }
+        let mut path_builder = Builder::new();
+        path_builder.add_polygon(polygon);
+        let path = path_builder.build();
+
+        self.tessellate(&path, &mut buffers, mode, tessellator);
 
         create_sprite(material, meshes, buffers, transform)
     }

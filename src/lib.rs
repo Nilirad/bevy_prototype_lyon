@@ -92,11 +92,11 @@ fn build_mesh(buffers: &Buffers) -> Mesh {
     mesh
 }
 
-fn new_create_sprite(
+fn create_sprite(
     material: Handle<ColorMaterial>,
     meshes: &mut ResMut<Assets<Mesh>>,
     buffers: Buffers,
-    translation: Vec3,
+    transform: Transform,
 ) -> SpriteBundle {
     SpriteBundle {
         material,
@@ -105,7 +105,7 @@ fn new_create_sprite(
             size: Vec2::new(1.0, 1.0),
             ..Default::default()
         },
-        transform: Transform::from_translation(translation),
+        transform,
         ..Default::default()
     }
 }

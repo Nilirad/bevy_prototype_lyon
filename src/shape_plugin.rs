@@ -25,6 +25,10 @@ fn shapesprite_maker(
     query: Query<(Entity, &ShapeDescriptor)>,
 ) {
     for (entity, shape_descriptor) in query.iter() {
+        assert_eq!(
+            shape_descriptor.transform.translation,
+            Vec3::new(800.0, 0.0, 0.0)
+        );
         commands
             .spawn(shape_descriptor.shape.generate_sprite(
                 shape_descriptor.material.clone(),

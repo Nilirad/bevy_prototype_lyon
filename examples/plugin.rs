@@ -16,12 +16,15 @@ fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>
     let shape = RectangleShape {
         width: 200.0,
         height: 150.0,
-        origin: RectangleOrigin::BottomRight,
+        origin: RectangleOrigin::Center,
     };
 
     commands.spawn(Camera2dBundle::default()).spawn(shape.draw(
         material,
         TessellationMode::Fill(FillOptions::default()),
-        Transform::default(),
+        Transform {
+            translation: Vec3::new(800.0, 0.0, 0.0),
+            ..Default::default()
+        },
     ));
 }

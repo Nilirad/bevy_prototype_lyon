@@ -2,7 +2,7 @@
 
 use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
-    new_create_sprite, Buffers, ShapeSprite, TessellationMode, Tessellator, VertexConstructor,
+    create_sprite, Buffers, ShapeSprite, TessellationMode, Tessellator, VertexConstructor,
 };
 use bevy::prelude::*;
 use lyon_tessellation::{
@@ -91,7 +91,7 @@ impl ShapeSprite for RectangleShape {
             }
         }
 
-        new_create_sprite(material, meshes, buffers, transform.translation)
+        create_sprite(material, meshes, buffers, transform)
     }
 }
 
@@ -153,7 +153,7 @@ impl ShapeSprite for CircleShape {
             }
         }
 
-        new_create_sprite(material, meshes, buffers, transform.translation)
+        create_sprite(material, meshes, buffers, transform)
     }
 }
 
@@ -218,7 +218,7 @@ impl ShapeSprite for EllipseShape {
             }
         }
 
-        new_create_sprite(material, meshes, buffers, transform.translation)
+        create_sprite(material, meshes, buffers, transform)
     }
 }
 
@@ -285,6 +285,6 @@ impl ShapeSprite for PolygonShape {
             }
         }
 
-        new_create_sprite(material, meshes, buffers, transform.translation)
+        create_sprite(material, meshes, buffers, transform)
     }
 }

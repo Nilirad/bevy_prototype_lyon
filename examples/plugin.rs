@@ -13,7 +13,7 @@ fn main() {
 fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
     let material = materials.add(ColorMaterial::color(Color::CRIMSON));
 
-    let shape = shapes::RectangleShape {
+    let shape = shapes::Rectangle {
         width: 200.0,
         height: 150.0,
         origin: shapes::RectangleOrigin::Center,

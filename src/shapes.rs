@@ -14,7 +14,7 @@ use bevy::{
 };
 use lyon_tessellation::{
     math::{Angle, Point, Rect, Size},
-    path::{path::Builder, traits::PathBuilder, Polygon, Winding},
+    path::{path::Builder, traits::PathBuilder, Polygon as LyonPolygon, Winding},
 };
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
@@ -34,13 +34,13 @@ impl Default for RectangleOrigin {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct RectangleShape {
+pub struct Rectangle {
     pub width: f32,
     pub height: f32,
     pub origin: RectangleOrigin,
 }
 
-impl Default for RectangleShape {
+impl Default for Rectangle {
     fn default() -> Self {
         Self {
             width: 1.0,
@@ -50,7 +50,7 @@ impl Default for RectangleShape {
     }
 }
 
-impl ShapeSprite for RectangleShape {
+impl ShapeSprite for Rectangle {
     fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
@@ -84,7 +84,7 @@ impl ShapeSprite for RectangleShape {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct CircleShape {
+pub struct Circle {
     /// Distance of the border of the circle from the center.
     pub radius: f32,
     /// The position of the center of the circle, relative to the world
@@ -92,7 +92,7 @@ pub struct CircleShape {
     pub center: Vec2,
 }
 
-impl Default for CircleShape {
+impl Default for Circle {
     fn default() -> Self {
         Self {
             radius: 1.0,
@@ -101,7 +101,7 @@ impl Default for CircleShape {
     }
 }
 
-impl ShapeSprite for CircleShape {
+impl ShapeSprite for Circle {
     fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
@@ -123,14 +123,14 @@ impl ShapeSprite for CircleShape {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct EllipseShape {
+pub struct Ellipse {
     pub radii: Vec2,
     /// The position of the center of the ellipse, relative to the world
     /// [`Translation`] of the [`SpriteBundle`].
     pub center: Vec2,
 }
 
-impl Default for EllipseShape {
+impl Default for Ellipse {
     fn default() -> Self {
         Self {
             radii: Vec2::one(),
@@ -139,7 +139,7 @@ impl Default for EllipseShape {
     }
 }
 
-impl ShapeSprite for EllipseShape {
+impl ShapeSprite for Ellipse {
     fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
@@ -166,12 +166,12 @@ impl ShapeSprite for EllipseShape {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct PolygonShape {
+pub struct Polygon {
     pub points: Vec<Vec2>,
     pub closed: bool,
 }
 
-impl Default for PolygonShape {
+impl Default for Polygon {
     fn default() -> Self {
         Self {
             points: Vec::new(),
@@ -180,7 +180,7 @@ impl Default for PolygonShape {
     }
 }
 
-impl ShapeSprite for PolygonShape {
+impl ShapeSprite for Polygon {
     fn generate_sprite(
         &self,
         material: Handle<ColorMaterial>,
@@ -196,7 +196,7 @@ impl ShapeSprite for PolygonShape {
             .iter()
             .map(|p| p.to_lyon_point())
             .collect::<Vec<Point>>();
-        let polygon: Polygon<Point> = Polygon {
+        let polygon: LyonPolygon<Point> = LyonPolygon {
             points: points.as_slice(),
             closed: self.closed,
         };

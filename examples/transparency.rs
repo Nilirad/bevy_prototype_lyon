@@ -20,7 +20,7 @@ fn main() {
 fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
     commands.spawn(Camera2dBundle::default());
 
-    let circle = basic_shapes::CircleShape {
+    let circle = shapes::CircleShape {
         radius: CIRCLE_RADIUS,
         ..Default::default()
     };

@@ -21,15 +21,15 @@ use lyon_tessellation::{
 };
 use shape_plugin::ShapeDescriptor;
 
-pub mod basic_shapes;
 pub mod conversions;
 pub mod shape_plugin;
+pub mod shapes;
 
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
 /// convenient imports.
 pub mod prelude {
     pub use crate::{
-        basic_shapes, shape_plugin::ShapePlugin, ShapeSprite, TessellationMode, Tessellator,
+        shape_plugin::ShapePlugin, shapes, ShapeSprite, TessellationMode, Tessellator,
     };
     pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
 }

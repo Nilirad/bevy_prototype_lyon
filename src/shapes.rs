@@ -2,19 +2,12 @@
 
 use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
-    create_sprite, Buffers, ShapeSprite, TessellationMode, Tessellator,
+    ShapeSprite,
 };
-use bevy::{
-    asset::{Assets, Handle},
-    ecs::ResMut,
-    math::Vec2,
-    render::mesh::Mesh,
-    sprite::{entity::SpriteBundle, ColorMaterial},
-    transform::components::Transform,
-};
+use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{Angle, Point, Rect, Size},
-    path::{path::Builder, traits::PathBuilder, Polygon as LyonPolygon, Winding},
+    path::{path::Builder, traits::PathBuilder, Path, Polygon as LyonPolygon, Winding},
 };
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
@@ -51,23 +44,16 @@ impl Default for Rectangle {
 }
 
 impl ShapeSprite for Rectangle {
-    fn generate_sprite(
-        &self,
-        material: Handle<ColorMaterial>,
-        meshes: &mut ResMut<Assets<Mesh>>,
-        tessellator: &mut Tessellator,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> SpriteBundle {
-        let mut buffers = Buffers::new();
-
-        use RectangleOrigin::*;
-        let origin = match self.origin {
-            Center => Point::new(-self.width / 2.0, -self.height / 2.0),
-            BottomLeft => Point::new(0.0, 0.0),
-            BottomRight => Point::new(-self.width, 0.0),
-            TopRight => Point::new(-self.width, -self.height),
-            TopLeft => Point::new(0.0, -self.height),
+    fn generate_path(&self) -> Path {
+        let origin = {
+            use RectangleOrigin::*;
+            match self.origin {
+                Center => Point::new(-self.width / 2.0, -self.height / 2.0),
+                BottomLeft => Point::new(0.0, 0.0),
+                BottomRight => Point::new(-self.width, 0.0),
+                TopRight => Point::new(-self.width, -self.height),
+                TopLeft => Point::new(0.0, -self.height),
+            }
         };
 
         let mut path_builder = Builder::new();
@@ -75,11 +61,7 @@ impl ShapeSprite for Rectangle {
             &Rect::new(origin, Size::new(self.width, self.height)),
             Winding::Positive,
         );
-        let path = path_builder.build();
-
-        self.tessellate(&path, &mut buffers, mode, tessellator);
-
-        create_sprite(material, meshes, buffers, transform)
+        path_builder.build()
     }
 }
 
@@ -102,23 +84,10 @@ impl Default for Circle {
 }
 
 impl ShapeSprite for Circle {
-    fn generate_sprite(
-        &self,
-        material: Handle<ColorMaterial>,
-        meshes: &mut ResMut<Assets<Mesh>>,
-        tessellator: &mut Tessellator,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> SpriteBundle {
-        let mut buffers = Buffers::new();
-
+    fn generate_path(&self) -> Path {
         let mut path_builder = Builder::new();
         path_builder.add_circle(self.center.to_lyon_point(), self.radius, Winding::Positive);
-        let path = path_builder.build();
-
-        self.tessellate(&path, &mut buffers, mode, tessellator);
-
-        create_sprite(material, meshes, buffers, transform)
+        path_builder.build()
     }
 }
 
@@ -140,16 +109,7 @@ impl Default for Ellipse {
 }
 
 impl ShapeSprite for Ellipse {
-    fn generate_sprite(
-        &self,
-        material: Handle<ColorMaterial>,
-        meshes: &mut ResMut<Assets<Mesh>>,
-        tessellator: &mut Tessellator,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> SpriteBundle {
-        let mut buffers = Buffers::new();
-
+    fn generate_path(&self) -> Path {
         let mut path_builder = Builder::new();
         path_builder.add_ellipse(
             self.center.to_lyon_point(),
@@ -157,11 +117,7 @@ impl ShapeSprite for Ellipse {
             Angle::zero(),
             Winding::Positive,
         );
-        let path = path_builder.build();
-
-        self.tessellate(&path, &mut buffers, mode, tessellator);
-
-        create_sprite(material, meshes, buffers, transform)
+        path_builder.build()
     }
 }
 
@@ -181,16 +137,7 @@ impl Default for Polygon {
 }
 
 impl ShapeSprite for Polygon {
-    fn generate_sprite(
-        &self,
-        material: Handle<ColorMaterial>,
-        meshes: &mut ResMut<Assets<Mesh>>,
-        tessellator: &mut Tessellator,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> SpriteBundle {
-        let mut buffers = Buffers::new();
-
+    fn generate_path(&self) -> Path {
         let points = self
             .points
             .iter()
@@ -203,10 +150,6 @@ impl ShapeSprite for Polygon {
 
         let mut path_builder = Builder::new();
         path_builder.add_polygon(polygon);
-        let path = path_builder.build();
-
-        self.tessellate(&path, &mut buffers, mode, tessellator);
-
-        create_sprite(material, meshes, buffers, transform)
+        path_builder.build()
     }
 }

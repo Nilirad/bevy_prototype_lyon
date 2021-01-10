@@ -5,20 +5,17 @@
 //! 2D shapes in Bevy.
 
 use bevy::{
-    asset::{Assets, Handle},
-    ecs::ResMut,
-    math::Vec2,
+    asset::Handle,
     render::{
         mesh::{Indices, Mesh},
         pipeline::PrimitiveTopology,
     },
-    sprite::{entity::SpriteBundle, ColorMaterial, Sprite},
+    sprite::ColorMaterial,
     transform::components::Transform,
 };
 use lyon_tessellation::{
-    path::path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertex,
-    FillVertexConstructor, StrokeOptions, StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
-    VertexBuffers,
+    path::path::Path, FillOptions, FillTessellator, FillVertex, FillVertexConstructor,
+    StrokeOptions, StrokeTessellator, StrokeVertex, StrokeVertexConstructor, VertexBuffers,
 };
 use plugin::ShapeDescriptor;
 
@@ -98,24 +95,6 @@ fn build_mesh(buffers: &Buffers) -> Mesh {
     mesh
 }
 
-fn create_sprite(
-    material: Handle<ColorMaterial>,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    buffers: Buffers,
-    transform: Transform,
-) -> SpriteBundle {
-    SpriteBundle {
-        material,
-        mesh: meshes.add(build_mesh(&buffers)),
-        sprite: Sprite {
-            size: Vec2::new(1.0, 1.0),
-            ..Default::default()
-        },
-        transform,
-        ..Default::default()
-    }
-}
-
 /// Determines if a shape or path must be filled or stroked.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TessellationMode {
@@ -142,21 +121,6 @@ impl Tessellator {
 /// Shape structs that implement this trait can be transformed into a
 /// `SpriteBundle`. See [`basic_shapes`] module for examples.
 pub trait ShapeSprite {
-    /// Returns a `SpriteBundle` with a custom mesh.
-    fn generate_sprite(
-        &self,
-        path: &Path,
-        material: Handle<ColorMaterial>,
-        meshes: &mut ResMut<Assets<Mesh>>,
-        tessellator: &mut Tessellator,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> SpriteBundle {
-        let mut buffers = Buffers::new();
-        self.tessellate(&path, &mut buffers, mode, tessellator);
-        create_sprite(material, meshes, buffers, transform)
-    }
-
     fn generate_path(&self) -> Path;
 
     fn draw(
@@ -176,54 +140,5 @@ pub trait ShapeSprite {
         };
 
         (desc,)
-    }
-
-    fn fill(
-        &self,
-        path: &Path,
-        buffers: &mut Buffers,
-        options: &FillOptions,
-        tessellator: &mut FillTessellator,
-    ) {
-        tessellator
-            .tessellate_path(
-                path,
-                options,
-                &mut BuffersBuilder::new(buffers, VertexConstructor),
-            )
-            .unwrap();
-    }
-
-    fn stroke(
-        &self,
-        path: &Path,
-        buffers: &mut Buffers,
-        options: &StrokeOptions,
-        tessellator: &mut StrokeTessellator,
-    ) {
-        tessellator
-            .tessellate_path(
-                path,
-                options,
-                &mut BuffersBuilder::new(buffers, VertexConstructor),
-            )
-            .unwrap();
-    }
-
-    fn tessellate(
-        &self,
-        path: &Path,
-        buffers: &mut Buffers,
-        mode: TessellationMode,
-        tessellator: &mut Tessellator,
-    ) {
-        match mode {
-            TessellationMode::Fill(ref options) => {
-                self.fill(path, buffers, options, &mut tessellator.fill);
-            }
-            TessellationMode::Stroke(ref options) => {
-                self.stroke(path, buffers, options, &mut tessellator.stroke);
-            }
-        }
     }
 }

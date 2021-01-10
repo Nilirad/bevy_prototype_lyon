@@ -1,12 +1,15 @@
-use crate::{ShapeSprite, TessellationMode, Tessellator};
+use crate::{build_mesh, Buffers, ShapeSprite, TessellationMode, Tessellator, VertexConstructor};
 use bevy::{
     app::{stage, AppBuilder, Plugin},
     asset::{Assets, Handle},
     ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage},
+    math::Vec2,
+    prelude::SpriteBundle,
     render::mesh::Mesh,
-    sprite::ColorMaterial,
+    sprite::{ColorMaterial, Sprite},
     transform::components::Transform,
 };
+use lyon_tessellation::BuffersBuilder;
 
 pub mod shape_plugin_stage {
     pub const SHAPE: &str = "shape";
@@ -42,14 +45,42 @@ fn shapesprite_maker(
 ) {
     for (entity, shape_descriptor) in query.iter() {
         let path = shape_descriptor.shape.generate_path();
-        let sprite_bundle = shape_descriptor.shape.generate_sprite(
-            &path,
-            shape_descriptor.material.clone(),
-            &mut meshes,
-            &mut tessellator,
-            shape_descriptor.mode,
-            shape_descriptor.transform,
-        );
+
+        let mut buffers = Buffers::new();
+
+        match shape_descriptor.mode {
+            TessellationMode::Fill(ref options) => {
+                tessellator
+                    .fill
+                    .tessellate_path(
+                        &path,
+                        options,
+                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
+                    )
+                    .unwrap();
+            }
+            TessellationMode::Stroke(ref options) => {
+                tessellator
+                    .stroke
+                    .tessellate_path(
+                        &path,
+                        options,
+                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
+                    )
+                    .unwrap();
+            }
+        }
+
+        let sprite_bundle = SpriteBundle {
+            material: shape_descriptor.material.clone(),
+            mesh: meshes.add(build_mesh(&buffers)),
+            sprite: Sprite {
+                size: Vec2::new(1.0, 1.0),
+                ..Default::default()
+            },
+            transform: shape_descriptor.transform,
+            ..Default::default()
+        };
 
         commands.spawn(sprite_bundle).despawn(entity);
     }

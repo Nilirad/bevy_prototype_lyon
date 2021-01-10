@@ -1,5 +1,12 @@
 use crate::{ShapeSprite, TessellationMode, Tessellator};
-use bevy::prelude::*;
+use bevy::{
+    app::{stage, AppBuilder, Plugin},
+    asset::{Assets, Handle},
+    ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage},
+    render::mesh::Mesh,
+    sprite::ColorMaterial,
+    transform::components::Transform,
+};
 
 pub mod shape_plugin_stage {
     pub const SHAPE: &str = "shape";

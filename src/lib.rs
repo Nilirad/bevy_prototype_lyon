@@ -119,32 +119,16 @@ pub enum TessellationMode {
 
 /// A couple of `lyon` fill and stroke tessellators.
 pub struct Tessellator {
-    pub fill: Option<FillTessellator>,
-    pub stroke: Option<StrokeTessellator>,
+    pub fill: FillTessellator,
+    pub stroke: StrokeTessellator,
 }
 
 impl Tessellator {
     /// Returns two new tessellators, one for fill and one for stroke.
     pub fn new() -> Self {
         Self {
-            fill: Some(FillTessellator::new()),
-            stroke: Some(StrokeTessellator::new()),
-        }
-    }
-
-    /// Returns a new fill tessellator.
-    pub fn only_fill() -> Self {
-        Self {
-            fill: Some(FillTessellator::new()),
-            stroke: None,
-        }
-    }
-
-    /// Returns a new stroke tessellator.
-    pub fn only_stroke() -> Self {
-        Self {
-            fill: None,
-            stroke: Some(StrokeTessellator::new()),
+            fill: FillTessellator::new(),
+            stroke: StrokeTessellator::new(),
         }
     }
 }
@@ -222,10 +206,10 @@ pub trait ShapeSprite {
     ) {
         match mode {
             TessellationMode::Fill(ref options) => {
-                self.fill(path, buffers, options, tessellator.fill.as_mut().unwrap());
+                self.fill(path, buffers, options, &mut tessellator.fill);
             }
             TessellationMode::Stroke(ref options) => {
-                self.stroke(path, buffers, options, tessellator.stroke.as_mut().unwrap());
+                self.stroke(path, buffers, options, &mut tessellator.stroke);
             }
         }
     }

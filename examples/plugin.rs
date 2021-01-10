@@ -13,10 +13,10 @@ fn main() {
 fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
     let material = materials.add(ColorMaterial::color(Color::CRIMSON));
 
-    let shape = basic_shapes::RectangleShape {
+    let shape = shapes::RectangleShape {
         width: 200.0,
         height: 150.0,
-        origin: basic_shapes::RectangleOrigin::Center,
+        origin: shapes::RectangleOrigin::Center,
     };
 
     commands.spawn(Camera2dBundle::default()).spawn(shape.draw(

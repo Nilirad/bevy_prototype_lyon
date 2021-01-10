@@ -9,8 +9,8 @@ use bevy::{
     render::{mesh::Indices, pipeline::PrimitiveTopology},
 };
 use lyon_tessellation::{
-    path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertexConstructor, StrokeOptions,
-    StrokeTessellator, StrokeVertexConstructor, VertexBuffers,
+    path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertex, FillVertexConstructor,
+    StrokeOptions, StrokeTessellator, StrokeVertex, StrokeVertexConstructor, VertexBuffers,
 };
 use shape_plugin::ShapeDescriptor;
 
@@ -39,7 +39,7 @@ pub struct Vertex {
 struct VertexConstructor;
 
 impl FillVertexConstructor<Vertex> for VertexConstructor {
-    fn new_vertex(&mut self, vertex: lyon_tessellation::FillVertex) -> Vertex {
+    fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
         Vertex {
             position: [vertex.position().x, vertex.position().y, 0.0],
             normal: [0.0, 0.0, 1.0],
@@ -49,7 +49,7 @@ impl FillVertexConstructor<Vertex> for VertexConstructor {
 }
 
 impl StrokeVertexConstructor<Vertex> for VertexConstructor {
-    fn new_vertex(&mut self, vertex: lyon_tessellation::StrokeVertex) -> Vertex {
+    fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
         Vertex {
             position: [vertex.position().x, vertex.position().y, 0.0],
             normal: [0.0, 0.0, 1.0],

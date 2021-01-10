@@ -41,14 +41,16 @@ fn shapesprite_maker(
     query: Query<(Entity, &ShapeDescriptor)>,
 ) {
     for (entity, shape_descriptor) in query.iter() {
-        commands
-            .spawn(shape_descriptor.shape.generate_sprite(
-                shape_descriptor.material.clone(),
-                &mut meshes,
-                &mut tessellator,
-                shape_descriptor.mode.clone(),
-                shape_descriptor.transform.clone(),
-            ))
-            .despawn(entity);
+        let path = shape_descriptor.shape.generate_path();
+        let sprite_bundle = shape_descriptor.shape.generate_sprite(
+            &path,
+            shape_descriptor.material.clone(),
+            &mut meshes,
+            &mut tessellator,
+            shape_descriptor.mode,
+            shape_descriptor.transform,
+        );
+
+        commands.spawn(sprite_bundle).despawn(entity);
     }
 }

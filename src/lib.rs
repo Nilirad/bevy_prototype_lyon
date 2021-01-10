@@ -16,8 +16,9 @@ use bevy::{
     transform::components::Transform,
 };
 use lyon_tessellation::{
-    path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertex, FillVertexConstructor,
-    StrokeOptions, StrokeTessellator, StrokeVertex, StrokeVertexConstructor, VertexBuffers,
+    path::path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertex,
+    FillVertexConstructor, StrokeOptions, StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
+    VertexBuffers,
 };
 use plugin::ShapeDescriptor;
 
@@ -144,12 +145,19 @@ pub trait ShapeSprite {
     /// Returns a `SpriteBundle` with a custom mesh.
     fn generate_sprite(
         &self,
+        path: &Path,
         material: Handle<ColorMaterial>,
         meshes: &mut ResMut<Assets<Mesh>>,
         tessellator: &mut Tessellator,
         mode: TessellationMode,
         transform: Transform,
-    ) -> SpriteBundle;
+    ) -> SpriteBundle {
+        let mut buffers = Buffers::new();
+        self.tessellate(&path, &mut buffers, mode, tessellator);
+        create_sprite(material, meshes, buffers, transform)
+    }
+
+    fn generate_path(&self) -> Path;
 
     fn draw(
         &self,

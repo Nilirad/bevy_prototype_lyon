@@ -29,7 +29,9 @@ pub mod shapes;
 /// convenient imports.
 pub mod prelude {
     pub use crate::{plugin::ShapePlugin, shapes, ShapeSprite, TessellationMode, Tessellator};
-    pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
+    pub use lyon_tessellation::{
+        FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
+    };
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

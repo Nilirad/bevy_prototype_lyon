@@ -43,7 +43,7 @@ impl FillVertexConstructor<Vertex> for VertexConstructor {
         Vertex {
             position: [vertex.position().x, vertex.position().y, 0.0],
             normal: [0.0, 0.0, 1.0],
-            uv: vertex.position().to_array(),
+            uv: [0.0, 0.0],
         }
     }
 }
@@ -53,7 +53,7 @@ impl StrokeVertexConstructor<Vertex> for VertexConstructor {
         Vertex {
             position: [vertex.position().x, vertex.position().y, 0.0],
             normal: [0.0, 0.0, 1.0],
-            uv: vertex.position().to_array(),
+            uv: [0.0, 0.0],
         }
     }
 }

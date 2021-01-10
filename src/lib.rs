@@ -19,18 +19,16 @@ use lyon_tessellation::{
     path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertex, FillVertexConstructor,
     StrokeOptions, StrokeTessellator, StrokeVertex, StrokeVertexConstructor, VertexBuffers,
 };
-use shape_plugin::ShapeDescriptor;
+use plugin::ShapeDescriptor;
 
 pub mod conversions;
-pub mod shape_plugin;
+pub mod plugin;
 pub mod shapes;
 
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
 /// convenient imports.
 pub mod prelude {
-    pub use crate::{
-        shape_plugin::ShapePlugin, shapes, ShapeSprite, TessellationMode, Tessellator,
-    };
+    pub use crate::{plugin::ShapePlugin, shapes, ShapeSprite, TessellationMode, Tessellator};
     pub use lyon_tessellation::{math::point, FillOptions, LineCap, LineJoin, StrokeOptions};
 }
 

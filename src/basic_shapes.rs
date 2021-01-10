@@ -4,7 +4,14 @@ use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
     create_sprite, Buffers, ShapeSprite, TessellationMode, Tessellator,
 };
-use bevy::prelude::*;
+use bevy::{
+    asset::{Assets, Handle},
+    ecs::ResMut,
+    math::Vec2,
+    render::mesh::Mesh,
+    sprite::{entity::SpriteBundle, ColorMaterial},
+    transform::components::Transform,
+};
 use lyon_tessellation::{
     math::{Angle, Point, Rect, Size},
     path::{path::Builder, traits::PathBuilder, Polygon, Winding},

@@ -5,8 +5,15 @@
 //! 2D shapes in Bevy.
 
 use bevy::{
-    prelude::*,
-    render::{mesh::Indices, pipeline::PrimitiveTopology},
+    asset::{Assets, Handle},
+    ecs::ResMut,
+    math::Vec2,
+    render::{
+        mesh::{Indices, Mesh},
+        pipeline::PrimitiveTopology,
+    },
+    sprite::{entity::SpriteBundle, ColorMaterial, Sprite},
+    transform::components::Transform,
 };
 use lyon_tessellation::{
     path::Path, BuffersBuilder, FillOptions, FillTessellator, FillVertex, FillVertexConstructor,

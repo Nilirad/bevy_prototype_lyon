@@ -10,7 +10,7 @@ fn main() {
 }
 
 fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    let circle = CircleShape {
+    let circle = basic_shapes::CircleShape {
         radius: 100.0,
         ..Default::default()
     };

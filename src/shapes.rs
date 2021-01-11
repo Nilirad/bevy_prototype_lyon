@@ -121,7 +121,7 @@ impl ShapeSprite for Ellipse {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
     pub points: Vec<Vec2>,
     pub closed: bool,

@@ -130,7 +130,7 @@ pub trait ShapeSprite {
         transform: Transform,
     ) -> (ShapeDescriptor,)
     where
-        Self: Sync + Send + Sized + Copy + 'static,
+        Self: Sync + Send + Sized + Clone + 'static,
     {
         let desc = ShapeDescriptor {
             shape: Box::new(self.clone()),

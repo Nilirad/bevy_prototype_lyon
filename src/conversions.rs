@@ -1,4 +1,4 @@
-//! Conversions between `bevy` and `lyon` datatypes.
+//! Conversions between Bevy and Lyon datatypes.
 use bevy::math::Vec2;
 use lyon_tessellation::math::{Point, Vector};
 

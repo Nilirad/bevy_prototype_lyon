@@ -1,3 +1,24 @@
+//! Contains the plugin and its helper types.
+//!
+//! The `ShapePlugin`, used at its fullest, provides the creation of shapes with
+//! minimal boilerplate.
+//!
+//! ## How it works
+//! When the user calls the [`ShapeSprite::draw`](super::ShapeSprite::draw)
+//! method from a system in the `UPDATE` stage, it will return a
+//! `(ShapeDescriptor, )` type, a single element tuple that gets feeded to
+//! Bevy's `Commands::spawn` method as a bundle.
+//!
+//! Then, in the [`SHAPE`](shape_plugin_stage::SHAPE) stage, there is a system
+//! that spawns the `SpriteBundle`s before deleting the `ShapeDescriptor`s
+//!
+//! ## Drawbacks
+//! There is an important drawback with this approach: since the `SpriteBundle`
+//! is created in another system, you can't use bevy's `with` or `with_bundle`
+//! commands.
+
+// TODO: Show use of the alternative drawing function.
+
 use crate::{build_mesh, Buffers, ShapeSprite, TessellationMode, Tessellator, VertexConstructor};
 use bevy::{
     app::{stage, AppBuilder, Plugin},
@@ -11,10 +32,15 @@ use bevy::{
 };
 use lyon_tessellation::BuffersBuilder;
 
+/// Stages for this plugin.
 pub mod shape_plugin_stage {
+    /// The stage where the [`ShapeDescriptor`](super::ShapeDescriptor)s are
+    /// replaced with `SpriteBundles`.
     pub const SHAPE: &str = "shape";
 }
 
+/// A plugin that provides resources and a system to draw shapes in Bevy with
+/// less boilerplate.
 pub struct ShapePlugin;
 
 impl Plugin for ShapePlugin {
@@ -30,6 +56,8 @@ impl Plugin for ShapePlugin {
     }
 }
 
+/// An intermediate representation that contains all the data to create a
+/// `SpriteBundle` with a custom mesh.
 pub struct ShapeDescriptor {
     pub shape: Box<dyn ShapeSprite + Send + Sync>,
     pub material: Handle<ColorMaterial>,
@@ -37,6 +65,8 @@ pub struct ShapeDescriptor {
     pub transform: Transform,
 }
 
+/// A bevy system. Queries all the [`ShapeDescriptor`]s to create a
+/// `SpriteBundle` for each one, before deleting them.
 fn shapesprite_maker(
     commands: &mut Commands,
     mut meshes: ResMut<Assets<Mesh>>,

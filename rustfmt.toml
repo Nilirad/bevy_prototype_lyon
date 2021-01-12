@@ -1,3 +1,4 @@
+format_code_in_doc_comments = true
 merge_imports = true
 newline_style = "Unix"
 reorder_impl_items = true

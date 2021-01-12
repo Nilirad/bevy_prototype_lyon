@@ -1,4 +1,8 @@
-//! Common shapes, like rectangles, ellipses, triangles and more.
+//! Collection of common shapes that can be drawn.
+//!
+//! The structs defined in this module implement the
+//! [`ShapeSprite`](super::ShapeSprite) trait. You can also implement the trait
+//! for your own shapes.
 
 use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
@@ -70,7 +74,7 @@ pub struct Circle {
     /// Distance of the border of the circle from the center.
     pub radius: f32,
     /// The position of the center of the circle, relative to the world
-    /// [`Translation`] of the [`SpriteBundle`].
+    /// translation of the [`SpriteBundle`](bevy::sprite::entity::SpriteBundle).
     pub center: Vec2,
 }
 
@@ -95,7 +99,7 @@ impl ShapeSprite for Circle {
 pub struct Ellipse {
     pub radii: Vec2,
     /// The position of the center of the ellipse, relative to the world
-    /// [`Translation`] of the [`SpriteBundle`].
+    /// translation of the [`SpriteBundle`](bevy::sprite::entity::SpriteBundle).
     pub center: Vec2,
 }
 

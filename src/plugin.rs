@@ -112,6 +112,7 @@ fn shapesprite_maker(
             ..Default::default()
         };
 
-        commands.spawn(sprite_bundle).despawn(entity);
+        commands.insert(entity, sprite_bundle);
+        commands.remove_one::<ShapeDescriptor>(entity);
     }
 }

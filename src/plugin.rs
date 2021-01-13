@@ -1,18 +1,18 @@
 //! Contains the plugin and its helper types.
 //!
-//! The `ShapePlugin`, used at its fullest, provides the creation of shapes with
-//! minimal boilerplate.
+//! The `ShapePlugin` provides the creation of shapes with minimal boilerplate.
 //!
 //! ## How it works
 //! When the user calls the [`ShapeSprite::draw`] method from a system in the
-//! `UPDATE` stage, it will return a `(ShapeDescriptor, )` type, a single
-//! element tuple that gets feeded to Bevy's `Commands::spawn` method as a
+//! [`UPDATE`](bevy::app::stage::UPDATE) stage, it will return a
+//! `(ShapeDescriptor, )` type, a single element tuple that gets feeded to
+//! Bevy's [`Commands::spawn`](bevy::ecs::Commands::spawn) method as a
 //! bundle.
 //!
 //! Then, in the [`SHAPE`](shape_plugin_stage::SHAPE) stage, there is a system
 //! that for each entity containing `ShapeDescriptor`, it inserts the
-//! `SpriteBundle` components into the entity and then removes the
-//! `ShapeDescriptor` component.
+//! [`SpriteBundle`](bevy::sprite::entity::SpriteBundle) components into the
+//! entity and then removes the `ShapeDescriptor` component.
 
 // TODO: Show use of the alternative drawing function.
 
@@ -184,7 +184,7 @@ fn shapesprite_maker(
 /// }
 /// ```
 pub trait ShapeSprite {
-    /// Generates a Lyon `Path` for the shape.
+    /// Generates a Lyon [`Path`] for the shape.
     fn generate_path(&self) -> Path;
 
     /// Returns a [`ShapeDescriptor`] entity for the

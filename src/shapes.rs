@@ -158,6 +158,7 @@ impl ShapeSprite for Polygon {
     }
 }
 
+/// The regular polygon feature used to determine the dimensions of the polygon.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RegularPolygonFeature {
     /// The radius of the polygon's circumcircle.

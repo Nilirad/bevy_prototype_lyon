@@ -34,7 +34,7 @@ pub mod prelude {
 }
 
 /// A vertex with all the necessary attributes to be inserted into a Bevy
-/// `Mesh`.
+/// [`Mesh`](bevy::render::mesh::Mesh).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vertex {
     position: [f32; 3],
@@ -68,13 +68,14 @@ impl StrokeVertexConstructor<Vertex> for VertexConstructor {
     }
 }
 
-/// The index type of a Bevy `Mesh`
+/// The index type of a Bevy [`Mesh`](bevy::render::mesh::Mesh)
 pub type IndexType = u32;
 
-/// Lyon's `VertexBuffers` generic data type defined for [`Vertex`].
+/// Lyon's [`VertexBuffers`](lyon_tessellation::geometry_builder::VertexBuffers)
+/// generic data type defined for [`Vertex`].
 pub type Buffers = VertexBuffers<Vertex, IndexType>;
 
-/// Builds a Bevy `Mesh` from a [`Buffers`] type.
+/// Builds a Bevy [`Mesh`](bevy::render::mesh::Mesh) from a [`Buffers`] type.
 fn build_mesh(buffers: &Buffers) -> Mesh {
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));

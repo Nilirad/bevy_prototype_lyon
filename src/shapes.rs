@@ -1,12 +1,12 @@
 //! Collection of common shapes that can be drawn.
 //!
 //! The structs defined in this module implement the
-//! [`ShapeSprite`](super::ShapeSprite) trait. You can also implement the trait
-//! for your own shapes.
+//! [`ShapeSprite`](crate::plugin::ShapeSprite) trait. You can also implement
+//! the trait for your own shapes.
 
 use crate::{
     conversions::{ToLyonPoint, ToLyonVector},
-    ShapeSprite,
+    plugin::ShapeSprite,
 };
 use bevy::math::Vec2;
 use lyon_tessellation::{

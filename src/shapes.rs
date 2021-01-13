@@ -10,7 +10,7 @@ use crate::{
 };
 use bevy::math::Vec2;
 use lyon_tessellation::{
-    math::{Angle, Point, Rect, Size},
+    math::{point, Angle, Point, Rect, Size},
     path::{path::Builder, traits::PathBuilder, Path, Polygon as LyonPolygon, Winding},
 };
 
@@ -150,6 +150,73 @@ impl ShapeSprite for Polygon {
         let polygon: LyonPolygon<Point> = LyonPolygon {
             points: points.as_slice(),
             closed: self.closed,
+        };
+
+        let mut path_builder = Builder::new();
+        path_builder.add_polygon(polygon);
+        path_builder.build()
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum RegularPolygonFeature {
+    /// The radius of the polygon's circumcircle.
+    Radius(f32),
+    /// The radius of the polygon's incircle.
+    Apothem(f32),
+    /// The length of the polygon's side.
+    SideLength(f32),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct RegularPolygon {
+    pub sides: usize,
+    pub center: Vec2,
+    pub feature: RegularPolygonFeature,
+}
+
+impl RegularPolygon {
+    /// Gets the radius of the polygon.
+    fn radius(&self) -> f32 {
+        use RegularPolygonFeature::*;
+        let ratio = std::f32::consts::PI / self.sides as f32;
+
+        match self.feature {
+            Radius(r) => r,
+            Apothem(a) => a * ratio.tan() / ratio.sin(),
+            SideLength(s) => s / (2.0 * ratio.sin()),
+        }
+    }
+}
+
+impl Default for RegularPolygon {
+    fn default() -> Self {
+        Self {
+            sides: 3,
+            center: Vec2::zero(),
+            feature: RegularPolygonFeature::Radius(1.0),
+        }
+    }
+}
+
+impl ShapeSprite for RegularPolygon {
+    fn generate_path(&self) -> Path {
+        //TODO: Lay the shape flat on its bottom.
+        assert!(self.sides > 2, "Polygons must have at least 3 sides");
+        let radius = self.radius();
+        let mut points = Vec::with_capacity(self.sides);
+        let step_angle = 2.0 * std::f32::consts::PI / self.sides as f32;
+
+        for i in 0..self.sides {
+            let cur_angle = i as f32 * step_angle;
+            let x = self.center.x + radius * cur_angle.cos();
+            let y = self.center.y + radius * cur_angle.sin();
+            points.push(point(x, y));
+        }
+
+        let polygon = LyonPolygon {
+            points: points.as_slice(),
+            closed: true,
         };
 
         let mut path_builder = Builder::new();

@@ -201,14 +201,22 @@ impl Default for RegularPolygon {
 
 impl ShapeSprite for RegularPolygon {
     fn generate_path(&self) -> Path {
-        //TODO: Lay the shape flat on its bottom.
-        assert!(self.sides > 2, "Polygons must have at least 3 sides");
-        let radius = self.radius();
-        let mut points = Vec::with_capacity(self.sides);
-        let step_angle = 2.0 * std::f32::consts::PI / self.sides as f32;
+        // -- Implementation details **PLEASE KEEP UPDATED** --
+        // - `step`: angle between two vertices.
+        // - `internal`: internal angle of the polygon.
+        // - `offset`: bias to make the shape lay flat on a line parallel to the x-axis.
 
+        use std::f32::consts::PI;
+        assert!(self.sides > 2, "Polygons must have at least 3 sides");
+        let n = self.sides as f32;
+        let radius = self.radius();
+        let internal = (n - 2.0) * PI / n;
+        let offset = -internal / 2.0;
+
+        let mut points = Vec::with_capacity(self.sides);
+        let step = 2.0 * PI / n;
         for i in 0..self.sides {
-            let cur_angle = i as f32 * step_angle;
+            let cur_angle = offset + i as f32 * step;
             let x = self.center.x + radius * cur_angle.cos();
             let y = self.center.y + radius * cur_angle.sin();
             points.push(point(x, y));

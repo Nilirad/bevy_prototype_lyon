@@ -10,12 +10,9 @@
 //! Bevy's `Commands::spawn` method as a bundle.
 //!
 //! Then, in the [`SHAPE`](shape_plugin_stage::SHAPE) stage, there is a system
-//! that spawns the `SpriteBundle`s before deleting the `ShapeDescriptor`s
-//!
-//! ## Drawbacks
-//! There is an important drawback with this approach: since the `SpriteBundle`
-//! is created in another system, you can't use bevy's `with` or `with_bundle`
-//! commands.
+//! that for each entity containing `ShapeDescriptor`, it inserts the
+//! `SpriteBundle` components into the entity and then removes the
+//! `ShapeDescriptor` component.
 
 // TODO: Show use of the alternative drawing function.
 

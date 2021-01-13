@@ -2,27 +2,20 @@
 //!
 //! This crate provides a Bevy [plugin] to draw shapes with minimum boilerplate.
 //! Some shapes are provided for convenience, however you can extend the
-//! functionality of this crate by implementing the [`ShapeSprite`] trait by
-//! your own.
+//! functionality of this crate by implementing the
+//! [`ShapeSprite`](plugin::ShapeSprite) trait by your own.
 //!
 //! ## Usage
 //! Check out the `README.md` on the [**GitHub repository**](https://github.com/Nilirad/bevy_prototype_lyon)
 //! or run the [examples](https://github.com/Nilirad/bevy_prototype_lyon/tree/master/examples).
 
-use bevy::{
-    asset::Handle,
-    render::{
-        mesh::{Indices, Mesh},
-        pipeline::PrimitiveTopology,
-    },
-    sprite::ColorMaterial,
-    transform::components::Transform,
+use bevy::render::{
+    mesh::{Indices, Mesh},
+    pipeline::PrimitiveTopology,
 };
 use lyon_tessellation::{
-    path::path::Path, FillOptions, FillTessellator, FillVertex, FillVertexConstructor,
-    StrokeOptions, StrokeTessellator, StrokeVertex, StrokeVertexConstructor, VertexBuffers,
+    FillVertex, FillVertexConstructor, StrokeVertex, StrokeVertexConstructor, VertexBuffers,
 };
-use plugin::ShapeDescriptor;
 
 pub mod conversions;
 pub mod plugin;
@@ -31,7 +24,10 @@ pub mod shapes;
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
 /// convenient imports.
 pub mod prelude {
-    pub use crate::{plugin::ShapePlugin, shapes, ShapeSprite, TessellationMode, Tessellator};
+    pub use crate::{
+        plugin::{ShapePlugin, ShapeSprite, TessellationMode, Tessellator},
+        shapes,
+    };
     pub use lyon_tessellation::{
         FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
     };
@@ -108,103 +104,4 @@ fn build_mesh(buffers: &Buffers) -> Mesh {
     );
 
     mesh
-}
-
-// TODO: Move to plugin module
-/// Determines if a shape must be filled or stroked.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum TessellationMode {
-    Fill(FillOptions),
-    Stroke(StrokeOptions),
-}
-
-// TODO: Move to plugin module
-/// A couple of `lyon` fill and stroke tessellators.
-pub struct Tessellator {
-    pub fill: FillTessellator,
-    pub stroke: StrokeTessellator,
-}
-
-// TODO: Move to plugin module
-impl Tessellator {
-    /// Creates a new `Tessellator` data structure, containing the two types of
-    /// Lyon tessellator.
-    pub fn new() -> Self {
-        Self {
-            fill: FillTessellator::new(),
-            stroke: StrokeTessellator::new(),
-        }
-    }
-}
-
-/// Shape structs that implement this trait can be transformed into a
-/// [`SpriteBundle`](bevy::sprite::entity::SpriteBundle). See the [`shapes`]
-/// module for some examples.
-///
-/// # Implementation example
-///
-/// ```
-/// use bevy_prototype_lyon::ShapeSprite;
-/// use lyon_tessellation::{
-///     math::{Point, Rect, Size},
-///     path::{path::Builder, traits::PathBuilder, Path, Winding},
-/// };
-///
-/// // First, create a struct to hold the shape features:
-/// #[derive(Debug, Clone, Copy, PartialEq)]
-/// pub struct Rectangle {
-///     pub width: f32,
-///     pub height: f32,
-/// }
-///
-/// // Implementing the `Default` trait is not required, but it may facilitate the
-/// // definition of the shape before spawning it.
-/// impl Default for Rectangle {
-///     fn default() -> Self {
-///         Self {
-///             width: 1.0,
-///             height: 1.0,
-///         }
-///     }
-/// }
-///
-/// // Finally, implement the `generate_path` method.
-/// impl ShapeSprite for Rectangle {
-///     fn generate_path(&self) -> Path {
-///         let mut path_builder = Builder::new();
-///         path_builder.add_rectangle(
-///             &Rect::new(Point::zero(), Size::new(self.width, self.height)),
-///             Winding::Positive,
-///         );
-///         path_builder.build()
-///     }
-/// }
-/// ```
-pub trait ShapeSprite {
-    /// Generates a Lyon `Path` for the shape.
-    fn generate_path(&self) -> Path;
-
-    /// Returns a [`ShapeDescriptor`](plugin::ShapeDescriptor) entity for the
-    /// shape. If spawned into the [`World`](bevy::ecs::World) during the
-    /// [`UPDATE`](bevy::app::stage::UPDATE) stage, it will be replaced by a
-    /// custom [`SpriteBundle`](bevy::sprite::entity::SpriteBundle)
-    /// corresponding to the shape.
-    fn draw(
-        &self,
-        material: Handle<ColorMaterial>,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> (ShapeDescriptor,)
-    where
-        Self: Sync + Send + Sized + Clone + 'static,
-    {
-        let desc = ShapeDescriptor {
-            shape: Box::new(self.clone()),
-            material: material.clone(),
-            mode,
-            transform,
-        };
-
-        (desc,)
-    }
 }

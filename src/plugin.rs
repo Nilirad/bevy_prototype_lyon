@@ -4,10 +4,10 @@
 //! minimal boilerplate.
 //!
 //! ## How it works
-//! When the user calls the [`ShapeSprite::draw`](super::ShapeSprite::draw)
-//! method from a system in the `UPDATE` stage, it will return a
-//! `(ShapeDescriptor, )` type, a single element tuple that gets feeded to
-//! Bevy's `Commands::spawn` method as a bundle.
+//! When the user calls the [`ShapeSprite::draw`] method from a system in the
+//! `UPDATE` stage, it will return a `(ShapeDescriptor, )` type, a single
+//! element tuple that gets feeded to Bevy's `Commands::spawn` method as a
+//! bundle.
 //!
 //! Then, in the [`SHAPE`](shape_plugin_stage::SHAPE) stage, there is a system
 //! that for each entity containing `ShapeDescriptor`, it inserts the
@@ -16,7 +16,7 @@
 
 // TODO: Show use of the alternative drawing function.
 
-use crate::{build_mesh, Buffers, ShapeSprite, TessellationMode, Tessellator, VertexConstructor};
+use crate::{build_mesh, Buffers, VertexConstructor};
 use bevy::{
     app::{stage, AppBuilder, Plugin},
     asset::{Assets, Handle},
@@ -27,13 +27,39 @@ use bevy::{
     sprite::{ColorMaterial, Sprite},
     transform::components::Transform,
 };
-use lyon_tessellation::BuffersBuilder;
+use lyon_tessellation::{
+    path::Path, BuffersBuilder, FillOptions, FillTessellator, StrokeOptions, StrokeTessellator,
+};
 
 /// Stages for this plugin.
 pub mod shape_plugin_stage {
     /// The stage where the [`ShapeDescriptor`](super::ShapeDescriptor)s are
     /// replaced with `SpriteBundles`.
     pub const SHAPE: &str = "shape";
+}
+
+/// Determines if a shape must be filled or stroked.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum TessellationMode {
+    Fill(FillOptions),
+    Stroke(StrokeOptions),
+}
+
+/// A couple of `lyon` fill and stroke tessellators.
+pub struct Tessellator {
+    pub fill: FillTessellator,
+    pub stroke: StrokeTessellator,
+}
+
+impl Tessellator {
+    /// Creates a new `Tessellator` data structure, containing the two types of
+    /// Lyon tessellator.
+    pub fn new() -> Self {
+        Self {
+            fill: FillTessellator::new(),
+            stroke: StrokeTessellator::new(),
+        }
+    }
 }
 
 /// A plugin that provides resources and a system to draw shapes in Bevy with
@@ -111,5 +137,77 @@ fn shapesprite_maker(
 
         commands.insert(entity, sprite_bundle);
         commands.remove_one::<ShapeDescriptor>(entity);
+    }
+}
+
+/// Shape structs that implement this trait can be transformed into a
+/// [`SpriteBundle`](bevy::sprite::entity::SpriteBundle). See the
+/// [`shapes`](crate::shapes) module for some examples.
+///
+/// # Implementation example
+///
+/// ```
+/// use bevy_prototype_lyon::plugin::ShapeSprite;
+/// use lyon_tessellation::{
+///     math::{Point, Rect, Size},
+///     path::{path::Builder, traits::PathBuilder, Path, Winding},
+/// };
+///
+/// // First, create a struct to hold the shape features:
+/// #[derive(Debug, Clone, Copy, PartialEq)]
+/// pub struct Rectangle {
+///     pub width: f32,
+///     pub height: f32,
+/// }
+///
+/// // Implementing the `Default` trait is not required, but it may facilitate the
+/// // definition of the shape before spawning it.
+/// impl Default for Rectangle {
+///     fn default() -> Self {
+///         Self {
+///             width: 1.0,
+///             height: 1.0,
+///         }
+///     }
+/// }
+///
+/// // Finally, implement the `generate_path` method.
+/// impl ShapeSprite for Rectangle {
+///     fn generate_path(&self) -> Path {
+///         let mut path_builder = Builder::new();
+///         path_builder.add_rectangle(
+///             &Rect::new(Point::zero(), Size::new(self.width, self.height)),
+///             Winding::Positive,
+///         );
+///         path_builder.build()
+///     }
+/// }
+/// ```
+pub trait ShapeSprite {
+    /// Generates a Lyon `Path` for the shape.
+    fn generate_path(&self) -> Path;
+
+    /// Returns a [`ShapeDescriptor`] entity for the
+    /// shape. If spawned into the [`World`](bevy::ecs::World) during the
+    /// [`UPDATE`](bevy::app::stage::UPDATE) stage, it will be replaced by a
+    /// custom [`SpriteBundle`](bevy::sprite::entity::SpriteBundle)
+    /// corresponding to the shape.
+    fn draw(
+        &self,
+        material: Handle<ColorMaterial>,
+        mode: TessellationMode,
+        transform: Transform,
+    ) -> (ShapeDescriptor,)
+    where
+        Self: Sync + Send + Sized + Clone + 'static,
+    {
+        let desc = ShapeDescriptor {
+            shape: Box::new(self.clone()),
+            material: material.clone(),
+            mode,
+            transform,
+        };
+
+        (desc,)
     }
 }

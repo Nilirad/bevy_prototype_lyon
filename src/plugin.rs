@@ -14,8 +14,6 @@
 //! [`SpriteBundle`](bevy::sprite::entity::SpriteBundle) components into the
 //! entity and then removes the `ShapeDescriptor` component.
 
-// TODO: Show use of the alternative drawing function.
-
 use crate::{build_mesh, Buffers, VertexConstructor};
 use bevy::{
     app::{stage, AppBuilder, Plugin},

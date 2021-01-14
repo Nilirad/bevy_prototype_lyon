@@ -23,7 +23,11 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
     let fill_material = materials.add(ColorMaterial::color(Color::WHITE));
     let stroke_material = materials.add(ColorMaterial::color(Color::BLACK));
     let fill_mode = TessellationMode::Fill(FillOptions::default());
-    let stroke_mode = TessellationMode::Stroke(StrokeOptions::default().with_line_width(5.0));
+    let stroke_mode = TessellationMode::Stroke(
+        StrokeOptions::default()
+            .with_line_width(5.0)
+            .with_line_join(LineJoin::Round),
+    );
     let transform = Transform {
         translation: Vec3::new(-250.0, 250.0, 0.0),
         scale: Vec3::new(3.0, -3.0, 3.0),

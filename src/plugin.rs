@@ -80,7 +80,7 @@ impl Plugin for ShapePlugin {
 /// An intermediate representation that contains all the data to create a
 /// `SpriteBundle` with a custom mesh.
 pub struct ShapeDescriptor {
-    pub shape: Box<dyn ShapeSprite + Send + Sync>,
+    pub path: Path,
     pub material: Handle<ColorMaterial>,
     pub mode: TessellationMode,
     pub transform: Transform,
@@ -95,8 +95,6 @@ fn shapesprite_maker(
     query: Query<(Entity, &ShapeDescriptor)>,
 ) {
     for (entity, shape_descriptor) in query.iter() {
-        let path = shape_descriptor.shape.generate_path();
-
         let mut buffers = Buffers::new();
 
         match shape_descriptor.mode {
@@ -104,7 +102,7 @@ fn shapesprite_maker(
                 tessellator
                     .fill
                     .tessellate_path(
-                        &path,
+                        &shape_descriptor.path,
                         options,
                         &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
                     )
@@ -114,7 +112,7 @@ fn shapesprite_maker(
                 tessellator
                     .stroke
                     .tessellate_path(
-                        &path,
+                        &shape_descriptor.path,
                         options,
                         &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
                     )
@@ -195,12 +193,9 @@ pub trait ShapeSprite {
         material: Handle<ColorMaterial>,
         mode: TessellationMode,
         transform: Transform,
-    ) -> (ShapeDescriptor,)
-    where
-        Self: Sync + Send + Sized + Clone + 'static,
-    {
+    ) -> (ShapeDescriptor,) {
         let desc = ShapeDescriptor {
-            shape: Box::new(self.clone()),
+            path: self.generate_path(),
             material: material.clone(),
             mode,
             transform,

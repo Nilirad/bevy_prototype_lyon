@@ -4,10 +4,7 @@
 //! [`ShapeSprite`](crate::plugin::ShapeSprite) trait. You can also implement
 //! the trait for your own shapes.
 
-use crate::{
-    conversions::{ToLyonPoint, ToLyonVector},
-    plugin::ShapeSprite,
-};
+use crate::{conversions::Convert, plugin::ShapeSprite};
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{point, Angle, Point, Rect, Size},
@@ -90,7 +87,7 @@ impl Default for Circle {
 impl ShapeSprite for Circle {
     fn generate_path(&self) -> Path {
         let mut path_builder = Builder::new();
-        path_builder.add_circle(self.center.to_lyon_point(), self.radius, Winding::Positive);
+        path_builder.add_circle(self.center.convert(), self.radius, Winding::Positive);
         path_builder.build()
     }
 }
@@ -116,8 +113,8 @@ impl ShapeSprite for Ellipse {
     fn generate_path(&self) -> Path {
         let mut path_builder = Builder::new();
         path_builder.add_ellipse(
-            self.center.to_lyon_point(),
-            self.radii.to_lyon_vector(),
+            self.center.convert(),
+            self.radii.convert(),
             Angle::zero(),
             Winding::Positive,
         );
@@ -145,7 +142,7 @@ impl ShapeSprite for Polygon {
         let points = self
             .points
             .iter()
-            .map(|p| p.to_lyon_point())
+            .map(|p| p.convert())
             .collect::<Vec<Point>>();
         let polygon: LyonPolygon<Point> = LyonPolygon {
             points: points.as_slice(),

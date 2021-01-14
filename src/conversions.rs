@@ -2,22 +2,25 @@
 use bevy::math::Vec2;
 use lyon_tessellation::math::{Point, Vector};
 
-pub trait ToLyonPoint {
-    fn to_lyon_point(self) -> Point;
+/// A locally defined std::convert::Into surrogate to overcome orphan rules.
+pub trait Convert<T>: Sized {
+    fn convert(self) -> T;
 }
 
-pub trait ToLyonVector {
-    fn to_lyon_vector(self) -> Vector;
-}
-
-impl ToLyonPoint for Vec2 {
-    fn to_lyon_point(self) -> Point {
+impl Convert<Point> for Vec2 {
+    fn convert(self) -> Point {
         Point::new(self.x, self.y)
     }
 }
 
-impl ToLyonVector for Vec2 {
-    fn to_lyon_vector(self) -> Vector {
+impl Convert<Vec2> for Point {
+    fn convert(self) -> Vec2 {
+        Vec2::new(self.x, self.y)
+    }
+}
+
+impl Convert<Vector> for Vec2 {
+    fn convert(self) -> Vector {
         Vector::new(self.x, self.y)
     }
 }

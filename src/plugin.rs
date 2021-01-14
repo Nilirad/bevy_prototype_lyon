@@ -183,7 +183,7 @@ pub trait ShapeSprite {
     /// Generates a Lyon [`Path`] for the shape.
     fn generate_path(&self) -> Path;
 
-    /// Returns a [`ShapeDescriptor`] entity for the
+    /// Returns a [`ShapeDescriptor`] bundle for the
     /// shape. If spawned into the [`World`](bevy::ecs::World) during the
     /// [`UPDATE`](bevy::app::stage::UPDATE) stage, it will be replaced by a
     /// custom [`SpriteBundle`](bevy::sprite::entity::SpriteBundle)
@@ -203,4 +203,21 @@ pub trait ShapeSprite {
 
         (desc,)
     }
+}
+
+/// Generates a [`ShapeDescriptor`] bundle with an arbitrary Path.
+pub fn draw_path(
+    path: &Path,
+    material: Handle<ColorMaterial>,
+    mode: TessellationMode,
+    transform: Transform,
+) -> (ShapeDescriptor,) {
+    let desc = ShapeDescriptor {
+        path: path.clone(),
+        material: material.clone(),
+        mode,
+        transform,
+    };
+
+    (desc,)
 }

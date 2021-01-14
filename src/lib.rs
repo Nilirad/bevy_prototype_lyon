@@ -18,6 +18,7 @@ use lyon_tessellation::{
 };
 
 pub mod conversions;
+pub mod path;
 pub mod plugin;
 pub mod shapes;
 
@@ -25,11 +26,12 @@ pub mod shapes;
 /// convenient imports.
 pub mod prelude {
     pub use crate::{
-        plugin::{ShapePlugin, ShapeSprite, TessellationMode, Tessellator},
+        path::PathBuilder,
+        plugin::{draw_path, ShapePlugin, ShapeSprite, TessellationMode, Tessellator},
         shapes,
     };
     pub use lyon_tessellation::{
-        FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
+        path::path::Builder, FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
     };
 }
 

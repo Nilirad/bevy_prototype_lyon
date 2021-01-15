@@ -26,7 +26,8 @@ use bevy::{
     transform::components::Transform,
 };
 use lyon_tessellation::{
-    path::Path, BuffersBuilder, FillOptions, FillTessellator, StrokeOptions, StrokeTessellator,
+    path::{path::Builder, Path},
+    BuffersBuilder, FillOptions, FillTessellator, StrokeOptions, StrokeTessellator,
 };
 
 /// Stages for this plugin.
@@ -79,6 +80,11 @@ impl Plugin for ShapePlugin {
 
 /// An intermediate representation that contains all the data to create a
 /// `SpriteBundle` with a custom mesh.
+///
+/// If spawned into the [`World`](bevy::ecs::World) during the
+/// [`UPDATE`](bevy::app::stage::UPDATE) stage, it will be replaced by a custom
+/// [`SpriteBundle`](bevy::sprite:: entity::SpriteBundle) corresponding to the
+/// shape.
 pub struct ShapeDescriptor {
     pub path: Path,
     pub material: Handle<ColorMaterial>,
@@ -169,33 +175,65 @@ fn shapesprite_maker(
 ///
 /// // Finally, implement the `generate_path` method.
 /// impl ShapeSprite for Rectangle {
-///     fn generate_path(&self) -> Path {
-///         let mut path_builder = Builder::new();
-///         path_builder.add_rectangle(
+///     fn add_geometry(&self, b: &mut Builder) {
+///         b.add_rectangle(
 ///             &Rect::new(Point::zero(), Size::new(self.width, self.height)),
 ///             Winding::Positive,
 ///         );
-///         path_builder.build()
 ///     }
 /// }
 /// ```
 pub trait ShapeSprite {
-    /// Generates a Lyon [`Path`] for the shape.
-    fn generate_path(&self) -> Path;
+    /// Mutates a Lyon path [`Builder`] adding the shape to it.
+    fn add_geometry(&self, b: &mut Builder);
 
     /// Returns a [`ShapeDescriptor`] bundle for the
-    /// shape. If spawned into the [`World`](bevy::ecs::World) during the
-    /// [`UPDATE`](bevy::app::stage::UPDATE) stage, it will be replaced by a
-    /// custom [`SpriteBundle`](bevy::sprite::entity::SpriteBundle)
-    /// corresponding to the shape.
+    /// shape.
     fn draw(
         &self,
         material: Handle<ColorMaterial>,
         mode: TessellationMode,
         transform: Transform,
     ) -> (ShapeDescriptor,) {
+        let mut builder = Builder::new();
+        self.add_geometry(&mut builder);
+
         let desc = ShapeDescriptor {
-            path: self.generate_path(),
+            path: builder.build(),
+            material: material.clone(),
+            mode,
+            transform,
+        };
+
+        (desc,)
+    }
+}
+
+/// Allows the creation of multiple shapes using only a single mesh.
+pub struct Multishape(Builder);
+
+impl Multishape {
+    /// Creates a new, empty `Multishape`.
+    pub fn new() -> Self {
+        Self(Builder::new())
+    }
+
+    /// Adds a shape.
+    pub fn add(&mut self, shape: impl ShapeSprite) -> &mut Self {
+        shape.add_geometry(&mut self.0);
+
+        self
+    }
+
+    /// Generates a `(ShapeDescriptor,)` with all the added shapes.
+    pub fn build(
+        self,
+        material: Handle<ColorMaterial>,
+        mode: TessellationMode,
+        transform: Transform,
+    ) -> (ShapeDescriptor,) {
+        let desc = ShapeDescriptor {
+            path: self.0.build(),
             material: material.clone(),
             mode,
             transform,

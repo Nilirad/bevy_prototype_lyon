@@ -1,3 +1,5 @@
+//! This example shows the capabilities of [`RegularPolygon`](shape::RegularPolygon).
+
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 

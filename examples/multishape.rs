@@ -1,3 +1,6 @@
+//! This example shows how you can use [`Multishape`] to add multiple shapes to
+//! a single mesh.
+
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 

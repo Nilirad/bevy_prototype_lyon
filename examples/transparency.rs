@@ -1,3 +1,6 @@
+//! This example shows how you can make semitransparent shapes using the alpha
+//! channel.
+
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 

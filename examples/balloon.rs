@@ -1,3 +1,6 @@
+//! This example shows how you can draw arbitrary shapes using paths. Here is
+//! shown a balloon taken from MDN HTML canvas tutorial.
+
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 

@@ -8,7 +8,7 @@ use crate::{conversions::Convert, plugin::ShapeSprite};
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{point, Angle, Point, Rect, Size},
-    path::{path::Builder, traits::PathBuilder, Path, Polygon as LyonPolygon, Winding},
+    path::{path::Builder, traits::PathBuilder, Polygon as LyonPolygon, Winding},
 };
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
@@ -45,7 +45,7 @@ impl Default for Rectangle {
 }
 
 impl ShapeSprite for Rectangle {
-    fn generate_path(&self) -> Path {
+    fn add_geometry(&self, b: &mut Builder) {
         let origin = {
             use RectangleOrigin::*;
             match self.origin {
@@ -57,12 +57,10 @@ impl ShapeSprite for Rectangle {
             }
         };
 
-        let mut path_builder = Builder::new();
-        path_builder.add_rectangle(
+        b.add_rectangle(
             &Rect::new(origin, Size::new(self.width, self.height)),
             Winding::Positive,
         );
-        path_builder.build()
     }
 }
 
@@ -85,10 +83,8 @@ impl Default for Circle {
 }
 
 impl ShapeSprite for Circle {
-    fn generate_path(&self) -> Path {
-        let mut path_builder = Builder::new();
-        path_builder.add_circle(self.center.convert(), self.radius, Winding::Positive);
-        path_builder.build()
+    fn add_geometry(&self, b: &mut Builder) {
+        b.add_circle(self.center.convert(), self.radius, Winding::Positive);
     }
 }
 
@@ -110,15 +106,13 @@ impl Default for Ellipse {
 }
 
 impl ShapeSprite for Ellipse {
-    fn generate_path(&self) -> Path {
-        let mut path_builder = Builder::new();
-        path_builder.add_ellipse(
+    fn add_geometry(&self, b: &mut Builder) {
+        b.add_ellipse(
             self.center.convert(),
             self.radii.convert(),
             Angle::zero(),
             Winding::Positive,
         );
-        path_builder.build()
     }
 }
 
@@ -138,7 +132,7 @@ impl Default for Polygon {
 }
 
 impl ShapeSprite for Polygon {
-    fn generate_path(&self) -> Path {
+    fn add_geometry(&self, b: &mut Builder) {
         let points = self
             .points
             .iter()
@@ -149,9 +143,7 @@ impl ShapeSprite for Polygon {
             closed: self.closed,
         };
 
-        let mut path_builder = Builder::new();
-        path_builder.add_polygon(polygon);
-        path_builder.build()
+        b.add_polygon(polygon);
     }
 }
 
@@ -198,7 +190,7 @@ impl Default for RegularPolygon {
 }
 
 impl ShapeSprite for RegularPolygon {
-    fn generate_path(&self) -> Path {
+    fn add_geometry(&self, b: &mut Builder) {
         // -- Implementation details **PLEASE KEEP UPDATED** --
         // - `step`: angle between two vertices.
         // - `internal`: internal angle of the polygon.
@@ -225,8 +217,6 @@ impl ShapeSprite for RegularPolygon {
             closed: true,
         };
 
-        let mut path_builder = Builder::new();
-        path_builder.add_polygon(polygon);
-        path_builder.build()
+        b.add_polygon(polygon);
     }
 }

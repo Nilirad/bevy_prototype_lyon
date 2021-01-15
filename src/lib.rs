@@ -9,7 +9,7 @@
 //! Check out the `README.md` on the [**GitHub repository**](https://github.com/Nilirad/bevy_prototype_lyon)
 //! or run the [examples](https://github.com/Nilirad/bevy_prototype_lyon/tree/master/examples).
 
-use bevy::render::{
+use bevy_render::{
     mesh::{Indices, Mesh},
     pipeline::PrimitiveTopology,
 };
@@ -36,7 +36,7 @@ pub mod prelude {
 }
 
 /// A vertex with all the necessary attributes to be inserted into a Bevy
-/// [`Mesh`](bevy::render::mesh::Mesh).
+/// [`Mesh`].
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vertex {
     position: [f32; 3],
@@ -70,14 +70,13 @@ impl StrokeVertexConstructor<Vertex> for VertexConstructor {
     }
 }
 
-/// The index type of a Bevy [`Mesh`](bevy::render::mesh::Mesh)
+/// The index type of a Bevy [`Mesh`].
 pub type IndexType = u32;
 
-/// Lyon's [`VertexBuffers`](lyon_tessellation::geometry_builder::VertexBuffers)
-/// generic data type defined for [`Vertex`].
+/// Lyon's [`VertexBuffers`] generic data type defined for [`Vertex`].
 pub type Buffers = VertexBuffers<Vertex, IndexType>;
 
-/// Builds a Bevy [`Mesh`](bevy::render::mesh::Mesh) from a [`Buffers`] type.
+/// Builds a Bevy [`Mesh`] from a [`Buffers`] type.
 fn build_mesh(buffers: &Buffers) -> Mesh {
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));

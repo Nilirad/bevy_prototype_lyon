@@ -1,8 +1,8 @@
 //! Conversions between Bevy and Lyon datatypes.
-use bevy::math::Vec2;
+use bevy_math::Vec2;
 use lyon_tessellation::math::{Point, Vector};
 
-/// A locally defined std::convert::Into surrogate to overcome orphan rules.
+/// A locally defined [std::convert::Into] surrogate to overcome orphan rules.
 pub trait Convert<T>: Sized {
     fn convert(self) -> T;
 }

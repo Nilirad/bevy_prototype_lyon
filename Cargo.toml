@@ -11,7 +11,15 @@ version = "0.1.5"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = {version = "0.4", default-features = false, features = ["render"]}
+# bevy = {version = "0.4", default-features = false, features = ["render"]}
+bevy_app = "0.4"
+bevy_asset = "0.4"
+bevy_ecs = "0.4"
+bevy_math = "0.4"
+bevy_render = "0.4"
+bevy_sprite = "0.4"
+bevy_transform = "0.4"
+
 lyon_tessellation = "0.17"
 
 [dev-dependencies]

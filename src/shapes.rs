@@ -5,7 +5,7 @@
 //! the trait for your own shapes.
 
 use crate::{conversions::Convert, plugin::ShapeSprite};
-use bevy::math::Vec2;
+use bevy_math::Vec2;
 use lyon_tessellation::{
     math::{point, Angle, Point, Rect, Size},
     path::{path::Builder, traits::PathBuilder, Polygon as LyonPolygon, Winding},
@@ -66,10 +66,7 @@ impl ShapeSprite for Rectangle {
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Circle {
-    /// Distance of the border of the circle from the center.
     pub radius: f32,
-    /// The position of the center of the circle, relative to the world
-    /// translation of the [`SpriteBundle`](bevy::sprite::entity::SpriteBundle).
     pub center: Vec2,
 }
 
@@ -91,8 +88,6 @@ impl ShapeSprite for Circle {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ellipse {
     pub radii: Vec2,
-    /// The position of the center of the ellipse, relative to the world
-    /// translation of the [`SpriteBundle`](bevy::sprite::entity::SpriteBundle).
     pub center: Vec2,
 }
 

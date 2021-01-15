@@ -3,28 +3,25 @@
 //! The `ShapePlugin` provides the creation of shapes with minimal boilerplate.
 //!
 //! ## How it works
-//! When the user calls the [`ShapeSprite::draw`] method from a system in the
-//! [`UPDATE`](bevy::app::stage::UPDATE) stage, it will return a
-//! `(ShapeDescriptor, )` type, a single element tuple that gets feeded to
-//! Bevy's [`Commands::spawn`](bevy::ecs::Commands::spawn) method as a
-//! bundle.
+//! When the user calls the [`ShapeSprite::draw`] or [`Multishape::build`]
+//! method from a system in the [`UPDATE`](bevy_app::stage::UPDATE) stage, it
+//! will return a `(ShapeDescriptor,)` type, a single element tuple that have to
+//! be feeded to Bevy's [`Commands::spawn`](bevy_ecs::Commands::spawn) method
+//! as a bundle.
 //!
 //! Then, in the [`SHAPE`](shape_plugin_stage::SHAPE) stage, there is a system
 //! that for each entity containing `ShapeDescriptor`, it inserts the
-//! [`SpriteBundle`](bevy::sprite::entity::SpriteBundle) components into the
-//! entity and then removes the `ShapeDescriptor` component.
+//! [`SpriteBundle`] components into the entity and then removes the
+//! `ShapeDescriptor` component.
 
 use crate::{build_mesh, Buffers, VertexConstructor};
-use bevy::{
-    app::{stage, AppBuilder, Plugin},
-    asset::{Assets, Handle},
-    ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage},
-    math::Vec2,
-    prelude::SpriteBundle,
-    render::mesh::Mesh,
-    sprite::{ColorMaterial, Sprite},
-    transform::components::Transform,
-};
+use bevy_app::{stage, AppBuilder, Plugin};
+use bevy_asset::{Assets, Handle};
+use bevy_ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage};
+use bevy_math::Vec2;
+use bevy_render::mesh::Mesh;
+use bevy_sprite::{entity::SpriteBundle, ColorMaterial, Sprite};
+use bevy_transform::components::Transform;
 use lyon_tessellation::{
     path::{path::Builder, Path},
     BuffersBuilder, FillOptions, FillTessellator, StrokeOptions, StrokeTessellator,
@@ -79,11 +76,11 @@ impl Plugin for ShapePlugin {
 }
 
 /// An intermediate representation that contains all the data to create a
-/// `SpriteBundle` with a custom mesh.
+/// [`SpriteBundle`] with a custom mesh.
 ///
-/// If spawned into the [`World`](bevy::ecs::World) during the
-/// [`UPDATE`](bevy::app::stage::UPDATE) stage, it will be replaced by a custom
-/// [`SpriteBundle`](bevy::sprite:: entity::SpriteBundle) corresponding to the
+/// If spawned into the [`World`](bevy_ecs::World) during the
+/// [`UPDATE`](bevy_app::stage::UPDATE) stage, it will be replaced by a custom
+/// `SpriteBundle` corresponding to the
 /// shape.
 pub struct ShapeDescriptor {
     pub path: Path,
@@ -143,8 +140,8 @@ fn shapesprite_maker(
 }
 
 /// Shape structs that implement this trait can be transformed into a
-/// [`SpriteBundle`](bevy::sprite::entity::SpriteBundle). See the
-/// [`shapes`](crate::shapes) module for some examples.
+/// [`SpriteBundle`]. See the [`shapes`](crate::shapes) module for some
+/// examples.
 ///
 /// # Implementation example
 ///
@@ -187,8 +184,7 @@ pub trait ShapeSprite {
     /// Mutates a Lyon path [`Builder`] adding the shape to it.
     fn add_geometry(&self, b: &mut Builder);
 
-    /// Returns a [`ShapeDescriptor`] bundle for the
-    /// shape.
+    /// Returns a [`ShapeDescriptor`] bundle for the shape.
     fn draw(
         &self,
         material: Handle<ColorMaterial>,

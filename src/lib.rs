@@ -9,6 +9,10 @@
 //! Check out the `README.md` on the [**GitHub repository**](https://github.com/Nilirad/bevy_prototype_lyon)
 //! or run the [examples](https://github.com/Nilirad/bevy_prototype_lyon/tree/master/examples).
 
+#![deny(future_incompatible, nonstandard_style)]
+#![warn(missing_docs, rust_2018_idioms, unused)]
+#![allow(elided_lifetimes_in_paths)]
+
 use bevy_render::{
     mesh::{Indices, Mesh},
     pipeline::PrimitiveTopology,

@@ -4,6 +4,7 @@ use lyon_tessellation::math::{Point, Vector};
 
 /// A locally defined [std::convert::Into] surrogate to overcome orphan rules.
 pub trait Convert<T>: Sized {
+    /// Converts the value to `T`.
     fn convert(self) -> T;
 }
 

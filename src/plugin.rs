@@ -37,13 +37,17 @@ pub mod shape_plugin_stage {
 /// Determines if a shape must be filled or stroked.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TessellationMode {
+    /// The shape should be filled with the provided [`FillOptions`].
     Fill(FillOptions),
+    /// The shape should be filled with the provided [`StrokeOptions`].
     Stroke(StrokeOptions),
 }
 
 /// A couple of `lyon` fill and stroke tessellators.
 pub struct Tessellator {
+    /// Tessellates the entire shape defined by the lyon [`Path`].
     pub fill: FillTessellator,
+    /// Tessellates the border of the shape defined by the lyon [`Path`].
     pub stroke: StrokeTessellator,
 }
 
@@ -82,6 +86,7 @@ impl Plugin for ShapePlugin {
 /// [`UPDATE`](bevy_app::stage::UPDATE) stage, it will be replaced by a custom
 /// `SpriteBundle` corresponding to the
 /// shape.
+#[allow(missing_docs)]
 pub struct ShapeDescriptor {
     pub path: Path,
     pub material: Handle<ColorMaterial>,

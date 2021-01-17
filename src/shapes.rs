@@ -12,6 +12,7 @@ use lyon_tessellation::{
 };
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RectangleOrigin {
     Center,
@@ -27,6 +28,7 @@ impl Default for RectangleOrigin {
     }
 }
 
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rectangle {
     pub width: f32,
@@ -64,6 +66,7 @@ impl ShapeSprite for Rectangle {
     }
 }
 
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Circle {
     pub radius: f32,
@@ -85,6 +88,7 @@ impl ShapeSprite for Circle {
     }
 }
 
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ellipse {
     pub radii: Vec2,
@@ -111,6 +115,7 @@ impl ShapeSprite for Ellipse {
     }
 }
 
+#[allow(missing_docs)]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
     pub points: Vec<Vec2>,
@@ -143,6 +148,7 @@ impl ShapeSprite for Polygon {
 }
 
 /// The regular polygon feature used to determine the dimensions of the polygon.
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RegularPolygonFeature {
     /// The radius of the polygon's circumcircle.
@@ -153,6 +159,7 @@ pub enum RegularPolygonFeature {
     SideLength(f32),
 }
 
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RegularPolygon {
     pub sides: usize,

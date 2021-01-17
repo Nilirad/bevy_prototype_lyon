@@ -9,9 +9,18 @@
 //! Check out the `README.md` on the [**GitHub repository**](https://github.com/Nilirad/bevy_prototype_lyon)
 //! or run the [examples](https://github.com/Nilirad/bevy_prototype_lyon/tree/master/examples).
 
+// rustc
 #![deny(future_incompatible, nonstandard_style)]
 #![warn(missing_docs, rust_2018_idioms, unused)]
 #![allow(elided_lifetimes_in_paths)]
+// clippy
+#![warn(
+    clippy::all,
+    clippy::restriction,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::cargo
+)]
 
 use bevy_render::{
     mesh::{Indices, Mesh},

@@ -17,14 +17,16 @@ use lyon_tessellation::{path::Path, FillOptions};
 
 use crate::plugin::TessellationMode;
 
-// FIXME: Make a Processed(bool) component to prevent creating meshes
-// indefinitely.
+/// Component that marks a [`ShapeBundle`] as completed or not.
+pub struct Processed(pub bool);
+
 /// A [`Bundle`] that represents a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {
     pub path: Path,
     pub mode: TessellationMode,
+    pub processed: Processed,
     pub sprite: Sprite,
     pub mesh: Handle<Mesh>,
     pub material: Handle<ColorMaterial>,
@@ -41,6 +43,7 @@ impl Default for ShapeBundle {
         Self {
             path: Path::new(),
             mode: TessellationMode::Fill(FillOptions::default()),
+            processed: Processed(false),
             mesh: QUAD_HANDLE.typed(),
             render_pipelines: RenderPipelines::from_pipelines(vec![RenderPipeline::new(
                 SPRITE_PIPELINE_HANDLE.typed(),

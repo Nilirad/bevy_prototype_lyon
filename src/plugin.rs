@@ -11,7 +11,11 @@
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 
-use crate::{build_mesh, entity::ShapeBundle, Buffers, VertexConstructor};
+use crate::{
+    build_mesh,
+    entity::{Processed, ShapeBundle},
+    Buffers, VertexConstructor,
+};
 use bevy::{
     app::{stage, AppBuilder, Plugin},
     asset::{Assets, Handle},
@@ -65,9 +69,19 @@ fn shapesprite_maker(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<(&TessellationMode, &Path, &mut Handle<Mesh>, &mut Visible)>,
+    mut query: Query<(
+        &TessellationMode,
+        &Path,
+        &mut Handle<Mesh>,
+        &mut Visible,
+        &mut Processed,
+    )>,
 ) {
-    for (tess_mode, path, mut mesh, mut visible) in query.iter_mut() {
+    for (tess_mode, path, mut mesh, mut visible, mut processed) in query.iter_mut() {
+        if processed.0 {
+            continue;
+        }
+
         let mut buffers = Buffers::new();
 
         match tess_mode {
@@ -93,6 +107,7 @@ fn shapesprite_maker(
 
         *mesh = meshes.add(build_mesh(&buffers));
         visible.is_visible = true;
+        *processed = Processed(true);
     }
 }
 

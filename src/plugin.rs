@@ -43,33 +43,16 @@ pub enum TessellationMode {
     Stroke(StrokeOptions),
 }
 
-/// A couple of `lyon` fill and stroke tessellators.
-pub struct Tessellator {
-    /// Tessellates the entire shape defined by the lyon [`Path`].
-    pub fill: FillTessellator,
-    /// Tessellates the border of the shape defined by the lyon [`Path`].
-    pub stroke: StrokeTessellator,
-}
-
-impl Tessellator {
-    /// Creates a new `Tessellator` data structure, containing the two types of
-    /// Lyon tessellator.
-    pub fn new() -> Self {
-        Self {
-            fill: FillTessellator::new(),
-            stroke: StrokeTessellator::new(),
-        }
-    }
-}
-
 /// A plugin that provides resources and a system to draw shapes in Bevy with
 /// less boilerplate.
 pub struct ShapePlugin;
 
 impl Plugin for ShapePlugin {
     fn build(&self, app: &mut AppBuilder) {
-        let tessellator = Tessellator::new();
-        app.add_resource(tessellator)
+        let fill_tess = FillTessellator::new();
+        let stroke_tess = StrokeTessellator::new();
+        app.add_resource(fill_tess)
+            .add_resource(stroke_tess)
             .add_stage_after(
                 stage::UPDATE,
                 shape_plugin_stage::SHAPE,
@@ -99,7 +82,8 @@ pub struct ShapeDescriptor {
 fn shapesprite_maker(
     commands: &mut Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut tessellator: ResMut<Tessellator>,
+    mut fill_tess: ResMut<FillTessellator>,
+    mut stroke_tess: ResMut<StrokeTessellator>,
     query: Query<(Entity, &ShapeDescriptor)>,
 ) {
     for (entity, shape_descriptor) in query.iter() {
@@ -107,8 +91,7 @@ fn shapesprite_maker(
 
         match shape_descriptor.mode {
             TessellationMode::Fill(ref options) => {
-                tessellator
-                    .fill
+                fill_tess
                     .tessellate_path(
                         &shape_descriptor.path,
                         options,
@@ -117,8 +100,7 @@ fn shapesprite_maker(
                     .unwrap();
             }
             TessellationMode::Stroke(ref options) => {
-                tessellator
-                    .stroke
+                stroke_tess
                     .tessellate_path(
                         &shape_descriptor.path,
                         options,

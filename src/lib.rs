@@ -1,6 +1,6 @@
 //! Draw 2D shapes in Bevy.
 //!
-//! This crate provides a Bevy [plugin] to draw shapes with minimum boilerplate.
+//! This crate provides a Bevy [plugin] to easily draw shapes.
 //! Some shapes are provided for convenience, however you can extend the
 //! functionality of this crate by implementing the
 //! [`ShapeSprite`](plugin::ShapeSprite) trait by your own.

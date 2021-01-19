@@ -3,6 +3,7 @@
 use bevy::{
     asset::Handle,
     ecs::Bundle,
+    math::Vec2,
     render::{
         draw::{Draw, Visible},
         mesh::Mesh,
@@ -12,12 +13,18 @@ use bevy::{
     sprite::{ColorMaterial, Sprite, QUAD_HANDLE, SPRITE_PIPELINE_HANDLE},
     transform::components::{GlobalTransform, Transform},
 };
-use lyon_tessellation::path::Path;
+use lyon_tessellation::{path::Path, FillOptions};
 
+use crate::plugin::TessellationMode;
+
+// FIXME: Make a Processed(bool) component to prevent creating meshes
+// indefinitely.
+/// A [`Bundle`] that represents a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {
     pub path: Path,
+    pub mode: TessellationMode,
     pub sprite: Sprite,
     pub mesh: Handle<Mesh>,
     pub material: Handle<ColorMaterial>,
@@ -33,17 +40,21 @@ impl Default for ShapeBundle {
     fn default() -> Self {
         Self {
             path: Path::new(),
+            mode: TessellationMode::Fill(FillOptions::default()),
             mesh: QUAD_HANDLE.typed(),
             render_pipelines: RenderPipelines::from_pipelines(vec![RenderPipeline::new(
                 SPRITE_PIPELINE_HANDLE.typed(),
             )]),
             visible: Visible {
-                is_visible: false, // TODO: Remember to set to true in shapesprite_maker!!!
+                is_visible: false,
                 is_transparent: true,
             },
             main_pass: MainPass,
             draw: Default::default(),
-            sprite: Default::default(),
+            sprite: Sprite {
+                size: Vec2::new(1.0, 1.0),
+                ..Default::default()
+            },
             material: Default::default(),
             transform: Default::default(),
             global_transform: Default::default(),

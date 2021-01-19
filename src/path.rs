@@ -11,7 +11,7 @@ use lyon_tessellation::{
 pub struct PathBuilder(WithSvg<Builder>);
 
 impl PathBuilder {
-    /// Returns a new, empty `PathBuilder`
+    /// Returns a new, empty `PathBuilder`.
     pub fn new() -> Self {
         Self(Builder::new().with_svg())
     }

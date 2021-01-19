@@ -1,27 +1,23 @@
 //! Contains the plugin and its helper types.
 //!
-//! The `ShapePlugin` provides the creation of shapes with minimal boilerplate.
+//! The [`ShapePlugin`] provides the creation of shapes with minimal
+//! boilerplate.
 //!
 //! ## How it works
-//! When the user calls the [`ShapeSprite::draw`] or [`Multishape::build`]
-//! method from a system in the [`UPDATE`](bevy_app::stage::UPDATE) stage, it
-//! will return a `(ShapeDescriptor,)` type, a single element tuple that have to
-//! be feeded to Bevy's [`Commands::spawn`](bevy_ecs::Commands::spawn) method
-//! as a bundle.
+//! The user spawns a [`ShapeBundle`] from a system in the
+//! [`UPDATE`](bevy::app::stage::UPDATE) stage.
 //!
 //! Then, in the [`SHAPE`](shape_plugin_stage::SHAPE) stage, there is a system
-//! that for each entity containing `ShapeDescriptor`, it inserts the
-//! [`SpriteBundle`] components into the entity and then removes the
-//! `ShapeDescriptor` component.
+//! that creates a mesh for each entity that has been spawned as a
+//! `ShapeBundle`.
 
-use crate::{build_mesh, Buffers, VertexConstructor};
+use crate::{build_mesh, entity::ShapeBundle, Buffers, VertexConstructor};
 use bevy::{
     app::{stage, AppBuilder, Plugin},
     asset::{Assets, Handle},
-    ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage},
-    math::Vec2,
-    render::mesh::Mesh,
-    sprite::{entity::SpriteBundle, ColorMaterial, Sprite},
+    ecs::{IntoSystem, Query, ResMut, SystemStage},
+    render::{draw::Visible, mesh::Mesh},
+    sprite::ColorMaterial,
     transform::components::Transform,
 };
 use lyon_tessellation::{
@@ -31,17 +27,16 @@ use lyon_tessellation::{
 
 /// Stages for this plugin.
 pub mod shape_plugin_stage {
-    /// The stage where the [`ShapeDescriptor`](super::ShapeDescriptor)s are
-    /// replaced with `SpriteBundles`.
+    /// The stage where the [`ShapeBundle`](super::ShapeBundle) gets completed.
     pub const SHAPE: &str = "shape";
 }
 
 /// Determines if a shape must be filled or stroked.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TessellationMode {
-    /// The shape should be filled with the provided [`FillOptions`].
+    /// The shape will be filled with the provided [`FillOptions`].
     Fill(FillOptions),
-    /// The shape should be filled with the provided [`StrokeOptions`].
+    /// The shape will be filled with the provided [`StrokeOptions`].
     Stroke(StrokeOptions),
 }
 
@@ -64,38 +59,22 @@ impl Plugin for ShapePlugin {
     }
 }
 
-/// An intermediate representation that contains all the data to create a
-/// [`SpriteBundle`] with a custom mesh.
-///
-/// If spawned into the [`World`](bevy_ecs::World) during the
-/// [`UPDATE`](bevy_app::stage::UPDATE) stage, it will be replaced by a custom
-/// `SpriteBundle` corresponding to the
-/// shape.
-#[allow(missing_docs)]
-pub struct ShapeDescriptor {
-    pub path: Path,
-    pub material: Handle<ColorMaterial>,
-    pub mode: TessellationMode,
-    pub transform: Transform,
-}
-
-/// A bevy system. Queries all the [`ShapeDescriptor`]s to create a
-/// `SpriteBundle` for each one, before deleting them.
+/// A bevy system. Queries all the [`ShapeBundle`]s to complete them with a
+/// mesh.
 fn shapesprite_maker(
-    commands: &mut Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    query: Query<(Entity, &ShapeDescriptor)>,
+    mut query: Query<(&TessellationMode, &Path, &mut Handle<Mesh>, &mut Visible)>,
 ) {
-    for (entity, shape_descriptor) in query.iter() {
+    for (tess_mode, path, mut mesh, mut visible) in query.iter_mut() {
         let mut buffers = Buffers::new();
 
-        match shape_descriptor.mode {
+        match tess_mode {
             TessellationMode::Fill(ref options) => {
                 fill_tess
                     .tessellate_path(
-                        &shape_descriptor.path,
+                        path,
                         options,
                         &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
                     )
@@ -104,7 +83,7 @@ fn shapesprite_maker(
             TessellationMode::Stroke(ref options) => {
                 stroke_tess
                     .tessellate_path(
-                        &shape_descriptor.path,
+                        path,
                         options,
                         &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
                     )
@@ -112,25 +91,13 @@ fn shapesprite_maker(
             }
         }
 
-        let sprite_bundle = SpriteBundle {
-            material: shape_descriptor.material.clone(),
-            mesh: meshes.add(build_mesh(&buffers)),
-            sprite: Sprite {
-                size: Vec2::new(1.0, 1.0),
-                ..Default::default()
-            },
-            transform: shape_descriptor.transform,
-            ..Default::default()
-        };
-
-        commands.insert(entity, sprite_bundle);
-        commands.remove_one::<ShapeDescriptor>(entity);
+        *mesh = meshes.add(build_mesh(&buffers));
+        visible.is_visible = true;
     }
 }
 
-/// Shape structs that implement this trait can be transformed into a
-/// [`SpriteBundle`]. See the [`shapes`](crate::shapes) module for some
-/// examples.
+/// Shape structs that implement this trait can be drawn as a shape. See the
+/// [`shapes`](crate::shapes) module for some examples.
 ///
 /// # Implementation example
 ///
@@ -173,24 +140,24 @@ pub trait ShapeSprite {
     /// Mutates a Lyon path [`Builder`] adding the shape to it.
     fn add_geometry(&self, b: &mut Builder);
 
-    /// Returns a [`ShapeDescriptor`] bundle for the shape.
+    /// Returns a [`ShapeBundle`] containing a [`Path`] with the designated
+    /// shape.
     fn draw(
         &self,
         material: Handle<ColorMaterial>,
         mode: TessellationMode,
         transform: Transform,
-    ) -> (ShapeDescriptor,) {
+    ) -> ShapeBundle {
         let mut builder = Builder::new();
         self.add_geometry(&mut builder);
 
-        let desc = ShapeDescriptor {
+        ShapeBundle {
             path: builder.build(),
-            material: material.clone(),
+            material,
             mode,
             transform,
-        };
-
-        (desc,)
+            ..Default::default()
+        }
     }
 }
 
@@ -210,37 +177,35 @@ impl Multishape {
         self
     }
 
-    /// Generates a `(ShapeDescriptor,)` with all the added shapes.
+    /// Generates a [`ShapeBundle`] with all the added shapes.
     pub fn build(
         self,
         material: Handle<ColorMaterial>,
         mode: TessellationMode,
         transform: Transform,
-    ) -> (ShapeDescriptor,) {
-        let desc = ShapeDescriptor {
+    ) -> ShapeBundle {
+        ShapeBundle {
             path: self.0.build(),
-            material: material.clone(),
+            material,
             mode,
             transform,
-        };
-
-        (desc,)
+            ..Default::default()
+        }
     }
 }
 
-/// Generates a [`ShapeDescriptor`] bundle with an arbitrary Path.
+/// Generates a [`ShapeBundle`] with an arbitrary [`Path`].
 pub fn draw_path(
     path: &Path,
     material: Handle<ColorMaterial>,
     mode: TessellationMode,
     transform: Transform,
-) -> (ShapeDescriptor,) {
-    let desc = ShapeDescriptor {
+) -> ShapeBundle {
+    ShapeBundle {
         path: path.clone(),
-        material: material.clone(),
+        material,
         mode,
         transform,
-    };
-
-    (desc,)
+        ..Default::default()
+    }
 }

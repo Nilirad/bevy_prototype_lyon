@@ -152,27 +152,13 @@ fn shapesprite_maker(
 /// }
 /// ```
 pub trait ShapeSprite {
-    /// Mutates a Lyon path [`Builder`] adding the shape to it.
+    /// Adds the geometry of the shape to the given Lyon [`Builder`].
     fn add_geometry(&self, b: &mut Builder);
+}
 
-    /// Returns a [`ShapeBundle`] containing a [`Path`] with the designated
-    /// shape.
-    fn draw(
-        &self,
-        material: Handle<ColorMaterial>,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> ShapeBundle {
-        let mut builder = Builder::new();
-        self.add_geometry(&mut builder);
-
-        ShapeBundle {
-            path: builder.build(),
-            material,
-            mode,
-            transform,
-            ..Default::default()
-        }
+impl ShapeSprite for Path {
+    fn add_geometry(&self, b: &mut Builder) {
+        b.concatenate(&[self.as_slice()])
     }
 }
 
@@ -186,7 +172,7 @@ impl Multishape {
     }
 
     /// Adds a shape.
-    pub fn add(&mut self, shape: impl ShapeSprite) -> &mut Self {
+    pub fn add(&mut self, shape: &impl ShapeSprite) -> &mut Self {
         shape.add_geometry(&mut self.0);
 
         self
@@ -207,20 +193,16 @@ impl Multishape {
             ..Default::default()
         }
     }
-}
 
-/// Generates a [`ShapeBundle`] with an arbitrary [`Path`].
-pub fn draw_path(
-    path: &Path,
-    material: Handle<ColorMaterial>,
-    mode: TessellationMode,
-    transform: Transform,
-) -> ShapeBundle {
-    ShapeBundle {
-        path: path.clone(),
-        material,
-        mode,
-        transform,
-        ..Default::default()
+    /// Generates a [`ShapeBundle`] with only one shape.
+    pub fn build_as(
+        shape: &impl ShapeSprite,
+        material: Handle<ColorMaterial>,
+        mode: TessellationMode,
+        transform: Transform,
+    ) -> ShapeBundle {
+        let mut multishape = Self::new();
+        multishape.add(shape);
+        multishape.build(material, mode, transform)
     }
 }

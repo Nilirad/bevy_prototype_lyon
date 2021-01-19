@@ -18,9 +18,12 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
         ..Default::default()
     };
 
-    commands.spawn(Camera2dBundle::default()).spawn(circle.draw(
-        materials.add(ColorMaterial::color(Color::AQUAMARINE)),
-        TessellationMode::Fill(FillOptions::default()),
-        Transform::default(),
-    ));
+    commands
+        .spawn(Camera2dBundle::default())
+        .spawn(Multishape::build_as(
+            &circle,
+            materials.add(ColorMaterial::color(Color::AQUAMARINE)),
+            TessellationMode::Fill(FillOptions::default()),
+            Transform::default(),
+        ));
 }

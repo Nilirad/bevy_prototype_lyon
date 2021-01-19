@@ -39,15 +39,15 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
 
     commands
         .spawn(Camera2dBundle::default())
-        .spawn(draw_path(
+        .spawn(Multishape::build_as(
             &path,
-            fill_material.clone(),
+            fill_material,
             fill_mode,
             transform,
         ))
-        .spawn(draw_path(
+        .spawn(Multishape::build_as(
             &path,
-            stroke_material.clone(),
+            stroke_material,
             stroke_mode,
             transform,
         ));

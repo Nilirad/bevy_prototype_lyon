@@ -22,7 +22,7 @@
     clippy::cargo
 )]
 
-use bevy_render::{
+use bevy::render::{
     mesh::{Indices, Mesh},
     pipeline::PrimitiveTopology,
 };
@@ -31,6 +31,7 @@ use lyon_tessellation::{
 };
 
 pub mod conversions;
+pub mod entity;
 pub mod path;
 pub mod plugin;
 pub mod shapes;

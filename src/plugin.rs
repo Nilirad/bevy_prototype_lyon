@@ -15,13 +15,15 @@
 //! `ShapeDescriptor` component.
 
 use crate::{build_mesh, Buffers, VertexConstructor};
-use bevy_app::{stage, AppBuilder, Plugin};
-use bevy_asset::{Assets, Handle};
-use bevy_ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage};
-use bevy_math::Vec2;
-use bevy_render::mesh::Mesh;
-use bevy_sprite::{entity::SpriteBundle, ColorMaterial, Sprite};
-use bevy_transform::components::Transform;
+use bevy::{
+    app::{stage, AppBuilder, Plugin},
+    asset::{Assets, Handle},
+    ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage},
+    math::Vec2,
+    render::mesh::Mesh,
+    sprite::{entity::SpriteBundle, ColorMaterial, Sprite},
+    transform::components::Transform,
+};
 use lyon_tessellation::{
     path::{path::Builder, Path},
     BuffersBuilder, FillOptions, FillTessellator, StrokeOptions, StrokeTessellator,

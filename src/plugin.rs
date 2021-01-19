@@ -163,10 +163,10 @@ impl ShapeSprite for Path {
 }
 
 /// Allows the creation of multiple shapes using only a single mesh.
-pub struct Multishape(Builder);
+pub struct ShapeBuilder(Builder);
 
-impl Multishape {
-    /// Creates a new, empty `Multishape`.
+impl ShapeBuilder {
+    /// Creates a new, empty `ShapeBuilder`.
     pub fn new() -> Self {
         Self(Builder::new())
     }

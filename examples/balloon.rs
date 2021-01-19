@@ -39,13 +39,13 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
 
     commands
         .spawn(Camera2dBundle::default())
-        .spawn(Multishape::build_as(
+        .spawn(ShapeBuilder::build_as(
             &path,
             fill_material,
             fill_mode,
             transform,
         ))
-        .spawn(Multishape::build_as(
+        .spawn(ShapeBuilder::build_as(
             &path,
             stroke_material,
             stroke_mode,

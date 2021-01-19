@@ -33,7 +33,7 @@ fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>
     for (i, color) in colors.into_iter().enumerate() {
         let x = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).cos();
         let y = CIRCLE_RADIUS / 2.0 * (PI_2 / num_colors as f32 * i as f32).sin();
-        commands.spawn(Multishape::build_as(
+        commands.spawn(ShapeBuilder::build_as(
             &circle,
             materials.add(ColorMaterial::color(color)),
             TessellationMode::Fill(FillOptions::default()),

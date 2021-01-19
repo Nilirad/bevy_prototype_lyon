@@ -5,7 +5,7 @@
 //! the trait for your own shapes.
 
 use crate::{conversions::Convert, plugin::ShapeSprite};
-use bevy_math::Vec2;
+use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{point, Angle, Point, Rect, Size},
     path::{path::Builder, traits::PathBuilder, Polygon as LyonPolygon, Winding},

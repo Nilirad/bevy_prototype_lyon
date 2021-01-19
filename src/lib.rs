@@ -40,7 +40,7 @@ pub mod shapes;
 pub mod prelude {
     pub use crate::{
         path::PathBuilder,
-        plugin::{draw_path, Multishape, ShapePlugin, ShapeSprite, TessellationMode, Tessellator},
+        plugin::{draw_path, Multishape, ShapePlugin, ShapeSprite, TessellationMode},
         shapes,
     };
     pub use lyon_tessellation::{

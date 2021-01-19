@@ -224,3 +224,17 @@ impl ShapeSprite for RegularPolygon {
         b.add_polygon(polygon);
     }
 }
+
+/// A simple line segment, specified by two points.
+#[allow(missing_docs)]
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Line(pub Vec2, pub Vec2);
+
+impl ShapeSprite for Line {
+    fn add_geometry(&self, b: &mut Builder) {
+        b.add_polygon(LyonPolygon {
+            points: &[self.0.convert(), self.1.convert()],
+            closed: false,
+        });
+    }
+}

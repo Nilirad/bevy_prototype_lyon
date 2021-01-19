@@ -23,7 +23,7 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
         feature: shapes::RegularPolygonFeature::SideLength(200.0),
     };
     let mut multishape = Multishape::new();
-    multishape.add(circle).add(square);
+    multishape.add(&circle).add(&square);
 
     let material = materials.add(ColorMaterial::color(Color::CRIMSON));
     let mode = TessellationMode::Stroke(StrokeOptions::default().with_line_width(3.0));

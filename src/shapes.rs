@@ -13,13 +13,14 @@ use lyon_tessellation::{
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RectangleOrigin {
     Center,
     BottomLeft,
     BottomRight,
     TopRight,
     TopLeft,
+    CustomCenter(Vec2),
 }
 
 impl Default for RectangleOrigin {
@@ -56,6 +57,7 @@ impl ShapeSprite for Rectangle {
                 BottomRight => Point::new(-self.width, 0.0),
                 TopRight => Point::new(-self.width, -self.height),
                 TopLeft => Point::new(0.0, -self.height),
+                CustomCenter(v) => Point::new(v.x - self.width / 2.0, v.y - self.height / 2.0),
             }
         };
 

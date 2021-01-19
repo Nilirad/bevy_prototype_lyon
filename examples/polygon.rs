@@ -43,25 +43,25 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
 
     commands
         .spawn(Camera2dBundle::default())
-        .spawn(Multishape::build_as(
+        .spawn(ShapeBuilder::build_as(
             &triangle,
             color.clone(),
             fill_mode,
             Transform::default(),
         ))
-        .spawn(Multishape::build_as(
+        .spawn(ShapeBuilder::build_as(
             &square,
             color.clone(),
             fill_mode,
             Transform::default(),
         ))
-        .spawn(Multishape::build_as(
+        .spawn(ShapeBuilder::build_as(
             &pentagon,
             color.clone(),
             fill_mode,
             Transform::default(),
         ))
-        .spawn(Multishape::build_as(
+        .spawn(ShapeBuilder::build_as(
             &hexagon,
             color.clone(),
             fill_mode,

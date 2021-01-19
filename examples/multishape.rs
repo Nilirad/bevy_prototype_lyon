@@ -1,5 +1,5 @@
-//! This example shows how you can use [`Multishape`] to add multiple shapes to
-//! a single mesh.
+//! This example shows how you can use [`ShapeBuilder`] to add multiple shapes
+//! to a single mesh.
 
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
@@ -22,7 +22,7 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
         center: Vec2::new(0.0, 200.0),
         feature: shapes::RegularPolygonFeature::SideLength(200.0),
     };
-    let mut multishape = Multishape::new();
+    let mut multishape = ShapeBuilder::new();
     multishape.add(&circle).add(&square);
 
     let material = materials.add(ColorMaterial::color(Color::CRIMSON));

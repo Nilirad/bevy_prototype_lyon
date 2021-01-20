@@ -1,10 +1,10 @@
 //! Collection of common shapes that can be drawn.
 //!
 //! The structs defined in this module implement the
-//! [`Geometry`](crate::plugin::Geometry) trait. You can also implement
+//! [`Geometry`](crate::geometry::Geometry) trait. You can also implement
 //! the trait for your own shapes.
 
-use crate::{conversions::Convert, plugin::Geometry};
+use crate::{geometry::Geometry, utils::Convert};
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{point, Angle, Point, Rect, Size},

@@ -4,44 +4,74 @@
 //! boilerplate.
 //!
 //! ## How it works
-//! The user spawns a [`ShapeBundle`] from a system in the
-//! [`UPDATE`](bevy::app::stage::UPDATE) stage.
+//! The user spawns a [`ShapeBundle`](crate::entity::ShapeBundle) from a
+//! system in the [`UPDATE`](bevy::app::stage::UPDATE) stage.
 //!
 //! Then, in the [`SHAPE`](stage::SHAPE) stage, there is a system
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 
-use crate::{
-    build_mesh,
-    entity::{Processed, ShapeBundle},
-    VertexBuffers, VertexConstructor,
-};
+use crate::{entity::Processed, utils::TessellationMode};
 use bevy::{
     app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
     ecs::{IntoSystem, Query, ResMut, SystemStage},
-    render::{draw::Visible, mesh::Mesh},
-    sprite::ColorMaterial,
-    transform::components::Transform,
+    render::{
+        draw::Visible,
+        mesh::{Indices, Mesh},
+        pipeline::PrimitiveTopology,
+    },
 };
 use lyon_tessellation::{
-    path::{path::Builder, Path},
-    BuffersBuilder, FillOptions, FillTessellator, StrokeOptions, StrokeTessellator,
+    self as tess, path::Path, BuffersBuilder, FillTessellator, FillVertex, FillVertexConstructor,
+    StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
 };
 
 /// Stages for this plugin.
 pub mod stage {
-    /// The stage where the [`ShapeBundle`](super::ShapeBundle) gets completed.
+    /// The stage where the [`ShapeBundle`](crate::entity::ShapeBundle) gets
+    /// completed.
     pub const SHAPE: &str = "shape";
 }
 
-/// Determines if a shape must be filled or stroked.
+/// The index type of a Bevy [`Mesh`](bevy::render::mesh::Mesh).
+type IndexType = u32;
+/// Lyon's [`VertexBuffers`] generic data type defined for [`Vertex`].
+type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
+
+/// A vertex with all the necessary attributes to be inserted into a Bevy
+/// [`Mesh`](bevy::render::mesh::Mesh).
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum TessellationMode {
-    /// The shape will be filled with the provided [`FillOptions`].
-    Fill(FillOptions),
-    /// The shape will be filled with the provided [`StrokeOptions`].
-    Stroke(StrokeOptions),
+struct Vertex {
+    position: [f32; 3],
+    normal: [f32; 3],
+    uv: [f32; 2],
+}
+
+/// Zero-sized type used to implement various vertex construction traits from
+/// Lyon.
+struct VertexConstructor;
+
+/// Enables the construction of a [`Vertex`] when using a `FillTessellator`.
+impl FillVertexConstructor<Vertex> for VertexConstructor {
+    fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
+        Vertex {
+            position: [vertex.position().x, vertex.position().y, 0.0],
+            normal: [0.0, 0.0, 1.0],
+            uv: [0.0, 0.0],
+        }
+    }
+}
+
+/// Enables the construction of a [`Vertex`] when using a `StrokeTessellator`.
+impl StrokeVertexConstructor<Vertex> for VertexConstructor {
+    fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
+        Vertex {
+            position: [vertex.position().x, vertex.position().y, 0.0],
+            normal: [0.0, 0.0, 1.0],
+            uv: [0.0, 0.0],
+        }
+    }
 }
 
 /// A plugin that provides resources and a system to draw shapes in Bevy with
@@ -92,7 +122,7 @@ fn complete_shape_bundle(
                         options,
                         &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
                     )
-                    .unwrap();
+                    .unwrap(); // TODO: log error instead.
             }
             TessellationMode::Stroke(ref options) => {
                 stroke_tess
@@ -101,7 +131,7 @@ fn complete_shape_bundle(
                         options,
                         &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
                     )
-                    .unwrap();
+                    .unwrap(); // TODO: log error instead.
             }
         }
 
@@ -111,98 +141,33 @@ fn complete_shape_bundle(
     }
 }
 
-/// Shape structs that implement this trait can be drawn as a shape. See the
-/// [`shapes`](crate::shapes) module for some examples.
-///
-/// # Implementation example
-///
-/// ```
-/// use bevy_prototype_lyon::plugin::Geometry;
-/// use lyon_tessellation::{
-///     math::{Point, Rect, Size},
-///     path::{path::Builder, traits::PathBuilder, Path, Winding},
-/// };
-///
-/// // First, create a struct to hold the shape features:
-/// #[derive(Debug, Clone, Copy, PartialEq)]
-/// pub struct Rectangle {
-///     pub width: f32,
-///     pub height: f32,
-/// }
-///
-/// // Implementing the `Default` trait is not required, but it may facilitate the
-/// // definition of the shape before spawning it.
-/// impl Default for Rectangle {
-///     fn default() -> Self {
-///         Self {
-///             width: 1.0,
-///             height: 1.0,
-///         }
-///     }
-/// }
-///
-/// // Finally, implement the `generate_path` method.
-/// impl Geometry for Rectangle {
-///     fn add_geometry(&self, b: &mut Builder) {
-///         b.add_rectangle(
-///             &Rect::new(Point::zero(), Size::new(self.width, self.height)),
-///             Winding::Positive,
-///         );
-///     }
-/// }
-/// ```
-pub trait Geometry {
-    /// Adds the geometry of the shape to the given Lyon [`Builder`].
-    fn add_geometry(&self, b: &mut Builder);
-}
+fn build_mesh(buffers: &VertexBuffers) -> Mesh {
+    let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+    mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
+    mesh.set_attribute(
+        Mesh::ATTRIBUTE_POSITION,
+        buffers
+            .vertices
+            .iter()
+            .map(|v| v.position)
+            .collect::<Vec<[f32; 3]>>(),
+    );
+    mesh.set_attribute(
+        Mesh::ATTRIBUTE_NORMAL,
+        buffers
+            .vertices
+            .iter()
+            .map(|v| v.normal)
+            .collect::<Vec<[f32; 3]>>(),
+    );
+    mesh.set_attribute(
+        Mesh::ATTRIBUTE_UV_0,
+        buffers
+            .vertices
+            .iter()
+            .map(|v| v.uv)
+            .collect::<Vec<[f32; 2]>>(),
+    );
 
-impl Geometry for Path {
-    fn add_geometry(&self, b: &mut Builder) {
-        b.concatenate(&[self.as_slice()])
-    }
-}
-
-/// Allows the creation of multiple shapes using only a single mesh.
-pub struct GeometryBuilder(Builder);
-
-impl GeometryBuilder {
-    /// Creates a new, empty `ShapeBuilder`.
-    pub fn new() -> Self {
-        Self(Builder::new())
-    }
-
-    /// Adds a shape.
-    pub fn add(&mut self, shape: &impl Geometry) -> &mut Self {
-        shape.add_geometry(&mut self.0);
-
-        self
-    }
-
-    /// Generates a [`ShapeBundle`] with all the added shapes.
-    pub fn build(
-        self,
-        material: Handle<ColorMaterial>,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> ShapeBundle {
-        ShapeBundle {
-            path: self.0.build(),
-            material,
-            mode,
-            transform,
-            ..Default::default()
-        }
-    }
-
-    /// Generates a [`ShapeBundle`] with only one shape.
-    pub fn build_as(
-        shape: &impl Geometry,
-        material: Handle<ColorMaterial>,
-        mode: TessellationMode,
-        transform: Transform,
-    ) -> ShapeBundle {
-        let mut multishape = Self::new();
-        multishape.add(shape);
-        multishape.build(material, mode, transform)
-    }
+    mesh
 }

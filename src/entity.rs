@@ -15,7 +15,7 @@ use bevy::{
 };
 use lyon_tessellation::{path::Path, FillOptions};
 
-use crate::plugin::TessellationMode;
+use crate::utils::TessellationMode;
 
 /// Component that marks a [`ShapeBundle`] as completed or not.
 pub struct Processed(pub bool);

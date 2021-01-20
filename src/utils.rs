@@ -1,6 +1,19 @@
-//! Conversions between Bevy and Lyon datatypes.
+//! Utility types and conversion traits.
+
 use bevy::math::Vec2;
-use lyon_tessellation::math::{Point, Vector};
+use lyon_tessellation::{
+    math::{Point, Vector},
+    FillOptions, StrokeOptions,
+};
+
+/// Determines if a shape must be filled or stroked.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum TessellationMode {
+    /// The shape will be filled with the provided [`FillOptions`].
+    Fill(FillOptions),
+    /// The shape will be filled with the provided [`StrokeOptions`].
+    Stroke(StrokeOptions),
+}
 
 /// A locally defined [`std::convert::Into`] surrogate to overcome orphan rules.
 pub trait Convert<T>: Sized {

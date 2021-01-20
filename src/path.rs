@@ -1,6 +1,6 @@
 //! Interface to build custom paths.
 
-use crate::conversions::Convert;
+use crate::utils::Convert;
 use bevy::math::Vec2;
 use lyon_tessellation::{
     geom::Angle,

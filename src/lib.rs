@@ -3,7 +3,7 @@
 //! This crate provides a Bevy [plugin] to easily draw shapes.
 //! Some shapes are provided for convenience, however you can extend the
 //! functionality of this crate by implementing the
-//! [`ShapeSprite`](plugin::ShapeSprite) trait by your own.
+//! [`Geometry`](plugin::Geometry) trait by your own.
 //!
 //! ## Usage
 //! Check out the `README.md` on the [**GitHub repository**](https://github.com/Nilirad/bevy_prototype_lyon)
@@ -27,7 +27,7 @@ use bevy::render::{
     pipeline::PrimitiveTopology,
 };
 use lyon_tessellation::{
-    FillVertex, FillVertexConstructor, StrokeVertex, StrokeVertexConstructor, VertexBuffers,
+    self as tess, FillVertex, FillVertexConstructor, StrokeVertex, StrokeVertexConstructor,
 };
 
 pub mod conversions;
@@ -41,7 +41,7 @@ pub mod shapes;
 pub mod prelude {
     pub use crate::{
         path::PathBuilder,
-        plugin::{ShapeBuilder, ShapePlugin, ShapeSprite, TessellationMode},
+        plugin::{Geometry, GeometryBuilder, ShapePlugin, TessellationMode},
         shapes,
     };
     pub use lyon_tessellation::{
@@ -88,10 +88,10 @@ impl StrokeVertexConstructor<Vertex> for VertexConstructor {
 pub type IndexType = u32;
 
 /// Lyon's [`VertexBuffers`] generic data type defined for [`Vertex`].
-pub type Buffers = VertexBuffers<Vertex, IndexType>;
+pub type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
 
 /// Builds a Bevy [`Mesh`] from a [`Buffers`] type.
-fn build_mesh(buffers: &Buffers) -> Mesh {
+fn build_mesh(buffers: &VertexBuffers) -> Mesh {
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
     mesh.set_attribute(

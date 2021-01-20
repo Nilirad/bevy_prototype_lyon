@@ -20,7 +20,7 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
 
     commands
         .spawn(Camera2dBundle::default())
-        .spawn(ShapeBuilder::build_as(
+        .spawn(GeometryBuilder::build_as(
             &circle,
             materials.add(ColorMaterial::color(Color::AQUAMARINE)),
             TessellationMode::Fill(FillOptions::default()),

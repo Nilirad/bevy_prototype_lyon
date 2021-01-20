@@ -7,17 +7,17 @@
 //! The user spawns a [`ShapeBundle`] from a system in the
 //! [`UPDATE`](bevy::app::stage::UPDATE) stage.
 //!
-//! Then, in the [`SHAPE`](shape_plugin_stage::SHAPE) stage, there is a system
+//! Then, in the [`SHAPE`](stage::SHAPE) stage, there is a system
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 
 use crate::{
     build_mesh,
     entity::{Processed, ShapeBundle},
-    Buffers, VertexConstructor,
+    VertexBuffers, VertexConstructor,
 };
 use bevy::{
-    app::{stage, AppBuilder, Plugin},
+    app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
     ecs::{IntoSystem, Query, ResMut, SystemStage},
     render::{draw::Visible, mesh::Mesh},
@@ -30,7 +30,7 @@ use lyon_tessellation::{
 };
 
 /// Stages for this plugin.
-pub mod shape_plugin_stage {
+pub mod stage {
     /// The stage where the [`ShapeBundle`](super::ShapeBundle) gets completed.
     pub const SHAPE: &str = "shape";
 }
@@ -55,17 +55,17 @@ impl Plugin for ShapePlugin {
         app.add_resource(fill_tess)
             .add_resource(stroke_tess)
             .add_stage_after(
-                stage::UPDATE,
-                shape_plugin_stage::SHAPE,
+                bevy::app::stage::UPDATE,
+                stage::SHAPE,
                 SystemStage::parallel(),
             )
-            .add_system_to_stage(shape_plugin_stage::SHAPE, shapesprite_maker.system());
+            .add_system_to_stage(stage::SHAPE, complete_shape_bundle.system());
     }
 }
 
 /// A bevy system. Queries all the [`ShapeBundle`]s to complete them with a
 /// mesh.
-fn shapesprite_maker(
+fn complete_shape_bundle(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
@@ -82,7 +82,7 @@ fn shapesprite_maker(
             continue;
         }
 
-        let mut buffers = Buffers::new();
+        let mut buffers = VertexBuffers::new();
 
         match tess_mode {
             TessellationMode::Fill(ref options) => {
@@ -117,7 +117,7 @@ fn shapesprite_maker(
 /// # Implementation example
 ///
 /// ```
-/// use bevy_prototype_lyon::plugin::ShapeSprite;
+/// use bevy_prototype_lyon::plugin::Geometry;
 /// use lyon_tessellation::{
 ///     math::{Point, Rect, Size},
 ///     path::{path::Builder, traits::PathBuilder, Path, Winding},
@@ -142,7 +142,7 @@ fn shapesprite_maker(
 /// }
 ///
 /// // Finally, implement the `generate_path` method.
-/// impl ShapeSprite for Rectangle {
+/// impl Geometry for Rectangle {
 ///     fn add_geometry(&self, b: &mut Builder) {
 ///         b.add_rectangle(
 ///             &Rect::new(Point::zero(), Size::new(self.width, self.height)),
@@ -151,28 +151,28 @@ fn shapesprite_maker(
 ///     }
 /// }
 /// ```
-pub trait ShapeSprite {
+pub trait Geometry {
     /// Adds the geometry of the shape to the given Lyon [`Builder`].
     fn add_geometry(&self, b: &mut Builder);
 }
 
-impl ShapeSprite for Path {
+impl Geometry for Path {
     fn add_geometry(&self, b: &mut Builder) {
         b.concatenate(&[self.as_slice()])
     }
 }
 
 /// Allows the creation of multiple shapes using only a single mesh.
-pub struct ShapeBuilder(Builder);
+pub struct GeometryBuilder(Builder);
 
-impl ShapeBuilder {
+impl GeometryBuilder {
     /// Creates a new, empty `ShapeBuilder`.
     pub fn new() -> Self {
         Self(Builder::new())
     }
 
     /// Adds a shape.
-    pub fn add(&mut self, shape: &impl ShapeSprite) -> &mut Self {
+    pub fn add(&mut self, shape: &impl Geometry) -> &mut Self {
         shape.add_geometry(&mut self.0);
 
         self
@@ -196,7 +196,7 @@ impl ShapeBuilder {
 
     /// Generates a [`ShapeBundle`] with only one shape.
     pub fn build_as(
-        shape: &impl ShapeSprite,
+        shape: &impl Geometry,
         material: Handle<ColorMaterial>,
         mode: TessellationMode,
         transform: Transform,

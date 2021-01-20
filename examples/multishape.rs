@@ -22,7 +22,7 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
         center: Vec2::new(0.0, 200.0),
         feature: shapes::RegularPolygonFeature::SideLength(200.0),
     };
-    let mut multishape = ShapeBuilder::new();
+    let mut multishape = GeometryBuilder::new();
     multishape.add(&circle).add(&square);
 
     let material = materials.add(ColorMaterial::color(Color::CRIMSON));

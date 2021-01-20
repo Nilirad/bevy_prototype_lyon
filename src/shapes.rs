@@ -1,10 +1,10 @@
 //! Collection of common shapes that can be drawn.
 //!
 //! The structs defined in this module implement the
-//! [`ShapeSprite`](crate::plugin::ShapeSprite) trait. You can also implement
+//! [`Geometry`](crate::plugin::Geometry) trait. You can also implement
 //! the trait for your own shapes.
 
-use crate::{conversions::Convert, plugin::ShapeSprite};
+use crate::{conversions::Convert, plugin::Geometry};
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{point, Angle, Point, Rect, Size},
@@ -47,7 +47,7 @@ impl Default for Rectangle {
     }
 }
 
-impl ShapeSprite for Rectangle {
+impl Geometry for Rectangle {
     fn add_geometry(&self, b: &mut Builder) {
         let origin = {
             use RectangleOrigin::*;
@@ -84,7 +84,7 @@ impl Default for Circle {
     }
 }
 
-impl ShapeSprite for Circle {
+impl Geometry for Circle {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_circle(self.center.convert(), self.radius, Winding::Positive);
     }
@@ -106,7 +106,7 @@ impl Default for Ellipse {
     }
 }
 
-impl ShapeSprite for Ellipse {
+impl Geometry for Ellipse {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_ellipse(
             self.center.convert(),
@@ -133,7 +133,7 @@ impl Default for Polygon {
     }
 }
 
-impl ShapeSprite for Polygon {
+impl Geometry for Polygon {
     fn add_geometry(&self, b: &mut Builder) {
         let points = self
             .points
@@ -193,7 +193,7 @@ impl Default for RegularPolygon {
     }
 }
 
-impl ShapeSprite for RegularPolygon {
+impl Geometry for RegularPolygon {
     fn add_geometry(&self, b: &mut Builder) {
         // -- Implementation details **PLEASE KEEP UPDATED** --
         // - `step`: angle between two vertices.
@@ -230,7 +230,7 @@ impl ShapeSprite for RegularPolygon {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Line(pub Vec2, pub Vec2);
 
-impl ShapeSprite for Line {
+impl Geometry for Line {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_polygon(LyonPolygon {
             points: &[self.0.convert(), self.1.convert()],

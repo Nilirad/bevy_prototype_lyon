@@ -1,5 +1,6 @@
 //! Custom Bevy [`Bundle`] for shapes.
 
+use crate::utils::TessellationMode;
 use bevy::{
     asset::Handle,
     ecs::Bundle,
@@ -14,8 +15,6 @@ use bevy::{
     transform::components::{GlobalTransform, Transform},
 };
 use lyon_tessellation::{path::Path, FillOptions};
-
-use crate::utils::TessellationMode;
 
 /// Component that marks a [`ShapeBundle`] as completed or not.
 pub struct Processed(pub bool);

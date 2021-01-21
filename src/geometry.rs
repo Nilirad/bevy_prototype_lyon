@@ -35,7 +35,7 @@ use crate::{entity::ShapeBundle, utils::TessellationMode};
 ///     }
 /// }
 ///
-/// // Finally, implement the `generate_path` method.
+/// // Finally, implement the `add_geometry` method.
 /// impl Geometry for Rectangle {
 ///     fn add_geometry(&self, b: &mut Builder) {
 ///         b.add_rectangle(
@@ -46,17 +46,18 @@ use crate::{entity::ShapeBundle, utils::TessellationMode};
 /// }
 /// ```
 pub trait Geometry {
-    /// Adds the geometry of the shape to the given Lyon [`Builder`].
+    /// Adds the geometry of the shape to the given Lyon path [`Builder`].
     fn add_geometry(&self, b: &mut Builder);
 }
 
+/// This implementation permits to use a Lyon [`Path`] as a [`Geometry`].
 impl Geometry for Path {
     fn add_geometry(&self, b: &mut Builder) {
         b.concatenate(&[self.as_slice()])
     }
 }
 
-/// Allows the creation of shapes using geometries.
+/// Allows the creation of shapes using geometries added to a path builder.
 pub struct GeometryBuilder(Builder);
 
 impl GeometryBuilder {
@@ -65,14 +66,17 @@ impl GeometryBuilder {
         Self(Builder::new())
     }
 
-    /// Adds a geometry.
+    // TODO: Add doc example.
+    /// Adds a geometry to the path builder.
     pub fn add(&mut self, shape: &impl Geometry) -> &mut Self {
         shape.add_geometry(&mut self.0);
 
         self
     }
 
-    /// Generates a [`ShapeBundle`] with all the added geometries.
+    // TODO: Add doc example.
+    /// Generates a [`ShapeBundle`] using the data contained in the path
+    /// builder.
     pub fn build(
         self,
         material: Handle<ColorMaterial>,
@@ -88,6 +92,7 @@ impl GeometryBuilder {
         }
     }
 
+    // TODO: Add doc example.
     /// Generates a [`ShapeBundle`] with only one geometry.
     pub fn build_as(
         shape: &impl Geometry,

@@ -1,4 +1,4 @@
-//! Custom [`Bundle`] for shapes.
+//! Custom Bevy [`Bundle`] for shapes.
 
 use bevy::{
     asset::Handle,
@@ -20,7 +20,7 @@ use crate::utils::TessellationMode;
 /// Component that marks a [`ShapeBundle`] as completed or not.
 pub struct Processed(pub bool);
 
-/// A [`Bundle`] that represents a shape.
+/// A Bevy [`Bundle`] to represent a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {

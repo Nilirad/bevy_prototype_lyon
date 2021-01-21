@@ -16,6 +16,7 @@ use bevy::{
     app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
     ecs::{IntoSystem, Query, ResMut, SystemStage},
+    log::error,
     render::{
         draw::Visible,
         mesh::{Indices, Mesh},
@@ -116,22 +117,22 @@ fn complete_shape_bundle(
 
         match tess_mode {
             TessellationMode::Fill(ref options) => {
-                fill_tess
-                    .tessellate_path(
-                        path,
-                        options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap(); // TODO: log error instead.
+                if let Err(e) = fill_tess.tessellate_path(
+                    path,
+                    options,
+                    &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
+                ) {
+                    error!("FillTessellator error: {:?}", e);
+                }
             }
             TessellationMode::Stroke(ref options) => {
-                stroke_tess
-                    .tessellate_path(
-                        path,
-                        options,
-                        &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
-                    )
-                    .unwrap(); // TODO: log error instead.
+                if let Err(e) = stroke_tess.tessellate_path(
+                    path,
+                    options,
+                    &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
+                ) {
+                    error!("StrokeTessellator error: {:?}", e);
+                }
             }
         }
 

@@ -40,6 +40,6 @@ pub mod prelude {
         utils::TessellationMode,
     };
     pub use lyon_tessellation::{
-        path::path::Builder, FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
+        FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
     };
 }

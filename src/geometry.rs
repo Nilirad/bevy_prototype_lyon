@@ -66,15 +66,37 @@ impl GeometryBuilder {
         Self(Builder::new())
     }
 
-    // TODO: Add doc example.
     /// Adds a geometry to the path builder.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use bevy::prelude::*;
+    /// use bevy_prototype_lyon::prelude::*;
+    ///
+    /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+    ///     let line = shapes::Line(Vec2::zero(), Vec2::new(10.0, 0.0));
+    ///     let rectangle = shapes::Rectangle {
+    ///         width: 100.0,
+    ///         height: 50.0,
+    ///         ..Default::default()
+    ///     };
+    ///     let mut builder = GeometryBuilder::new();
+    ///     builder.add(&line).add(&rectangle);
+    ///
+    ///     commands.spawn(builder.build(
+    ///         materials.add(ColorMaterial::color(Color::ORANGE_RED)),
+    ///         TessellationMode::Fill(FillOptions::default()),
+    ///         Transform::default(),
+    ///     ));
+    /// }
+    /// ```
     pub fn add(&mut self, shape: &impl Geometry) -> &mut Self {
         shape.add_geometry(&mut self.0);
 
         self
     }
 
-    // TODO: Add doc example.
     /// Generates a [`ShapeBundle`] using the data contained in the path
     /// builder.
     pub fn build(
@@ -92,8 +114,25 @@ impl GeometryBuilder {
         }
     }
 
-    // TODO: Add doc example.
     /// Generates a [`ShapeBundle`] with only one geometry.
+    /// Adds a geometry to the path builder.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use bevy::prelude::*;
+    /// use bevy_prototype_lyon::prelude::*;
+    ///
+    /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+    ///     let line = shapes::Line(Vec2::zero(), Vec2::new(10.0, 0.0));
+    ///     commands.spawn(GeometryBuilder::build_as(
+    ///         &line,
+    ///         materials.add(ColorMaterial::color(Color::ORANGE_RED)),
+    ///         TessellationMode::Fill(FillOptions::default()),
+    ///         Transform::default(),
+    ///     ));
+    /// }
+    /// ```
     pub fn build_as(
         shape: &impl Geometry,
         material: Handle<ColorMaterial>,

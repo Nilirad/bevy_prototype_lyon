@@ -12,8 +12,10 @@ version = "0.1.5"
 
 [dependencies]
 bevy = {version = "0.4", default-features = false}
-
 lyon_tessellation = "0.17"
 
 [dev-dependencies]
 bevy = "0.4"
+bevy_egui = "0.1"
+bevy_rapier2d = "0.7.0"
+rand = "0.8.2"

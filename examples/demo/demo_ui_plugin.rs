@@ -19,6 +19,7 @@ impl Plugin for DemoUiPlugin {
     }
 }
 
+#[allow(clippy::too_many_lines)] // Too homogeneous to split
 fn setup_ui(commands: &mut Commands, asset_server: Res<AssetServer>) {
     let font: Handle<Font> = asset_server.load("fonts/FiraSans-Bold.ttf");
 
@@ -33,20 +34,20 @@ fn setup_ui(commands: &mut Commands, asset_server: Res<AssetServer>) {
                 margin: Rect {
                     left: Val::Px(30.0),
                     top: Val::Px(30.0),
-                    ..Default::default()
+                    ..Rect::default()
                 },
-                ..Default::default()
+                ..Style::default()
             },
             text: Text {
                 font: font.clone(),
                 style: TextStyle {
                     font_size: 60.0,
                     color: Color::WHITE,
-                    ..Default::default()
+                    ..TextStyle::default()
                 },
-                ..Default::default()
+                ..Text::default()
             },
-            ..Default::default()
+            ..TextBundle::default()
         })
         .with(TitleText);
 
@@ -59,20 +60,20 @@ fn setup_ui(commands: &mut Commands, asset_server: Res<AssetServer>) {
                 position: Rect {
                     left: Val::Px(30.0),
                     top: Val::Px(100.0),
-                    ..Default::default()
+                    ..Rect::default()
                 },
-                ..Default::default()
+                ..Style::default()
             },
             text: Text {
                 font: font.clone(),
                 style: TextStyle {
                     font_size: 20.0,
                     color: Color::WHITE,
-                    ..Default::default()
+                    ..TextStyle::default()
                 },
-                ..Default::default()
+                ..Text::default()
             },
-            ..Default::default()
+            ..TextBundle::default()
         })
         .with(SubtitleText);
 
@@ -85,21 +86,20 @@ fn setup_ui(commands: &mut Commands, asset_server: Res<AssetServer>) {
                 position: Rect {
                     top: Val::Px(150.0),
                     left: Val::Px(250.0),
-                    ..Default::default()
+                    ..Rect::default()
                 },
-                ..Default::default()
+                ..Style::default()
             },
             text: Text {
                 font: font.clone(),
                 style: TextStyle {
                     font_size: 90.0,
                     color: Color::WHITE,
-                    ..Default::default()
+                    ..TextStyle::default()
                 },
                 value: "Welcome to the\nbevy_prototype_lyon\ndemo!".to_string(),
-                ..Default::default()
             },
-            ..Default::default()
+            ..TextBundle::default()
         })
         .with(BodyText(0));
 
@@ -112,21 +112,20 @@ fn setup_ui(commands: &mut Commands, asset_server: Res<AssetServer>) {
                 position: Rect {
                     top: Val::Px(500.0),
                     left: Val::Px(350.0),
-                    ..Default::default()
+                    ..Rect::default()
                 },
-                ..Default::default()
+                ..Style::default()
             },
             text: Text {
                 font: font.clone(),
                 style: TextStyle {
                     font_size: 30.0,
                     color: Color::WHITE,
-                    ..Default::default()
+                    ..TextStyle::default()
                 },
                 value: "Use the AD keys to move across pages".to_string(),
-                ..Default::default()
             },
-            ..Default::default()
+            ..TextBundle::default()
         })
         .with(BodyText(0));
 
@@ -139,21 +138,20 @@ fn setup_ui(commands: &mut Commands, asset_server: Res<AssetServer>) {
                 position: Rect {
                     top: Val::Px(150.0),
                     left: Val::Px(250.0),
-                    ..Default::default()
+                    ..Rect::default()
                 },
-                ..Default::default()
+                ..Style::default()
             },
             text: Text {
-                font: font.clone(),
+                font,
                 style: TextStyle {
                     font_size: 90.0,
                     color: Color::WHITE,
-                    ..Default::default()
+                    ..TextStyle::default()
                 },
                 value: "Thanks for using\nbevy_prototype_lyon!".to_string(),
-                ..Default::default()
             },
-            ..Default::default()
+            ..TextBundle::default()
         })
         .with(BodyText(5));
 }

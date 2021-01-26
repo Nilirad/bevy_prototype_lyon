@@ -12,11 +12,13 @@ pub struct PathBuilder(WithSvg<Builder>);
 
 impl PathBuilder {
     /// Returns a new, empty `PathBuilder`.
+    #[must_use]
     pub fn new() -> Self {
         Self(Builder::new().with_svg())
     }
 
     /// Returns a finalized [`Path`].
+    #[must_use]
     pub fn build(self) -> Path {
         self.0.build()
     }
@@ -59,8 +61,15 @@ impl PathBuilder {
     }
 
     /// Returns the path's current position.
+    #[must_use]
     pub fn current_position(&self) -> Vec2 {
         let p = self.0.current_position();
         Vec2::new(p.x, p.y)
+    }
+}
+
+impl Default for PathBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }

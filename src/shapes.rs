@@ -49,15 +49,14 @@ impl Default for Rectangle {
 
 impl Geometry for Rectangle {
     fn add_geometry(&self, b: &mut Builder) {
-        let origin = {
-            use RectangleOrigin::*;
-            match self.origin {
-                Center => Point::new(-self.width / 2.0, -self.height / 2.0),
-                BottomLeft => Point::new(0.0, 0.0),
-                BottomRight => Point::new(-self.width, 0.0),
-                TopRight => Point::new(-self.width, -self.height),
-                TopLeft => Point::new(0.0, -self.height),
-                CustomCenter(v) => Point::new(v.x - self.width / 2.0, v.y - self.height / 2.0),
+        let origin = match self.origin {
+            RectangleOrigin::Center => Point::new(-self.width / 2.0, -self.height / 2.0),
+            RectangleOrigin::BottomLeft => Point::new(0.0, 0.0),
+            RectangleOrigin::BottomRight => Point::new(-self.width, 0.0),
+            RectangleOrigin::TopRight => Point::new(-self.width, -self.height),
+            RectangleOrigin::TopLeft => Point::new(0.0, -self.height),
+            RectangleOrigin::CustomCenter(v) => {
+                Point::new(v.x - self.width / 2.0, v.y - self.height / 2.0)
             }
         };
 
@@ -172,13 +171,12 @@ pub struct RegularPolygon {
 impl RegularPolygon {
     /// Gets the radius of the polygon.
     fn radius(&self) -> f32 {
-        use RegularPolygonFeature::*;
         let ratio = std::f32::consts::PI / self.sides as f32;
 
         match self.feature {
-            Radius(r) => r,
-            Apothem(a) => a * ratio.tan() / ratio.sin(),
-            SideLength(s) => s / (2.0 * ratio.sin()),
+            RegularPolygonFeature::Radius(r) => r,
+            RegularPolygonFeature::Apothem(a) => a * ratio.tan() / ratio.sin(),
+            RegularPolygonFeature::SideLength(s) => s / (2.0 * ratio.sin()),
         }
     }
 }
@@ -210,9 +208,9 @@ impl Geometry for RegularPolygon {
         let mut points = Vec::with_capacity(self.sides);
         let step = 2.0 * PI / n;
         for i in 0..self.sides {
-            let cur_angle = offset + i as f32 * step;
-            let x = self.center.x + radius * cur_angle.cos();
-            let y = self.center.y + radius * cur_angle.sin();
+            let cur_angle = (i as f32).mul_add(step, offset);
+            let x = radius.mul_add(cur_angle.cos(), self.center.x);
+            let y = radius.mul_add(cur_angle.sin(), self.center.y);
             points.push(point(x, y));
         }
 

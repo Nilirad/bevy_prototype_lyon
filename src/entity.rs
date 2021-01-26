@@ -52,14 +52,14 @@ impl Default for ShapeBundle {
                 is_transparent: true,
             },
             main_pass: MainPass,
-            draw: Default::default(),
+            draw: Draw::default(),
             sprite: Sprite {
                 size: Vec2::new(1.0, 1.0),
-                ..Default::default()
+                ..Sprite::default()
             },
-            material: Default::default(),
-            transform: Default::default(),
-            global_transform: Default::default(),
+            material: Handle::<ColorMaterial>::default(),
+            transform: Transform::default(),
+            global_transform: GlobalTransform::default(),
         }
     }
 }

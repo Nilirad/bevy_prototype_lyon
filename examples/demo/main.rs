@@ -83,7 +83,7 @@ fn physics_showoff(commands: &mut Commands, materials: &mut ResMut<Assets<ColorM
 
         let dir_x = (rng.gen::<f32>() - 0.5) * 2.0; // rand number in [-1.0, 1.0]
         let dir_y = (rng.gen::<f32>() - 0.5) * 2.0;
-        let speed = (rng.gen::<f32>() * 500.0).max(200.0);
+        let speed = (rng.gen::<f32>() * 75.0).max(25.0);
         let vel = Vec2::new(dir_x, dir_y).normalize() * speed;
 
         let rigid_body = RigidBodyBuilder::new_dynamic()

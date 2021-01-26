@@ -62,6 +62,7 @@ pub struct GeometryBuilder(Builder);
 
 impl GeometryBuilder {
     /// Creates a new, empty `GeometryBuilder`.
+    #[must_use]
     pub fn new() -> Self {
         Self(Builder::new())
     }
@@ -79,7 +80,7 @@ impl GeometryBuilder {
     ///     let rectangle = shapes::Rectangle {
     ///         width: 100.0,
     ///         height: 50.0,
-    ///         ..Default::default()
+    ///         ..shapes::Rectangle::default()
     ///     };
     ///     let mut builder = GeometryBuilder::new();
     ///     builder.add(&line).add(&rectangle);
@@ -99,6 +100,7 @@ impl GeometryBuilder {
 
     /// Generates a [`ShapeBundle`] using the data contained in the path
     /// builder.
+    #[must_use]
     pub fn build(
         self,
         material: Handle<ColorMaterial>,
@@ -110,7 +112,7 @@ impl GeometryBuilder {
             material,
             mode,
             transform,
-            ..Default::default()
+            ..ShapeBundle::default()
         }
     }
 
@@ -142,5 +144,11 @@ impl GeometryBuilder {
         let mut multishape = Self::new();
         multishape.add(shape);
         multishape.build(material, mode, transform)
+    }
+}
+
+impl Default for GeometryBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }

@@ -14,13 +14,17 @@
 #![warn(missing_docs, rust_2018_idioms, unused)]
 #![allow(elided_lifetimes_in_paths)]
 // clippy
-#![warn(
-    clippy::all,
-    clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo
-)]
+#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::clippy::clippy::multiple_crate_versions)] // this is a dependency problem
+
+// lints that need revisiting
+
+// TODO: Add lint and fix names
+#![allow(clippy::clippy::module_name_repetitions)]
+
+// Could have many false positives. Uncomment if needed.
+//#![allow(clippy::must_use_candidate)]
 
 pub mod entity;
 pub mod geometry;

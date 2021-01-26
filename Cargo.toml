@@ -1,7 +1,9 @@
 [package]
 authors = ["Federico Rinaldi <gisquerin@gmail.com>"]
-description = "Draw 2D shapes and paths in Bevy."
+categories = ["game-engines", "graphics", "rendering"]
+description = "Draw 2D shapes and paths in the Bevy game engine."
 edition = "2018"
+keywords = ["game", "shapes", "gamedev", "graphics", "bevy"]
 license = "MIT"
 name = "bevy_prototype_lyon"
 readme = "README.md"

@@ -52,13 +52,16 @@ fn camera_controls(
     }
 }
 
-fn move_camera(mut query: Query<(&mut Transform, &CameraTarget), With<WorldCamera>>) {
+fn move_camera(
+    mut query: Query<(&mut Transform, &CameraTarget), With<WorldCamera>>,
+    time: Res<Time>,
+) {
     for (mut camera_transform, target) in query.iter_mut() {
         let camera_x = &mut camera_transform.translation.x;
 
         let remaining_distance = target.0 - *camera_x;
-        let displacement = 0.1 * remaining_distance;
-        *camera_x = if remaining_distance.abs() < 1.0 {
+        let displacement = 5.0 * time.delta_seconds() * remaining_distance;
+        *camera_x = if remaining_distance.abs() < 0.1 {
             target.0
         } else {
             *camera_x + displacement

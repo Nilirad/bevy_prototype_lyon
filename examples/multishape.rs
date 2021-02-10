@@ -29,6 +29,6 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
     let mode = TessellationMode::Stroke(StrokeOptions::default().with_line_width(3.0));
 
     commands
-        .spawn(Camera2dBundle::default())
+        .spawn(OrthographicCameraBundle::new_2d())
         .spawn(multishape.build(material, mode, Transform::default()));
 }

@@ -21,7 +21,7 @@ fn main() {
 }
 
 fn startup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(OrthographicCameraBundle::new_2d());
 
     let circle = shapes::Circle {
         radius: CIRCLE_RADIUS,

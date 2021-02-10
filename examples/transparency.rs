@@ -15,7 +15,7 @@ fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_resource(ClearColor(Color::BLACK))
+        .insert_resource(ClearColor(Color::BLACK))
         .add_startup_system(startup.system())
         .run();
 }

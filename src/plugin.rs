@@ -69,7 +69,7 @@ pub struct ShapePlugin;
 impl Plugin for ShapePlugin {
     fn build(&self, app: &mut AppBuilder) {
         let tessellator = Tessellator::new();
-        app.add_resource(tessellator)
+        app.insert_resource(tessellator)
             .add_stage_after(
                 stage::UPDATE,
                 shape_plugin_stage::SHAPE,

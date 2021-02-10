@@ -41,7 +41,7 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
     };
 
     commands
-        .spawn(Camera2dBundle::default())
+        .spawn(OrthographicCameraBundle::new_2d())
         .spawn(triangle.draw(color.clone(), fill_mode, Transform::default()))
         .spawn(square.draw(color.clone(), fill_mode, Transform::default()))
         .spawn(pentagon.draw(color.clone(), fill_mode, Transform::default()))

@@ -18,7 +18,7 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
         ..Default::default()
     };
 
-    commands.spawn(Camera2dBundle::default()).spawn(circle.draw(
+    commands.spawn(OrthographicCameraBundle::new_2d()).spawn(circle.draw(
         materials.add(ColorMaterial::color(Color::AQUAMARINE)),
         TessellationMode::Fill(FillOptions::default()),
         Transform::default(),

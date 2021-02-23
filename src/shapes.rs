@@ -7,9 +7,15 @@
 use crate::{geometry::Geometry, utils::Convert};
 use bevy::math::Vec2;
 use lyon_tessellation::{
-    math::{point, Angle, Point, Rect, Size},
-    path::{path::Builder, traits::PathBuilder, Polygon as LyonPolygon, Winding},
+    math::{point, Angle, Point, Rect, Size, Vector},
+    path::{
+        builder::WithSvg,
+        path::Builder,
+        traits::{PathBuilder, SvgPathBuilder},
+        ArcFlags, Polygon as LyonPolygon, Winding,
+    },
 };
+use svgtypes::{Path, PathSegment};
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
 #[allow(missing_docs)]
@@ -234,5 +240,151 @@ impl Geometry for Line {
             points: &[self.0.convert(), self.1.convert()],
             closed: false,
         });
+    }
+}
+///An easy way to display svg paths as a shape, takes an svg path string.
+///
+///For documentation on svg paths: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+///
+///You can also take path strings from inkscape .svg files or whatever program
+/// you use that outputs SVG files. Make sure that if you use M/m components,
+/// they are set to 0.0, 0.0 or your art is gonna be offset by a margin, an
+/// example exists in the examples folder
+pub struct SvgPathShape {
+    ///the string that describes the path
+    pub svg_path_string: String,
+}
+impl Geometry for SvgPathShape {
+    fn add_geometry(&self, b: &mut Builder) {
+        let builder = Builder::new();
+        let mut svg_builder = WithSvg::new(builder);
+        let p: Path = self.svg_path_string.parse().unwrap();
+        for path_segment in p.0 {
+            match path_segment {
+                PathSegment::MoveTo { abs, x, y } => {
+                    if abs {
+                        svg_builder.move_to(Point::new(x as f32, y as f32 * -1.));
+                    } else {
+                        svg_builder.relative_move_to(Vector::new(x as f32, y as f32 * -1.));
+                    }
+                }
+                PathSegment::LineTo { abs, x, y } => {
+                    if abs {
+                        svg_builder.line_to(Point::new(x as f32, y as f32 * -1.));
+                    } else {
+                        svg_builder.relative_line_to(Vector::new(x as f32, y as f32 * -1.));
+                    }
+                }
+                PathSegment::HorizontalLineTo { abs, x } => {
+                    if abs {
+                        svg_builder.horizontal_line_to(x as f32);
+                    } else {
+                        svg_builder.relative_horizontal_line_to(x as f32);
+                    }
+                }
+                PathSegment::VerticalLineTo { abs, y } => {
+                    if abs {
+                        svg_builder.vertical_line_to(y as f32 * -1.);
+                    } else {
+                        svg_builder.relative_vertical_line_to(y as f32 * -1.);
+                    }
+                }
+                PathSegment::CurveTo {
+                    abs,
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    x,
+                    y,
+                } => {
+                    if abs {
+                        svg_builder.cubic_bezier_to(
+                            Point::new(x1 as f32, y1 as f32 * -1.),
+                            Point::new(x2 as f32, y2 as f32 * -1.),
+                            Point::new(x as f32, y as f32 * -1.),
+                        );
+                    } else {
+                        svg_builder.relative_cubic_bezier_to(
+                            Vector::new(x1 as f32, y1 as f32 * -1.),
+                            Vector::new(x2 as f32, y2 as f32 * -1.),
+                            Vector::new(x as f32, y as f32 * -1.),
+                        );
+                    }
+                }
+                PathSegment::SmoothCurveTo { abs, x2, y2, x, y } => {
+                    if abs {
+                        svg_builder.smooth_cubic_bezier_to(
+                            Point::new(x2 as f32, y2 as f32 * -1.),
+                            Point::new(x as f32, y as f32 * -1.),
+                        );
+                    } else {
+                        svg_builder.smooth_relative_cubic_bezier_to(
+                            Vector::new(x2 as f32, y2 as f32 * -1.),
+                            Vector::new(x as f32, y as f32 * -1.),
+                        );
+                    }
+                }
+                PathSegment::Quadratic { abs, x1, y1, x, y } => {
+                    if abs {
+                        svg_builder.quadratic_bezier_to(
+                            Point::new(x1 as f32, y1 as f32 * -1.),
+                            Point::new(x as f32, y as f32 * -1.),
+                        );
+                    } else {
+                        svg_builder.relative_quadratic_bezier_to(
+                            Vector::new(x1 as f32, y1 as f32 * -1.),
+                            Vector::new(x as f32, y as f32 * -1.),
+                        );
+                    }
+                }
+                PathSegment::SmoothQuadratic { abs, x, y } => {
+                    if abs {
+                        svg_builder
+                            .smooth_quadratic_bezier_to(Point::new(x as f32, y as f32 * -1.));
+                    } else {
+                        svg_builder.smooth_relative_quadratic_bezier_to(Vector::new(
+                            x as f32,
+                            y as f32 * -1.,
+                        ));
+                    }
+                }
+                PathSegment::EllipticalArc {
+                    abs,
+                    rx,
+                    ry,
+                    x_axis_rotation,
+                    large_arc,
+                    sweep,
+                    x,
+                    y,
+                } => {
+                    if abs {
+                        svg_builder.arc_to(
+                            Vector::new(rx as f32, ry as f32),
+                            Angle {
+                                radians: x_axis_rotation as f32,
+                            },
+                            ArcFlags { sweep, large_arc },
+                            Point::new(x as f32, y as f32 * -1.),
+                        );
+                    } else {
+                        svg_builder.relative_arc_to(
+                            Vector::new(rx as f32, ry as f32),
+                            Angle {
+                                radians: x_axis_rotation as f32,
+                            },
+                            ArcFlags { sweep, large_arc },
+                            Vector::new(x as f32, y as f32 * -1.),
+                        );
+                    }
+                }
+                PathSegment::ClosePath { abs: _ } => {
+                    svg_builder.close();
+                }
+            }
+        }
+        let path = svg_builder.build();
+        b.concatenate(&[path.as_slice()]);
     }
 }

@@ -15,7 +15,7 @@
 //! `ShapeDescriptor` component.
 
 use crate::{build_mesh, Buffers, VertexConstructor};
-use bevy_app::{stage, AppBuilder, Plugin};
+use bevy_app::{AppBuilder, CoreStage, Plugin};
 use bevy_asset::{Assets, Handle};
 use bevy_ecs::{Commands, Entity, IntoSystem, Query, ResMut, SystemStage};
 use bevy_math::Vec2;
@@ -71,7 +71,7 @@ impl Plugin for ShapePlugin {
         let tessellator = Tessellator::new();
         app.insert_resource(tessellator)
             .add_stage_after(
-                stage::UPDATE,
+                CoreStage::Update,
                 shape_plugin_stage::SHAPE,
                 SystemStage::parallel(),
             )

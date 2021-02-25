@@ -3,6 +3,8 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::build()
+        //Added msaa to reduce aliasing
+        .add_resource(Msaa{samples:8})
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_startup_system(startup_system.system())

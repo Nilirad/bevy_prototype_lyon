@@ -4,7 +4,7 @@ use bevy_prototype_lyon::prelude::*;
 fn main() {
     App::build()
         //Added msaa to reduce aliasing
-        .add_resource(Msaa{samples:8})
+        .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_startup_system(startup_system.system())
@@ -20,7 +20,7 @@ struct BuildingBundle {
     global_transform: GlobalTransform,
 }
 fn startup_system(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(OrthographicCameraBundle::new_2d());
 
     commands.spawn(BuildingBundle {
         name: Name("Blacksmith".to_owned()),

@@ -16,7 +16,7 @@ pub struct DemoCameraPlugin;
 
 impl Plugin for DemoCameraPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_resource(Page(0))
+        app.insert_resource(Page(0))
             .add_startup_system(camera_setup.system())
             .add_system(camera_controls.system())
             .add_system(move_camera.system());

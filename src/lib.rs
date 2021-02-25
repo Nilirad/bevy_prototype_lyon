@@ -16,7 +16,8 @@
 // clippy
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(clippy::cast_precision_loss)]
-#![allow(clippy::clippy::clippy::multiple_crate_versions)] // this is a dependency problem
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::multiple_crate_versions)] // this is a dependency problem
 
 // lints that need revisiting
 

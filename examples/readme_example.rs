@@ -19,7 +19,7 @@ fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) 
     };
 
     commands
-        .spawn(Camera2dBundle::default())
+        .spawn(OrthographicCameraBundle::new_2d())
         .spawn(GeometryBuilder::build_as(
             &circle,
             materials.add(ColorMaterial::color(Color::AQUAMARINE)),

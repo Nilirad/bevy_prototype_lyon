@@ -63,8 +63,8 @@ pub struct DemoInspectorPlugin;
 
 impl Plugin for DemoInspectorPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_resource(PolygonInspector::default())
-            .add_resource(MultishapeInspector::default())
+        app.insert_resource(PolygonInspector::default())
+            .insert_resource(MultishapeInspector::default())
             .add_system(update_polygon_inspector.system())
             .add_system(replace_polygon.system())
             .add_system(update_multishape_inspector.system());
@@ -213,7 +213,7 @@ fn update_multishape_inspector(
                     ui.label("scale");
                     ui.add(
                         egui::widgets::DragValue::f32(&mut inspector.scale)
-                            .range(-1.5..=1.5)
+                            .clamp_range(-1.5..=1.5)
                             .speed(0.1),
                     );
                 });

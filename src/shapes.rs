@@ -371,10 +371,14 @@ impl Geometry for SvgPathShape {
                             get_point_after_offset(x, y, offset_x, offset_y),
                         );
                     } else {
+                        /* 
                         svg_builder.relative_quadratic_bezier_to(
                             get_corrected_relative_vector(x1, y1),
                             get_corrected_relative_vector(x, y),
                         );
+                        */
+                        //temporary fix until Lyon 0.17.6(?) comes out
+                        svg_builder.quadratic_bezier_to(svg_builder.current_position()+get_corrected_relative_vector(x1, y1),svg_builder.current_position()+get_corrected_relative_vector(x, y));
                     }
                 }
                 PathSegment::SmoothQuadratic { abs, x, y } => {

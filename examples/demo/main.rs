@@ -1,3 +1,7 @@
+fn main() {}
+
+/* Temporarily disabled example due to outdated dependencies
+
 //! This demo shows the main features of the `bevy_prototype_lyon` library.
 
 // rustc
@@ -227,3 +231,4 @@ fn show_multishape(commands: &mut Commands, materials: &mut ResMut<Assets<ColorM
         ))
         .with(MultishapeTag);
 }
+ */

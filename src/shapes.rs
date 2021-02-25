@@ -245,7 +245,7 @@ impl Geometry for Line {
 ///An easy way to display svg paths as a shape, takes an svg path string and a
 ///document size(Vec2).
 ///
-///For documentation on svg paths: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+///For documentation on svg paths: <https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths>
 ///
 ///Make sure that your units are pixels(px) and that the transform of the \<g\>
 ///in your svg document is set to transform="translate(0,0)" so as to not
@@ -255,7 +255,7 @@ impl Geometry for Line {
 ///1) Go to File>Document Properties>General>Display Units and set it to px
 ///
 ///2) In File>Document Properties>Custom Size>Units set it to px, also, this
-/// size would be used for svg_doc_size_in_px
+/// size would be used for `svg_doc_size_in_px`
 ///
 ///3) In File>Document Properties>Scale>Scale x make sure it is set to 1 User
 /// unit per px
@@ -289,6 +289,7 @@ fn get_corrected_relative_vector(x: f64, y: f64) -> Vector {
     Vector::new(x as f32, get_y_in_bevy_orientation(y))
 }
 impl Geometry for SvgPathShape {
+    #[allow(clippy::clippy::too_many_lines)]
     fn add_geometry(&self, b: &mut Builder) {
         let builder = Builder::new();
         let mut svg_builder = WithSvg::new(builder);
@@ -371,22 +372,28 @@ impl Geometry for SvgPathShape {
                             get_point_after_offset(x, y, offset_x, offset_y),
                         );
                     } else {
-                        /* 
+                        /*
                         svg_builder.relative_quadratic_bezier_to(
                             get_corrected_relative_vector(x1, y1),
                             get_corrected_relative_vector(x, y),
                         );
                         */
                         //temporary fix until Lyon 0.17.6(?) comes out
-                        svg_builder.quadratic_bezier_to(svg_builder.current_position()+get_corrected_relative_vector(x1, y1),svg_builder.current_position()+get_corrected_relative_vector(x, y));
+                        svg_builder.quadratic_bezier_to(
+                            svg_builder.current_position() + get_corrected_relative_vector(x1, y1),
+                            svg_builder.current_position() + get_corrected_relative_vector(x, y),
+                        );
                     }
                 }
                 PathSegment::SmoothQuadratic { abs, x, y } => {
                     if abs {
-                        svg_builder
-                            .smooth_quadratic_bezier_to(get_point_after_offset(x, y, offset_x, offset_y));
+                        svg_builder.smooth_quadratic_bezier_to(get_point_after_offset(
+                            x, y, offset_x, offset_y,
+                        ));
                     } else {
-                        svg_builder.smooth_relative_quadratic_bezier_to(get_corrected_relative_vector(x, y));
+                        svg_builder.smooth_relative_quadratic_bezier_to(
+                            get_corrected_relative_vector(x, y),
+                        );
                     }
                 }
                 PathSegment::EllipticalArc {

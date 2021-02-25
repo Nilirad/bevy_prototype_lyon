@@ -83,10 +83,10 @@ impl Plugin for ShapePlugin {
     fn build(&self, app: &mut AppBuilder) {
         let fill_tess = FillTessellator::new();
         let stroke_tess = StrokeTessellator::new();
-        app.add_resource(fill_tess)
-            .add_resource(stroke_tess)
+        app.insert_resource(fill_tess)
+            .insert_resource(stroke_tess)
             .add_stage_after(
-                bevy::app::stage::UPDATE,
+                bevy::app::CoreStage::Update,
                 stage::SHAPE,
                 SystemStage::parallel(),
             )

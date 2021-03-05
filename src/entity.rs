@@ -3,7 +3,7 @@
 use crate::utils::TessellationMode;
 use bevy::{
     asset::Handle,
-    ecs::Bundle,
+    ecs::bundle::Bundle,
     math::Vec2,
     render::{
         draw::{Draw, Visible},

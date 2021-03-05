@@ -19,7 +19,7 @@ struct BuildingBundle {
     transform: Transform,
     global_transform: GlobalTransform,
 }
-fn startup_system(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
     commands.spawn(OrthographicCameraBundle::new_2d());
 
     commands.spawn(BuildingBundle {

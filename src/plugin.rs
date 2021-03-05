@@ -15,7 +15,10 @@ use crate::{entity::Processed, utils::TessellationMode};
 use bevy::{
     app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
-    ecs::{IntoSystem, Query, ResMut, SystemStage},
+    ecs::{
+        schedule::SystemStage,
+        system::{IntoSystem, Query, ResMut},
+    },
     log::error,
     render::{
         draw::Visible,

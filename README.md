@@ -9,6 +9,7 @@
 
 `bevy_prototype_lyon` enables [**Bevy**](https://bevyengine.org) users to draw 2D shapes and paths, like triangles, circles, rectangles, lines, arcs and beziers.
 
+[**Try out the live demo!**](https://nilirad.github.io/bevy_prototype_lyon_showcase/)
 ![Regular polygon demo](docs/polygon_demo.webp)
 
 ## How does it work?

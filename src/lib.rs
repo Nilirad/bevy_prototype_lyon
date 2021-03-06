@@ -31,6 +31,7 @@ pub mod entity;
 pub mod geometry;
 pub mod path;
 pub mod plugin;
+pub mod render;
 pub mod shapes;
 pub mod utils;
 

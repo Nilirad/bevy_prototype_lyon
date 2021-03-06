@@ -1,6 +1,6 @@
 //! Custom Bevy [`Bundle`] for shapes.
 
-use crate::utils::TessellationMode;
+use crate::{render::SHAPE_PIPELINE_HANDLE, utils::TessellationMode};
 use bevy::{
     asset::Handle,
     ecs::bundle::Bundle,
@@ -11,7 +11,7 @@ use bevy::{
         pipeline::{RenderPipeline, RenderPipelines},
         render_graph::base::MainPass,
     },
-    sprite::{ColorMaterial, Sprite, QUAD_HANDLE, SPRITE_PIPELINE_HANDLE},
+    sprite::{ColorMaterial, Sprite, QUAD_HANDLE},
     transform::components::{GlobalTransform, Transform},
 };
 use lyon_tessellation::{path::Path, FillOptions};
@@ -45,7 +45,7 @@ impl Default for ShapeBundle {
             processed: Processed(false),
             mesh: QUAD_HANDLE.typed(),
             render_pipelines: RenderPipelines::from_pipelines(vec![RenderPipeline::new(
-                SPRITE_PIPELINE_HANDLE.typed(),
+                SHAPE_PIPELINE_HANDLE.typed(),
             )]),
             visible: Visible {
                 is_visible: false,

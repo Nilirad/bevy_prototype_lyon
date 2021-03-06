@@ -84,7 +84,7 @@ impl Default for Circle {
     fn default() -> Self {
         Self {
             radius: 1.0,
-            center: Vec2::zero(),
+            center: Vec2::ZERO,
         }
     }
 }
@@ -105,8 +105,8 @@ pub struct Ellipse {
 impl Default for Ellipse {
     fn default() -> Self {
         Self {
-            radii: Vec2::one(),
-            center: Vec2::zero(),
+            radii: Vec2::ONE,
+            center: Vec2::ZERO,
         }
     }
 }
@@ -191,7 +191,7 @@ impl Default for RegularPolygon {
     fn default() -> Self {
         Self {
             sides: 3,
-            center: Vec2::zero(),
+            center: Vec2::ZERO,
             feature: RegularPolygonFeature::Radius(1.0),
         }
     }

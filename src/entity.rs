@@ -5,11 +5,14 @@ use bevy::{
     asset::Handle,
     ecs::bundle::Bundle,
     math::Vec2,
+    reflect::TypeUuid,
     render::{
+        color::Color,
         draw::{Draw, Visible},
         mesh::Mesh,
         pipeline::{RenderPipeline, RenderPipelines},
         render_graph::base::MainPass,
+        renderer::RenderResources,
     },
     sprite::{ColorMaterial, Sprite, QUAD_HANDLE},
     transform::components::{GlobalTransform, Transform},
@@ -57,4 +60,10 @@ impl Default for ShapeBundle {
             global_transform: GlobalTransform::default(),
         }
     }
+}
+
+#[derive(RenderResources, Default, TypeUuid)]
+#[uuid = "370d078f-e13b-48d8-b12a-954ba887afcb"]
+struct ShapeMaterial {
+    pub color: Color,
 }

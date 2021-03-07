@@ -44,13 +44,12 @@ type IndexType = u32;
 /// Lyon's [`VertexBuffers`] generic data type defined for [`Vertex`].
 type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
 
+// TODO: Turn into a tuple struct.
 /// A vertex with all the necessary attributes to be inserted into a Bevy
 /// [`Mesh`](bevy::render::mesh::Mesh).
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct Vertex {
     position: [f32; 3],
-    normal: [f32; 3],
-    uv: [f32; 2],
 }
 
 /// Zero-sized type used to implement various vertex construction traits from
@@ -62,8 +61,6 @@ impl FillVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
         Vertex {
             position: [vertex.position().x, vertex.position().y, 0.0],
-            normal: [0.0, 0.0, 1.0],
-            uv: [0.0, 0.0],
         }
     }
 }
@@ -73,8 +70,6 @@ impl StrokeVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
         Vertex {
             position: [vertex.position().x, vertex.position().y, 0.0],
-            normal: [0.0, 0.0, 1.0],
-            uv: [0.0, 0.0],
         }
     }
 }
@@ -146,22 +141,6 @@ fn build_mesh(buffers: &VertexBuffers) -> Mesh {
             .iter()
             .map(|v| v.position)
             .collect::<Vec<[f32; 3]>>(),
-    );
-    mesh.set_attribute(
-        Mesh::ATTRIBUTE_NORMAL,
-        buffers
-            .vertices
-            .iter()
-            .map(|v| v.normal)
-            .collect::<Vec<[f32; 3]>>(),
-    );
-    mesh.set_attribute(
-        Mesh::ATTRIBUTE_UV_0,
-        buffers
-            .vertices
-            .iter()
-            .map(|v| v.uv)
-            .collect::<Vec<[f32; 2]>>(),
     );
 
     mesh

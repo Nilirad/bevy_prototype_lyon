@@ -16,16 +16,12 @@ use bevy::{
 };
 use lyon_tessellation::{path::Path, FillOptions};
 
-/// Component that marks a [`ShapeBundle`] as completed or not.
-pub struct Processed(pub bool);
-
 /// A Bevy [`Bundle`] to represent a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {
     pub path: Path,
     pub mode: TessellationMode,
-    pub processed: Processed,
     pub sprite: Sprite,
     pub mesh: Handle<Mesh>,
     pub material: Handle<ColorMaterial>,
@@ -42,7 +38,6 @@ impl Default for ShapeBundle {
         Self {
             path: Path::new(),
             mode: TessellationMode::Fill(FillOptions::default()),
-            processed: Processed(false),
             mesh: QUAD_HANDLE.typed(),
             render_pipelines: RenderPipelines::from_pipelines(vec![RenderPipeline::new(
                 SHAPE_PIPELINE_HANDLE.typed(),

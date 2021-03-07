@@ -11,7 +11,7 @@
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 
-use crate::{entity::Processed, utils::TessellationMode};
+use crate::utils::TessellationMode;
 use bevy::{
     app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
@@ -20,6 +20,7 @@ use bevy::{
         system::{IntoSystem, Query, ResMut},
     },
     log::error,
+    prelude::Added,
     render::{
         draw::Visible,
         mesh::{Indices, Mesh},
@@ -104,19 +105,9 @@ fn complete_shape_bundle(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<(
-        &TessellationMode,
-        &Path,
-        &mut Handle<Mesh>,
-        &mut Visible,
-        &mut Processed,
-    )>,
+    mut query: Query<(&TessellationMode, &Path, &mut Handle<Mesh>, &mut Visible), Added<Path>>,
 ) {
-    for (tess_mode, path, mut mesh, mut visible, mut processed) in query.iter_mut() {
-        if processed.0 {
-            continue;
-        }
-
+    for (tess_mode, path, mut mesh, mut visible) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 
         match tess_mode {
@@ -142,7 +133,6 @@ fn complete_shape_bundle(
 
         *mesh = meshes.add(build_mesh(&buffers));
         visible.is_visible = true;
-        *processed = Processed(true);
     }
 }
 

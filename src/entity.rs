@@ -17,14 +17,14 @@ use bevy::{
 };
 use lyon_tessellation::{path::Path, FillOptions};
 
-use crate::{render::SHAPE_PIPELINE_HANDLE, utils::TessellationMode};
+use crate::{render::SHAPE_PIPELINE_HANDLE, utils::DrawMode};
 
 /// A Bevy [`Bundle`] to represent a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {
     pub path: Path,
-    pub mode: TessellationMode,
+    pub mode: DrawMode,
     pub mesh: Handle<Mesh>,
     pub material: Handle<ShapeMaterial>,
     pub main_pass: MainPass,
@@ -39,7 +39,7 @@ impl Default for ShapeBundle {
     fn default() -> Self {
         Self {
             path: Path::new(),
-            mode: TessellationMode::Fill(FillOptions::default()),
+            mode: DrawMode::Fill(FillOptions::default()),
             mesh: QUAD_HANDLE.typed(),
             render_pipelines: RenderPipelines::from_pipelines(vec![RenderPipeline::new(
                 SHAPE_PIPELINE_HANDLE.typed(),

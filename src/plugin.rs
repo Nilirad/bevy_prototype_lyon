@@ -31,7 +31,7 @@ use lyon_tessellation::{
     StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
 };
 
-use crate::{entity::ShapeMaterial, utils::TessellationMode};
+use crate::{entity::ShapeMaterial, utils::DrawMode};
 
 /// Stages for this plugin.
 pub mod stage {
@@ -95,13 +95,13 @@ fn complete_shape_bundle(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<(&TessellationMode, &Path, &mut Handle<Mesh>, &mut Visible), Added<Path>>,
+    mut query: Query<(&DrawMode, &Path, &mut Handle<Mesh>, &mut Visible), Added<Path>>,
 ) {
     for (tess_mode, path, mut mesh, mut visible) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 
         match tess_mode {
-            TessellationMode::Fill(ref options) => {
+            DrawMode::Fill(ref options) => {
                 if let Err(e) = fill_tess.tessellate_path(
                     path,
                     options,
@@ -110,7 +110,7 @@ fn complete_shape_bundle(
                     error!("FillTessellator error: {:?}", e);
                 }
             }
-            TessellationMode::Stroke(ref options) => {
+            DrawMode::Stroke(ref options) => {
                 if let Err(e) = stroke_tess.tessellate_path(
                     path,
                     options,

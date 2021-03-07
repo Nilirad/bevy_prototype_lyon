@@ -42,7 +42,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ShapeMate
             },
 
             materials.add(ShapeMaterial::new(Color::BLACK)),
-            TessellationMode::Stroke(StrokeOptions::default().with_line_width(4.)),
+            DrawMode::Stroke(StrokeOptions::default().with_line_width(4.)),
             Transform::default()
         ))
         .with(GlobalTransform::default())
@@ -53,7 +53,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ShapeMate
             },
 
             materials.add(ShapeMaterial::new(Color::BLACK)),
-            TessellationMode::Stroke(StrokeOptions::default().with_line_width(2.5)),
+            DrawMode::Stroke(StrokeOptions::default().with_line_width(2.5)),
             Transform::default()
         ))
         .with(GlobalTransform::default());
@@ -78,7 +78,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ShapeMate
             },
 
             materials.add(ShapeMaterial::new(Color::BLACK)),
-            TessellationMode::Stroke(StrokeOptions::default().with_line_width(20.)),
+            DrawMode::Stroke(StrokeOptions::default().with_line_width(20.)),
             Transform::default()
         ))
         .with(GlobalTransform::default())
@@ -89,7 +89,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ShapeMate
             },
 
             materials.add(ShapeMaterial::new(Color::BLACK)),
-            TessellationMode::Stroke(StrokeOptions::default().with_line_width(17.5)),
+            DrawMode::Stroke(StrokeOptions::default().with_line_width(17.5)),
             Transform::default()
         ))
         .with(GlobalTransform::default());

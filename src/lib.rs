@@ -48,6 +48,6 @@ pub mod prelude {
         path::PathBuilder,
         plugin::ShapePlugin,
         shapes,
-        utils::TessellationMode,
+        utils::DrawMode,
     };
 }

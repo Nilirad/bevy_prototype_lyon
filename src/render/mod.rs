@@ -16,8 +16,6 @@ use bevy::{
     },
 };
 
-use crate::prelude::ShapeMaterial;
-
 #[allow(missing_docs, clippy::unreadable_literal)]
 pub const SHAPE_PIPELINE_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(PipelineDescriptor::TYPE_UUID, 3868147544761532180);
@@ -75,26 +73,9 @@ fn build_shape_pipeline(mut shaders: ResMut<Assets<Shader>>) -> PipelineDescript
     }
 }
 
-/// Render nodes for this crate.
-pub mod node {
-    #![allow(missing_docs)]
-
-    pub const SHAPE_MATERIAL: &str = "bevy_prototype_lyon:shape_material";
-}
-
 pub(crate) fn add_shape_pipeline(
     mut pipelines: ResMut<Assets<PipelineDescriptor>>,
-    mut render_graph: ResMut<RenderGraph>,
     shaders: ResMut<Assets<Shader>>,
 ) {
     pipelines.set_untracked(SHAPE_PIPELINE_HANDLE, build_shape_pipeline(shaders));
-
-    render_graph.add_system_node(
-        node::SHAPE_MATERIAL,
-        AssetRenderResourcesNode::<ShapeMaterial>::new(true),
-    );
-
-    render_graph
-        .add_node_edge(node::SHAPE_MATERIAL, base::node::MAIN_PASS)
-        .unwrap();
 }

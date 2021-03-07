@@ -31,10 +31,7 @@ use lyon_tessellation::{
     StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
 };
 
-use crate::{
-    entity::{ShapeColors, ShapeMaterial},
-    utils::DrawMode,
-};
+use crate::{entity::ShapeColors, utils::DrawMode};
 
 /// Stages for this plugin.
 pub mod stage {
@@ -100,8 +97,7 @@ impl Plugin for ShapePlugin {
     fn build(&self, app: &mut AppBuilder) {
         let fill_tess = FillTessellator::new();
         let stroke_tess = StrokeTessellator::new();
-        app.add_asset::<ShapeMaterial>()
-            .insert_resource(fill_tess)
+        app.insert_resource(fill_tess)
             .insert_resource(stroke_tess)
             .add_stage_after(
                 bevy::app::CoreStage::Update,

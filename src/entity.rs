@@ -48,7 +48,6 @@ pub struct ShapeBundle {
     pub mode: DrawMode,
     pub mesh: Handle<Mesh>,
     pub colors: ShapeColors,
-    pub material: Handle<ShapeMaterial>,
     pub main_pass: MainPass,
     pub draw: Draw,
     pub visible: Visible,
@@ -76,25 +75,8 @@ impl Default for ShapeBundle {
                 main: Color::WHITE,
                 outline: Color::BLACK,
             },
-            material: Handle::<ShapeMaterial>::default(),
             transform: Transform::default(),
             global_transform: GlobalTransform::default(),
         }
-    }
-}
-
-/// Defines the color of the shape
-#[derive(RenderResources, Default, TypeUuid)]
-#[uuid = "370d078f-e13b-48d8-b12a-954ba887afcb"]
-pub struct ShapeMaterial {
-    #[allow(missing_docs)]
-    pub color: Color,
-}
-
-impl ShapeMaterial {
-    /// Creates a `ShapeMaterial` with the specified `Color`.
-    #[must_use]
-    pub const fn new(color: Color) -> Self {
-        Self { color }
     }
 }

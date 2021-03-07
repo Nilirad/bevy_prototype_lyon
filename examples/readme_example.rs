@@ -6,13 +6,14 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::build()
+        .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_startup_system(setup.system())
         .run();
 }
 
-fn setup(mut commands: Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
+fn setup(mut commands: Commands) {
     let circle = shapes::Circle {
         radius: 100.0,
         ..shapes::Circle::default()
@@ -22,8 +23,11 @@ fn setup(mut commands: Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
         .spawn(OrthographicCameraBundle::new_2d())
         .spawn(GeometryBuilder::build_as(
             &circle,
-            materials.add(ShapeMaterial::new(Color::AQUAMARINE)),
-            DrawMode::Fill(FillOptions::default()),
+            ShapeColors::outlined(Color::GOLD, Color::BLACK),
+            DrawMode::Outlined {
+                fill_options: FillOptions::default(),
+                outline_options: StrokeOptions::default().with_line_width(5.0),
+            },
             Transform::default(),
         ));
 }

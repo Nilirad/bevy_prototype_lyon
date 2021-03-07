@@ -39,6 +39,7 @@ pub mod utils;
 /// convenient imports.
 pub mod prelude {
     pub use crate::{
+        entity::ShapeMaterial,
         geometry::{Geometry, GeometryBuilder},
         path::PathBuilder,
         plugin::ShapePlugin,

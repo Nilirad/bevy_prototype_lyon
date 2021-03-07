@@ -1,9 +1,12 @@
 //! Types for defining and using geometries.
 
-use bevy::{asset::Handle, sprite::ColorMaterial, transform::components::Transform};
+use bevy::{asset::Handle, transform::components::Transform};
 use lyon_tessellation::path::{path::Builder, Path};
 
-use crate::{entity::ShapeBundle, utils::TessellationMode};
+use crate::{
+    entity::{ShapeBundle, ShapeMaterial},
+    utils::TessellationMode,
+};
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -75,7 +78,7 @@ impl GeometryBuilder {
     /// use bevy::prelude::*;
     /// use bevy_prototype_lyon::prelude::*;
     ///
-    /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+    /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
     ///     let line = shapes::Line(Vec2::zero(), Vec2::new(10.0, 0.0));
     ///     let rectangle = shapes::Rectangle {
     ///         width: 100.0,
@@ -86,7 +89,7 @@ impl GeometryBuilder {
     ///     builder.add(&line).add(&rectangle);
     ///
     ///     commands.spawn(builder.build(
-    ///         materials.add(ColorMaterial::color(Color::ORANGE_RED)),
+    ///         materials.add(ShapeMaterial::color(Color::ORANGE_RED)),
     ///         TessellationMode::Fill(FillOptions::default()),
     ///         Transform::default(),
     ///     ));
@@ -103,7 +106,7 @@ impl GeometryBuilder {
     #[must_use]
     pub fn build(
         self,
-        material: Handle<ColorMaterial>,
+        material: Handle<ShapeMaterial>,
         mode: TessellationMode,
         transform: Transform,
     ) -> ShapeBundle {
@@ -125,11 +128,11 @@ impl GeometryBuilder {
     /// use bevy::prelude::*;
     /// use bevy_prototype_lyon::prelude::*;
     ///
-    /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+    /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
     ///     let line = shapes::Line(Vec2::zero(), Vec2::new(10.0, 0.0));
     ///     commands.spawn(GeometryBuilder::build_as(
     ///         &line,
-    ///         materials.add(ColorMaterial::color(Color::ORANGE_RED)),
+    ///         materials.add(ShapeMaterial::color(Color::ORANGE_RED)),
     ///         TessellationMode::Fill(FillOptions::default()),
     ///         Transform::default(),
     ///     ));
@@ -137,7 +140,7 @@ impl GeometryBuilder {
     /// ```
     pub fn build_as(
         shape: &impl Geometry,
-        material: Handle<ColorMaterial>,
+        material: Handle<ShapeMaterial>,
         mode: TessellationMode,
         transform: Transform,
     ) -> ShapeBundle {

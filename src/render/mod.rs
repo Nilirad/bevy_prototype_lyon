@@ -11,10 +11,13 @@ use bevy::{
             CullMode, DepthBiasState, DepthStencilState, FrontFace, PipelineDescriptor,
             PolygonMode, PrimitiveState, PrimitiveTopology, StencilFaceState, StencilState,
         },
+        render_graph::{base, AssetRenderResourcesNode, RenderGraph},
         shader::{Shader, ShaderStage, ShaderStages},
         texture::TextureFormat,
     },
 };
+
+use crate::prelude::ShapeMaterial;
 
 #[allow(clippy::unreadable_literal)]
 pub const SHAPE_PIPELINE_HANDLE: HandleUntyped =
@@ -74,12 +77,22 @@ fn build_shape_pipeline(mut shaders: ResMut<Assets<Shader>>) -> PipelineDescript
 }
 
 pub mod node {
-    pub const SHAPE: &str = "bevy_prototype_lyon:shape";
+    pub const SHAPE_MATERIAL: &str = "bevy_prototype_lyon:shape_material";
 }
 
 pub(crate) fn add_shape_pipeline(
     mut pipelines: ResMut<Assets<PipelineDescriptor>>,
+    mut render_graph: ResMut<RenderGraph>,
     shaders: ResMut<Assets<Shader>>,
 ) {
     pipelines.set_untracked(SHAPE_PIPELINE_HANDLE, build_shape_pipeline(shaders));
+
+    render_graph.add_system_node(
+        node::SHAPE_MATERIAL,
+        AssetRenderResourcesNode::<ShapeMaterial>::new(true),
+    );
+
+    render_graph
+        .add_node_edge(node::SHAPE_MATERIAL, base::node::MAIN_PASS)
+        .unwrap();
 }

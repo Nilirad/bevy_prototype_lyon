@@ -19,7 +19,7 @@ struct BuildingBundle {
     transform: Transform,
     global_transform: GlobalTransform,
 }
-fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
     commands.spawn(OrthographicCameraBundle::new_2d());
 
     commands.spawn(BuildingBundle {
@@ -41,7 +41,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ColorMate
                 svg_doc_size_in_px:svg_doc_size.to_owned()
             },
 
-            materials.add(ColorMaterial::color(Color::BLACK)),
+            materials.add(ShapeMaterial::new(Color::BLACK)),
             TessellationMode::Stroke(StrokeOptions::default().with_line_width(4.)),
             Transform::default()
         ))
@@ -52,7 +52,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ColorMate
                 svg_doc_size_in_px:svg_doc_size.to_owned()
             },
 
-            materials.add(ColorMaterial::color(Color::BLACK)),
+            materials.add(ShapeMaterial::new(Color::BLACK)),
             TessellationMode::Stroke(StrokeOptions::default().with_line_width(2.5)),
             Transform::default()
         ))
@@ -77,7 +77,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ColorMate
                 svg_doc_size_in_px:svg_doc_size.to_owned()
             },
 
-            materials.add(ColorMaterial::color(Color::BLACK)),
+            materials.add(ShapeMaterial::new(Color::BLACK)),
             TessellationMode::Stroke(StrokeOptions::default().with_line_width(20.)),
             Transform::default()
         ))
@@ -88,7 +88,7 @@ fn startup_system(mut commands: Commands, mut materials: ResMut<Assets<ColorMate
                 svg_doc_size_in_px:svg_doc_size.to_owned()
             },
 
-            materials.add(ColorMaterial::color(Color::BLACK)),
+            materials.add(ShapeMaterial::new(Color::BLACK)),
             TessellationMode::Stroke(StrokeOptions::default().with_line_width(17.5)),
             Transform::default()
         ))

@@ -19,7 +19,7 @@ use bevy::{
         system::{IntoSystem, Query, ResMut},
     },
     log::error,
-    prelude::{AddAsset, Added},
+    prelude::{AddAsset, Added, Color},
     render::{
         draw::Visible,
         mesh::{Indices, Mesh},
@@ -31,7 +31,10 @@ use lyon_tessellation::{
     StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
 };
 
-use crate::{entity::ShapeMaterial, utils::DrawMode};
+use crate::{
+    entity::{ShapeColors, ShapeMaterial},
+    utils::DrawMode,
+};
 
 /// Stages for this plugin.
 pub mod stage {
@@ -48,23 +51,44 @@ type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
 /// A vertex with all the necessary attributes to be inserted into a Bevy
 /// [`Mesh`](bevy::render::mesh::Mesh).
 #[derive(Debug, Clone, Copy, PartialEq)]
-struct Vertex([f32; 3]);
+struct Vertex {
+    position: [f32; 3],
+    color: [f32; 4],
+}
 
 /// Zero-sized type used to implement various vertex construction traits from
 /// Lyon.
-struct VertexConstructor;
+struct VertexConstructor {
+    color: Color,
+}
 
 /// Enables the construction of a [`Vertex`] when using a `FillTessellator`.
 impl FillVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
-        Vertex([vertex.position().x, vertex.position().y, 0.0])
+        Vertex {
+            position: [vertex.position().x, vertex.position().y, 0.0],
+            color: [
+                self.color.r(),
+                self.color.g(),
+                self.color.b(),
+                self.color.a(),
+            ],
+        }
     }
 }
 
 /// Enables the construction of a [`Vertex`] when using a `StrokeTessellator`.
 impl StrokeVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
-        Vertex([vertex.position().x, vertex.position().y, 0.0])
+        Vertex {
+            position: [vertex.position().x, vertex.position().y, 0.0],
+            color: [
+                self.color.r(),
+                self.color.g(),
+                self.color.b(),
+                self.color.a(),
+            ],
+        }
     }
 }
 
@@ -95,9 +119,18 @@ fn complete_shape_bundle(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<(&DrawMode, &Path, &mut Handle<Mesh>, &mut Visible), Added<Path>>,
+    mut query: Query<
+        (
+            &DrawMode,
+            &Path,
+            &mut Handle<Mesh>,
+            &ShapeColors,
+            &mut Visible,
+        ),
+        Added<Path>,
+    >,
 ) {
-    for (tess_mode, path, mut mesh, mut visible) in query.iter_mut() {
+    for (tess_mode, path, mut mesh, colors, mut visible) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 
         match tess_mode {
@@ -105,7 +138,10 @@ fn complete_shape_bundle(
                 if let Err(e) = fill_tess.tessellate_path(
                     path,
                     options,
-                    &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
+                    &mut BuffersBuilder::new(
+                        &mut buffers,
+                        VertexConstructor { color: colors.main },
+                    ),
                 ) {
                     error!("FillTessellator error: {:?}", e);
                 }
@@ -114,7 +150,37 @@ fn complete_shape_bundle(
                 if let Err(e) = stroke_tess.tessellate_path(
                     path,
                     options,
-                    &mut BuffersBuilder::new(&mut buffers, VertexConstructor),
+                    &mut BuffersBuilder::new(
+                        &mut buffers,
+                        VertexConstructor { color: colors.main },
+                    ),
+                ) {
+                    error!("StrokeTessellator error: {:?}", e);
+                }
+            }
+            DrawMode::Outlined {
+                fill_options,
+                outline_options,
+            } => {
+                if let Err(e) = fill_tess.tessellate_path(
+                    path,
+                    fill_options,
+                    &mut BuffersBuilder::new(
+                        &mut buffers,
+                        VertexConstructor { color: colors.main },
+                    ),
+                ) {
+                    error!("FillTessellator error: {:?}", e);
+                }
+                if let Err(e) = stroke_tess.tessellate_path(
+                    path,
+                    outline_options,
+                    &mut BuffersBuilder::new(
+                        &mut buffers,
+                        VertexConstructor {
+                            color: colors.outline,
+                        },
+                    ),
                 ) {
                     error!("StrokeTessellator error: {:?}", e);
                 }
@@ -134,8 +200,16 @@ fn build_mesh(buffers: &VertexBuffers) -> Mesh {
         buffers
             .vertices
             .iter()
-            .map(|v| v.0)
+            .map(|v| v.position)
             .collect::<Vec<[f32; 3]>>(),
+    );
+    mesh.set_attribute(
+        Mesh::ATTRIBUTE_COLOR,
+        buffers
+            .vertices
+            .iter()
+            .map(|v| v.color)
+            .collect::<Vec<[f32; 4]>>(),
     );
 
     mesh

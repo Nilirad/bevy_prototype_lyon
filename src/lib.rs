@@ -43,7 +43,7 @@ pub mod prelude {
     };
 
     pub use crate::{
-        entity::ShapeMaterial,
+        entity::{ShapeColors, ShapeMaterial},
         geometry::{Geometry, GeometryBuilder},
         path::PathBuilder,
         plugin::ShapePlugin,

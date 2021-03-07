@@ -19,6 +19,27 @@ use lyon_tessellation::{path::Path, FillOptions};
 
 use crate::{render::SHAPE_PIPELINE_HANDLE, utils::DrawMode};
 
+pub struct ShapeColors {
+    pub main: Color,
+    pub outline: Color,
+}
+
+impl ShapeColors {
+    pub fn new(color: Color) -> Self {
+        Self {
+            main: color,
+            outline: Color::BLACK,
+        }
+    }
+
+    pub fn outlined(fill: Color, outline: Color) -> Self {
+        Self {
+            main: fill,
+            outline,
+        }
+    }
+}
+
 /// A Bevy [`Bundle`] to represent a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
@@ -26,6 +47,7 @@ pub struct ShapeBundle {
     pub path: Path,
     pub mode: DrawMode,
     pub mesh: Handle<Mesh>,
+    pub colors: ShapeColors,
     pub material: Handle<ShapeMaterial>,
     pub main_pass: MainPass,
     pub draw: Draw,
@@ -50,6 +72,10 @@ impl Default for ShapeBundle {
             },
             main_pass: MainPass,
             draw: Draw::default(),
+            colors: ShapeColors {
+                main: Color::WHITE,
+                outline: Color::BLACK,
+            },
             material: Handle::<ShapeMaterial>::default(),
             transform: Transform::default(),
             global_transform: GlobalTransform::default(),

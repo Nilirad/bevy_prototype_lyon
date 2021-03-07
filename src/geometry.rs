@@ -79,7 +79,7 @@ impl GeometryBuilder {
     /// use bevy_prototype_lyon::prelude::*;
     ///
     /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
-    ///     let line = shapes::Line(Vec2::zero(), Vec2::new(10.0, 0.0));
+    ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
     ///     let rectangle = shapes::Rectangle {
     ///         width: 100.0,
     ///         height: 50.0,
@@ -89,7 +89,7 @@ impl GeometryBuilder {
     ///     builder.add(&line).add(&rectangle);
     ///
     ///     commands.spawn(builder.build(
-    ///         materials.add(ShapeMaterial::color(Color::ORANGE_RED)),
+    ///         materials.add(ShapeMaterial::new(Color::ORANGE_RED)),
     ///         TessellationMode::Fill(FillOptions::default()),
     ///         Transform::default(),
     ///     ));
@@ -129,10 +129,10 @@ impl GeometryBuilder {
     /// use bevy_prototype_lyon::prelude::*;
     ///
     /// fn some_system(commands: &mut Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
-    ///     let line = shapes::Line(Vec2::zero(), Vec2::new(10.0, 0.0));
+    ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
     ///     commands.spawn(GeometryBuilder::build_as(
     ///         &line,
-    ///         materials.add(ShapeMaterial::color(Color::ORANGE_RED)),
+    ///         materials.add(ShapeMaterial::new(Color::ORANGE_RED)),
     ///         TessellationMode::Fill(FillOptions::default()),
     ///         Transform::default(),
     ///     ));

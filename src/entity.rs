@@ -4,7 +4,6 @@ use crate::{render::SHAPE_PIPELINE_HANDLE, utils::TessellationMode};
 use bevy::{
     asset::Handle,
     ecs::bundle::Bundle,
-    math::Vec2,
     reflect::TypeUuid,
     render::{
         color::Color,
@@ -14,7 +13,7 @@ use bevy::{
         render_graph::base::MainPass,
         renderer::RenderResources,
     },
-    sprite::{Sprite, QUAD_HANDLE},
+    sprite::QUAD_HANDLE,
     transform::components::{GlobalTransform, Transform},
 };
 use lyon_tessellation::{path::Path, FillOptions};
@@ -25,7 +24,6 @@ use lyon_tessellation::{path::Path, FillOptions};
 pub struct ShapeBundle {
     pub path: Path,
     pub mode: TessellationMode,
-    pub sprite: Sprite,
     pub mesh: Handle<Mesh>,
     pub material: Handle<ShapeMaterial>,
     pub main_pass: MainPass,
@@ -51,10 +49,6 @@ impl Default for ShapeBundle {
             },
             main_pass: MainPass,
             draw: Draw::default(),
-            sprite: Sprite {
-                size: Vec2::new(1.0, 1.0),
-                ..Sprite::default()
-            },
             material: Handle::<ShapeMaterial>::default(),
             transform: Transform::default(),
             global_transform: GlobalTransform::default(),

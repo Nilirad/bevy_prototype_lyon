@@ -20,9 +20,12 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Formatting test
-        run: rustup component add rustfmt; cargo +nightly fmt --all -- --check
+      - name: fmt
         if: ${{ matrix.toolchain == 'nightly' }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
 
       - uses: actions/checkout@v2
       

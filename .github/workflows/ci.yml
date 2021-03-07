@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Formatting test
-        run: cargo fmt --all -- --check
+        run: rustup component add rustfmt; cargo fmt +nightly --all -- --check
 
       - uses: actions/checkout@v2
       

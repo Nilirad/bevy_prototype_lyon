@@ -14,7 +14,7 @@ use bevy::{
         render_graph::base::MainPass,
         renderer::RenderResources,
     },
-    sprite::{ColorMaterial, Sprite, QUAD_HANDLE},
+    sprite::{Sprite, QUAD_HANDLE},
     transform::components::{GlobalTransform, Transform},
 };
 use lyon_tessellation::{path::Path, FillOptions};
@@ -27,7 +27,7 @@ pub struct ShapeBundle {
     pub mode: TessellationMode,
     pub sprite: Sprite,
     pub mesh: Handle<Mesh>,
-    pub material: Handle<ColorMaterial>,
+    pub material: Handle<ShapeMaterial>,
     pub main_pass: MainPass,
     pub draw: Draw,
     pub visible: Visible,
@@ -55,7 +55,7 @@ impl Default for ShapeBundle {
                 size: Vec2::new(1.0, 1.0),
                 ..Sprite::default()
             },
-            material: Handle::<ColorMaterial>::default(),
+            material: Handle::<ShapeMaterial>::default(),
             transform: Transform::default(),
             global_transform: GlobalTransform::default(),
         }
@@ -64,6 +64,12 @@ impl Default for ShapeBundle {
 
 #[derive(RenderResources, Default, TypeUuid)]
 #[uuid = "370d078f-e13b-48d8-b12a-954ba887afcb"]
-struct ShapeMaterial {
+pub struct ShapeMaterial {
     pub color: Color,
+}
+
+impl ShapeMaterial {
+    pub fn new(color: Color) -> Self {
+        Self { color }
+    }
 }

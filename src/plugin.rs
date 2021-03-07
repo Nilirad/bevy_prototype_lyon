@@ -11,7 +11,7 @@
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 
-use crate::utils::TessellationMode;
+use crate::{entity::ShapeMaterial, utils::TessellationMode};
 use bevy::{
     app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
@@ -20,7 +20,7 @@ use bevy::{
         system::{IntoSystem, Query, ResMut},
     },
     log::error,
-    prelude::Added,
+    prelude::{AddAsset, Added},
     render::{
         draw::Visible,
         mesh::{Indices, Mesh},
@@ -82,7 +82,8 @@ impl Plugin for ShapePlugin {
     fn build(&self, app: &mut AppBuilder) {
         let fill_tess = FillTessellator::new();
         let stroke_tess = StrokeTessellator::new();
-        app.insert_resource(fill_tess)
+        app.add_asset::<ShapeMaterial>()
+            .insert_resource(fill_tess)
             .insert_resource(stroke_tess)
             .add_stage_after(
                 bevy::app::CoreStage::Update,

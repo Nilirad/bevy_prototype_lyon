@@ -12,7 +12,7 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+fn setup(mut commands: Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
     let circle = shapes::Circle {
         radius: 100.0,
         ..shapes::Circle::default()
@@ -22,7 +22,7 @@ fn setup(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
         .spawn(OrthographicCameraBundle::new_2d())
         .spawn(GeometryBuilder::build_as(
             &circle,
-            materials.add(ColorMaterial::color(Color::AQUAMARINE)),
+            materials.add(ShapeMaterial::new(Color::AQUAMARINE)),
             TessellationMode::Fill(FillOptions::default()),
             Transform::default(),
         ));

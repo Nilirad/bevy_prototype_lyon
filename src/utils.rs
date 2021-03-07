@@ -6,9 +6,9 @@ use lyon_tessellation::{
     FillOptions, StrokeOptions,
 };
 
-/// Determines if a shape must be filled or stroked.
+/// Determines how a shape is drawn.
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum TessellationMode {
+pub enum DrawMode {
     /// The shape will be filled with the provided [`FillOptions`].
     Fill(FillOptions),
     /// The shape will be filled with the provided [`StrokeOptions`].

@@ -23,7 +23,7 @@ fn setup(mut commands: Commands, mut materials: ResMut<Assets<ShapeMaterial>>) {
         .spawn(GeometryBuilder::build_as(
             &circle,
             materials.add(ShapeMaterial::new(Color::AQUAMARINE)),
-            TessellationMode::Fill(FillOptions::default()),
+            DrawMode::Fill(FillOptions::default()),
             Transform::default(),
         ));
 }

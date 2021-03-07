@@ -5,7 +5,7 @@ use lyon_tessellation::path::{path::Builder, Path};
 
 use crate::{
     entity::{ShapeBundle, ShapeMaterial},
-    utils::TessellationMode,
+    utils::DrawMode,
 };
 
 /// Structs that implement this trait can be drawn as a shape. See the
@@ -107,7 +107,7 @@ impl GeometryBuilder {
     pub fn build(
         self,
         material: Handle<ShapeMaterial>,
-        mode: TessellationMode,
+        mode: DrawMode,
         transform: Transform,
     ) -> ShapeBundle {
         ShapeBundle {
@@ -141,7 +141,7 @@ impl GeometryBuilder {
     pub fn build_as(
         shape: &impl Geometry,
         material: Handle<ShapeMaterial>,
-        mode: TessellationMode,
+        mode: DrawMode,
         transform: Transform,
     ) -> ShapeBundle {
         let mut multishape = Self::new();

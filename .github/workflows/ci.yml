@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Formatting test
         run: rustup component add rustfmt; cargo +nightly fmt --all -- --check
-        if: toolchain == 'nightly'
+        if: ${{ matrix.toolchain == 'nightly' }}
 
       - uses: actions/checkout@v2
       

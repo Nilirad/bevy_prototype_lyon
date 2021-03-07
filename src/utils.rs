@@ -6,13 +6,20 @@ use lyon_tessellation::{
     FillOptions, StrokeOptions,
 };
 
-/// Determines how a shape is drawn.
+/// Determines how a shape will be drawn.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DrawMode {
     /// The shape will be filled with the provided [`FillOptions`].
     Fill(FillOptions),
     /// The shape will be filled with the provided [`StrokeOptions`].
     Stroke(StrokeOptions),
+    /// The shape will be filled with the provided [`FillOptions`], then stroked
+    /// with the [`StrokeOptions`], creating a shape with an outline.
+    #[allow(missing_docs)]
+    Outlined {
+        fill_options: FillOptions,
+        outline_options: StrokeOptions,
+    },
 }
 
 /// A locally defined [`std::convert::Into`] surrogate to overcome orphan rules.

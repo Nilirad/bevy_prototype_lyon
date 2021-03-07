@@ -28,7 +28,7 @@ jobs:
           components: rustfmt, clippy
           override: true
       - name: fmt
-        if: ${{ matrix.toolchain == 'nightly' }}
+        if: ${{ matrix.toolchain == 'nightly' && runner.os == 'linux' }}
         uses: actions-rs/cargo@v1
         with:
           command: fmt

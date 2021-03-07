@@ -3,10 +3,7 @@
 use bevy::{asset::Handle, transform::components::Transform};
 use lyon_tessellation::path::{path::Builder, Path};
 
-use crate::{
-    entity::{ShapeBundle, ShapeMaterial},
-    utils::DrawMode,
-};
+use crate::{entity::ShapeBundle, prelude::ShapeColors, utils::DrawMode};
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -104,15 +101,10 @@ impl GeometryBuilder {
     /// Generates a [`ShapeBundle`] using the data contained in the path
     /// builder.
     #[must_use]
-    pub fn build(
-        self,
-        material: Handle<ShapeMaterial>,
-        mode: DrawMode,
-        transform: Transform,
-    ) -> ShapeBundle {
+    pub fn build(self, colors: ShapeColors, mode: DrawMode, transform: Transform) -> ShapeBundle {
         ShapeBundle {
             path: self.0.build(),
-            material,
+            colors,
             mode,
             transform,
             ..ShapeBundle::default()
@@ -140,13 +132,13 @@ impl GeometryBuilder {
     /// ```
     pub fn build_as(
         shape: &impl Geometry,
-        material: Handle<ShapeMaterial>,
+        colors: ShapeColors,
         mode: DrawMode,
         transform: Transform,
     ) -> ShapeBundle {
         let mut multishape = Self::new();
         multishape.add(shape);
-        multishape.build(material, mode, transform)
+        multishape.build(colors, mode, transform)
     }
 }
 

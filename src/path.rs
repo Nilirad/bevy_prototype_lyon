@@ -1,11 +1,12 @@
 //! Interface to build custom paths.
 
-use crate::utils::Convert;
 use bevy::math::Vec2;
 use lyon_tessellation::{
     geom::Angle,
     path::{builder::WithSvg, path::Builder, EndpointId, Path},
 };
+
+use crate::utils::Convert;
 
 /// A SVG-like path builder.
 pub struct PathBuilder(WithSvg<Builder>);

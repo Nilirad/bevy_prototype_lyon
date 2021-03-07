@@ -11,7 +11,6 @@
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 
-use crate::{entity::ShapeMaterial, utils::TessellationMode};
 use bevy::{
     app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
@@ -31,6 +30,8 @@ use lyon_tessellation::{
     self as tess, path::Path, BuffersBuilder, FillTessellator, FillVertex, FillVertexConstructor,
     StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
 };
+
+use crate::{entity::ShapeMaterial, utils::TessellationMode};
 
 /// Stages for this plugin.
 pub mod stage {

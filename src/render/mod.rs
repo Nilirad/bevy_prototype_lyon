@@ -1,5 +1,4 @@
-// TODO: Add docs and remove.
-#![allow(missing_docs)]
+//! Render graph settings.
 
 use bevy::{
     asset::{Assets, HandleUntyped},
@@ -19,7 +18,7 @@ use bevy::{
 
 use crate::prelude::ShapeMaterial;
 
-#[allow(clippy::unreadable_literal)]
+#[allow(missing_docs, clippy::unreadable_literal)]
 pub const SHAPE_PIPELINE_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(PipelineDescriptor::TYPE_UUID, 3868147544761532180);
 
@@ -76,7 +75,10 @@ fn build_shape_pipeline(mut shaders: ResMut<Assets<Shader>>) -> PipelineDescript
     }
 }
 
+/// Render nodes for this crate.
 pub mod node {
+    #![allow(missing_docs)]
+
     pub const SHAPE_MATERIAL: &str = "bevy_prototype_lyon:shape_material";
 }
 

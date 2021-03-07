@@ -56,14 +56,18 @@ impl Default for ShapeBundle {
     }
 }
 
+/// Defines the color of the shape
 #[derive(RenderResources, Default, TypeUuid)]
 #[uuid = "370d078f-e13b-48d8-b12a-954ba887afcb"]
 pub struct ShapeMaterial {
+    #[allow(missing_docs)]
     pub color: Color,
 }
 
 impl ShapeMaterial {
-    pub fn new(color: Color) -> Self {
+    /// Creates a `ShapeMaterial` with the specified `Color`.
+    #[must_use]
+    pub const fn new(color: Color) -> Self {
         Self { color }
     }
 }

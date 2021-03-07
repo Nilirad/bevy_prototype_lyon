@@ -44,13 +44,10 @@ type IndexType = u32;
 /// Lyon's [`VertexBuffers`] generic data type defined for [`Vertex`].
 type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
 
-// TODO: Turn into a tuple struct.
 /// A vertex with all the necessary attributes to be inserted into a Bevy
 /// [`Mesh`](bevy::render::mesh::Mesh).
 #[derive(Debug, Clone, Copy, PartialEq)]
-struct Vertex {
-    position: [f32; 3],
-}
+struct Vertex([f32; 3]);
 
 /// Zero-sized type used to implement various vertex construction traits from
 /// Lyon.
@@ -59,18 +56,14 @@ struct VertexConstructor;
 /// Enables the construction of a [`Vertex`] when using a `FillTessellator`.
 impl FillVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
-        Vertex {
-            position: [vertex.position().x, vertex.position().y, 0.0],
-        }
+        Vertex([vertex.position().x, vertex.position().y, 0.0])
     }
 }
 
 /// Enables the construction of a [`Vertex`] when using a `StrokeTessellator`.
 impl StrokeVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
-        Vertex {
-            position: [vertex.position().x, vertex.position().y, 0.0],
-        }
+        Vertex([vertex.position().x, vertex.position().y, 0.0])
     }
 }
 
@@ -140,7 +133,7 @@ fn build_mesh(buffers: &VertexBuffers) -> Mesh {
         buffers
             .vertices
             .iter()
-            .map(|v| v.position)
+            .map(|v| v.0)
             .collect::<Vec<[f32; 3]>>(),
     );
 

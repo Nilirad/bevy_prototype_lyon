@@ -38,6 +38,10 @@ pub mod utils;
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
 /// convenient imports.
 pub mod prelude {
+    pub use lyon_tessellation::{
+        FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
+    };
+
     pub use crate::{
         entity::ShapeMaterial,
         geometry::{Geometry, GeometryBuilder},
@@ -45,8 +49,5 @@ pub mod prelude {
         plugin::ShapePlugin,
         shapes,
         utils::TessellationMode,
-    };
-    pub use lyon_tessellation::{
-        FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
     };
 }

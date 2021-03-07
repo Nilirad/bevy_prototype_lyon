@@ -4,7 +4,6 @@
 //! [`Geometry`](crate::geometry::Geometry) trait. You can also implement
 //! the trait for your own shapes.
 
-use crate::{geometry::Geometry, utils::Convert};
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{point, Angle, Point, Rect, Size, Vector},
@@ -16,6 +15,8 @@ use lyon_tessellation::{
     },
 };
 use svgtypes::{Path, PathSegment};
+
+use crate::{geometry::Geometry, utils::Convert};
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
 #[allow(missing_docs)]

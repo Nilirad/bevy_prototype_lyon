@@ -1,6 +1,5 @@
 //! Custom Bevy [`Bundle`] for shapes.
 
-use crate::{render::SHAPE_PIPELINE_HANDLE, utils::TessellationMode};
 use bevy::{
     asset::Handle,
     ecs::bundle::Bundle,
@@ -17,6 +16,8 @@ use bevy::{
     transform::components::{GlobalTransform, Transform},
 };
 use lyon_tessellation::{path::Path, FillOptions};
+
+use crate::{render::SHAPE_PIPELINE_HANDLE, utils::TessellationMode};
 
 /// A Bevy [`Bundle`] to represent a shape.
 #[allow(missing_docs)]

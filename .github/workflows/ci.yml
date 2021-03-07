@@ -20,14 +20,6 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: fmt
-        if: ${{ matrix.toolchain == 'nightly' }}
-        uses: actions-rs/cargo@v1
-        with:
-          components: rustfmt
-          command: fmt
-          args: --all -- --check
-
       - uses: actions/checkout@v2
       
       - uses: actions-rs/toolchain@v1
@@ -35,12 +27,19 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           components: rustfmt, clippy
           override: true
+      - name: fmt
+        if: ${{ matrix.toolchain == 'nightly' }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
           
       - name: Install alsa and udev
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
         if: runner.os == 'linux'
         
-      - uses: actions-rs/clippy-check@v1
+      - name: lint
+        uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-targets --all-features -- -D warnings

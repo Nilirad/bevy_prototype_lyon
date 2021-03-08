@@ -5,9 +5,9 @@
 //!
 //! ## How it works
 //! The user spawns a [`ShapeBundle`](crate::entity::ShapeBundle) from a
-//! system in the [`UPDATE`](bevy::app::stage::UPDATE) stage.
+//! system in the `UPDATE` stage.
 //!
-//! Then, in the [`SHAPE`](stage::SHAPE) stage, there is a system
+//! Then, in [`Stage::Shape`] stage, there is a system
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 

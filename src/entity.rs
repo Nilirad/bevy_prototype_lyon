@@ -1,4 +1,4 @@
-//! Custom Bevy [`Bundle`] for shapes.
+//! Custom Bevy ECS bundle for shapes.
 
 use bevy::{
     asset::Handle,
@@ -46,7 +46,7 @@ impl ShapeColors {
     }
 }
 
-/// A Bevy [`Bundle`] to represent a shape.
+/// A Bevy `Bundle` to represent a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {

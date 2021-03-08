@@ -3,7 +3,10 @@
 use bevy::transform::components::Transform;
 use lyon_tessellation::path::{path::Builder, Path};
 
-use crate::{entity::ShapeBundle, prelude::ShapeColors, utils::DrawMode};
+use crate::{
+    entity::{ShapeBundle, ShapeColors},
+    utils::DrawMode,
+};
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.

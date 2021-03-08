@@ -15,12 +15,13 @@ use bevy::{
     app::{AppBuilder, Plugin},
     asset::{Assets, Handle},
     ecs::{
+        query::Added,
         schedule::SystemStage,
         system::{IntoSystem, Query, ResMut},
     },
     log::error,
-    prelude::{Added, Color},
     render::{
+        color::Color,
         draw::Visible,
         mesh::{Indices, Mesh},
         pipeline::PrimitiveTopology,

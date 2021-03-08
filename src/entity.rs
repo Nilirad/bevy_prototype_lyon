@@ -3,14 +3,12 @@
 use bevy::{
     asset::Handle,
     ecs::bundle::Bundle,
-    reflect::TypeUuid,
     render::{
         color::Color,
         draw::{Draw, Visible},
         mesh::Mesh,
         pipeline::{RenderPipeline, RenderPipelines},
         render_graph::base::MainPass,
-        renderer::RenderResources,
     },
     sprite::QUAD_HANDLE,
     transform::components::{GlobalTransform, Transform},
@@ -19,20 +17,28 @@ use lyon_tessellation::{path::Path, FillOptions};
 
 use crate::{render::SHAPE_PIPELINE_HANDLE, utils::DrawMode};
 
+/// The colors assigned to a shape.
 pub struct ShapeColors {
+    /// The main color of the shape. It is the only color for fill and stroke
+    /// shapes, and the fill color for the outlined shapes.
     pub main: Color,
+    /// The outline color of the shape.
     pub outline: Color,
 }
 
 impl ShapeColors {
-    pub fn new(color: Color) -> Self {
+    /// Creates a `ShapeColors` structure with only one color.
+    #[must_use]
+    pub const fn new(color: Color) -> Self {
         Self {
             main: color,
             outline: Color::BLACK,
         }
     }
 
-    pub fn outlined(fill: Color, outline: Color) -> Self {
+    /// Creates a complete `ShapeColor`, with main and outline colors.
+    #[must_use]
+    pub const fn outlined(fill: Color, outline: Color) -> Self {
         Self {
             main: fill,
             outline,

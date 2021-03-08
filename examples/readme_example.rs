@@ -14,19 +14,20 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    let circle = shapes::Circle {
-        radius: 100.0,
-        ..shapes::Circle::default()
+    let shape = shapes::RegularPolygon {
+        sides: 6,
+        feature: shapes::RegularPolygonFeature::Radius(200.0),
+        ..shapes::RegularPolygon::default()
     };
 
     commands
         .spawn(OrthographicCameraBundle::new_2d())
         .spawn(GeometryBuilder::build_as(
-            &circle,
-            ShapeColors::outlined(Color::GOLD, Color::BLACK),
+            &shape,
+            ShapeColors::outlined(Color::TEAL, Color::BLACK),
             DrawMode::Outlined {
                 fill_options: FillOptions::default(),
-                outline_options: StrokeOptions::default().with_line_width(5.0),
+                outline_options: StrokeOptions::default().with_line_width(10.0),
             },
             Transform::default(),
         ));

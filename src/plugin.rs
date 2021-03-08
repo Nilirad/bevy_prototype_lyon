@@ -16,7 +16,7 @@ use bevy::{
     asset::{Assets, Handle},
     ecs::{
         query::Added,
-        schedule::SystemStage,
+        schedule::{StageLabel, SystemStage},
         system::{IntoSystem, Query, ResMut},
     },
     log::error,
@@ -36,10 +36,11 @@ use tess::{FillOptions, StrokeOptions};
 use crate::{entity::ShapeColors, utils::DrawMode};
 
 /// Stages for this plugin.
-pub mod stage {
+#[derive(Debug, Clone, Eq, Hash, PartialEq, StageLabel)]
+pub enum Stage {
     /// The stage where the [`ShapeBundle`](crate::entity::ShapeBundle) gets
     /// completed.
-    pub const SHAPE: &str = "shape";
+    Shape,
 }
 
 /// The index type of a Bevy [`Mesh`](bevy::render::mesh::Mesh).
@@ -103,11 +104,11 @@ impl Plugin for ShapePlugin {
             .insert_resource(stroke_tess)
             .add_stage_after(
                 bevy::app::CoreStage::Update,
-                stage::SHAPE,
+                Stage::Shape,
                 SystemStage::parallel(),
             )
             .add_startup_system(crate::render::add_shape_pipeline.system())
-            .add_system_to_stage(stage::SHAPE, complete_shape_bundle.system());
+            .add_system_to_stage(Stage::Shape, complete_shape_bundle.system());
     }
 }
 

@@ -1,6 +1,6 @@
 //! Types for defining and using geometries.
 
-use bevy::{transform::components::Transform};
+use bevy::transform::components::Transform;
 use lyon_tessellation::path::{path::Builder, Path};
 
 use crate::{entity::ShapeBundle, prelude::ShapeColors, utils::DrawMode};

@@ -19,7 +19,7 @@ use bevy::{
         system::{IntoSystem, Query, ResMut},
     },
     log::error,
-    prelude::{AddAsset, Added, Color},
+    prelude::{Added, Color},
     render::{
         draw::Visible,
         mesh::{Indices, Mesh},
@@ -30,6 +30,7 @@ use lyon_tessellation::{
     self as tess, path::Path, BuffersBuilder, FillTessellator, FillVertex, FillVertexConstructor,
     StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
 };
+use tess::{FillOptions, StrokeOptions};
 
 use crate::{entity::ShapeColors, utils::DrawMode};
 
@@ -111,6 +112,7 @@ impl Plugin for ShapePlugin {
 
 /// A bevy system. Queries all the [`ShapeBundle`]s to complete them with a
 /// mesh.
+#[allow(clippy::type_complexity)]
 fn complete_shape_bundle(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
@@ -130,61 +132,79 @@ fn complete_shape_bundle(
         let mut buffers = VertexBuffers::new();
 
         match tess_mode {
-            DrawMode::Fill(ref options) => {
-                if let Err(e) = fill_tess.tessellate_path(
-                    path,
-                    options,
-                    &mut BuffersBuilder::new(
-                        &mut buffers,
-                        VertexConstructor { color: colors.main },
-                    ),
-                ) {
-                    error!("FillTessellator error: {:?}", e);
-                }
+            DrawMode::Fill(options) => {
+                fill(&mut fill_tess, path, options, &mut buffers, colors.main);
             }
-            DrawMode::Stroke(ref options) => {
-                if let Err(e) = stroke_tess.tessellate_path(
-                    path,
-                    options,
-                    &mut BuffersBuilder::new(
-                        &mut buffers,
-                        VertexConstructor { color: colors.main },
-                    ),
-                ) {
-                    error!("StrokeTessellator error: {:?}", e);
-                }
+            DrawMode::Stroke(options) => {
+                stroke(&mut stroke_tess, path, options, &mut buffers, colors.main);
             }
             DrawMode::Outlined {
                 fill_options,
                 outline_options,
             } => {
-                if let Err(e) = fill_tess.tessellate_path(
+                fill(
+                    &mut fill_tess,
                     path,
                     fill_options,
-                    &mut BuffersBuilder::new(
-                        &mut buffers,
-                        VertexConstructor { color: colors.main },
-                    ),
-                ) {
-                    error!("FillTessellator error: {:?}", e);
-                }
-                if let Err(e) = stroke_tess.tessellate_path(
+                    &mut buffers,
+                    colors.main,
+                );
+                stroke(
+                    &mut stroke_tess,
                     path,
                     outline_options,
-                    &mut BuffersBuilder::new(
-                        &mut buffers,
-                        VertexConstructor {
-                            color: colors.outline,
-                        },
-                    ),
-                ) {
-                    error!("StrokeTessellator error: {:?}", e);
-                }
+                    &mut buffers,
+                    colors.outline,
+                );
             }
         }
 
         *mesh = meshes.add(build_mesh(&buffers));
         visible.is_visible = true;
+    }
+}
+
+#[allow(clippy::clippy::trivially_copy_pass_by_ref)] // lyon takes &FillOptions
+fn fill(
+    tess: &mut ResMut<FillTessellator>,
+    path: &Path,
+    options: &FillOptions,
+    buffers: &mut VertexBuffers,
+    vertex_color: Color,
+) {
+    if let Err(e) = tess.tessellate_path(
+        path,
+        options,
+        &mut BuffersBuilder::new(
+            buffers,
+            VertexConstructor {
+                color: vertex_color,
+            },
+        ),
+    ) {
+        error!("FillTessellator error: {:?}", e);
+    }
+}
+
+#[allow(clippy::clippy::trivially_copy_pass_by_ref)] // lyon takes &StrokeOptions
+fn stroke(
+    tess: &mut ResMut<StrokeTessellator>,
+    path: &Path,
+    options: &StrokeOptions,
+    buffers: &mut VertexBuffers,
+    vertex_color: Color,
+) {
+    if let Err(e) = tess.tessellate_path(
+        path,
+        options,
+        &mut BuffersBuilder::new(
+            buffers,
+            VertexConstructor {
+                color: vertex_color,
+            },
+        ),
+    ) {
+        error!("StrokeTessellator error: {:?}", e);
     }
 }
 

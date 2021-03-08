@@ -10,7 +10,6 @@ use bevy::{
             CullMode, DepthBiasState, DepthStencilState, FrontFace, PipelineDescriptor,
             PolygonMode, PrimitiveState, PrimitiveTopology, StencilFaceState, StencilState,
         },
-        render_graph::{base, AssetRenderResourcesNode, RenderGraph},
         shader::{Shader, ShaderStage, ShaderStages},
         texture::TextureFormat,
     },

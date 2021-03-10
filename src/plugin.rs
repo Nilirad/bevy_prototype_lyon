@@ -211,7 +211,7 @@ fn stroke(
 }
 
 fn build_mesh(buffers: &VertexBuffers) -> Mesh {
-    pub const ATTRIBUTE_POSITION_2D: &'static str = "Vertex_Position_2D";
+    pub const ATTRIBUTE_POSITION_2D: &str = "Vertex_Position_2D";
 
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));

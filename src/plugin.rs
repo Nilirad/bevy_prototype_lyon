@@ -52,7 +52,7 @@ type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
 /// [`Mesh`](bevy::render::mesh::Mesh).
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct Vertex {
-    position: [f32; 3],
+    position: [f32; 2],
     color: [f32; 4],
 }
 
@@ -66,7 +66,7 @@ struct VertexConstructor {
 impl FillVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
         Vertex {
-            position: [vertex.position().x, vertex.position().y, 0.0],
+            position: [vertex.position().x, vertex.position().y],
             color: [
                 self.color.r(),
                 self.color.g(),
@@ -81,7 +81,7 @@ impl FillVertexConstructor<Vertex> for VertexConstructor {
 impl StrokeVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
         Vertex {
-            position: [vertex.position().x, vertex.position().y, 0.0],
+            position: [vertex.position().x, vertex.position().y],
             color: [
                 self.color.r(),
                 self.color.g(),
@@ -211,15 +211,17 @@ fn stroke(
 }
 
 fn build_mesh(buffers: &VertexBuffers) -> Mesh {
+    pub const ATTRIBUTE_POSITION_2D: &'static str = "Vertex_Position_2D";
+
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
     mesh.set_attribute(
-        Mesh::ATTRIBUTE_POSITION,
+        ATTRIBUTE_POSITION_2D,
         buffers
             .vertices
             .iter()
             .map(|v| v.position)
-            .collect::<Vec<[f32; 3]>>(),
+            .collect::<Vec<[f32; 2]>>(),
     );
     mesh.set_attribute(
         Mesh::ATTRIBUTE_COLOR,

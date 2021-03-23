@@ -20,15 +20,14 @@ fn setup(mut commands: Commands) {
         ..shapes::RegularPolygon::default()
     };
 
-    commands
-        .spawn(OrthographicCameraBundle::new_2d())
-        .spawn(GeometryBuilder::build_as(
-            &shape,
-            ShapeColors::outlined(Color::TEAL, Color::BLACK),
-            DrawMode::Outlined {
-                fill_options: FillOptions::default(),
-                outline_options: StrokeOptions::default().with_line_width(10.0),
-            },
-            Transform::default(),
-        ));
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands.spawn_bundle(GeometryBuilder::build_as(
+        &shape,
+        ShapeColors::outlined(Color::TEAL, Color::BLACK),
+        DrawMode::Outlined {
+            fill_options: FillOptions::default(),
+            outline_options: StrokeOptions::default().with_line_width(10.0),
+        },
+        Transform::default(),
+    ));
 }

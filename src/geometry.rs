@@ -88,7 +88,7 @@ impl GeometryBuilder {
     ///     let mut builder = GeometryBuilder::new();
     ///     builder.add(&line).add(&rectangle);
     ///
-    ///     commands.spawn(builder.build(
+    ///     commands.spawn_bundle(builder.build(
     ///         ShapeColors::new(Color::ORANGE_RED),
     ///         DrawMode::Fill(FillOptions::default()),
     ///         Transform::default(),
@@ -125,7 +125,7 @@ impl GeometryBuilder {
     ///
     /// fn some_system(commands: &mut Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
-    ///     commands.spawn(GeometryBuilder::build_as(
+    ///     commands.spawn_bundle(GeometryBuilder::build_as(
     ///         &line,
     ///         ShapeColors::new(Color::ORANGE_RED),
     ///         DrawMode::Fill(FillOptions::default()),

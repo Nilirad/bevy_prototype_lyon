@@ -18,6 +18,9 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ### Changelog
 
+#### 0.3.0
+- Works with bevy 0.5
+
 #### 0.2.0
 - Complete API reworking
 - Regular polygon support

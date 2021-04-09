@@ -44,26 +44,30 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::build()
+        .insert_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_startup_system(setup.system())
         .run();
 }
 
-fn setup(commands: &mut Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    let circle = shapes::Circle {
-        radius: 100.0,
-        ..shapes::Circle::default()
+fn setup(mut commands: Commands) {
+    let shape = shapes::RegularPolygon {
+        sides: 6,
+        feature: shapes::RegularPolygonFeature::Radius(200.0),
+        ..shapes::RegularPolygon::default()
     };
 
-    commands
-        .spawn(Camera2dBundle::default())
-        .spawn(GeometryBuilder::build_as(
-            &circle,
-            materials.add(ColorMaterial::color(Color::AQUAMARINE)),
-            TessellationMode::Fill(FillOptions::default()),
-            Transform::default(),
-        ));
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands.spawn_bundle(GeometryBuilder::build_as(
+        &shape,
+        ShapeColors::outlined(Color::TEAL, Color::BLACK),
+        DrawMode::Outlined {
+            fill_options: FillOptions::default(),
+            outline_options: StrokeOptions::default().with_line_width(10.0),
+        },
+        Transform::default(),
+    ));
 }
 ```
 

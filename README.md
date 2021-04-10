@@ -16,14 +16,16 @@
 
 Currently Bevy does not support drawing custom shapes in an easy way. This crate uses a variation of Bevy's `SpriteBundle` with custom meshes to draw shapes. The [**lyon**](https://docs.rs/lyon_tessellation) crate is used to generate those custom mesh.
 
-### Changelog
+## Changelog
+### 0.3.0
+- Support for Bevy 0.5
 
-#### 0.2.0
+### 0.2.0
 - Complete API reworking
 - Regular polygon support
 - Extensible shape system through `Geometry` trait
 
-#### 0.1.5
+### 0.1.5
 - updated dependency to `lyon_tessellation v0.17`
 - with `lyon_tessellation v0.17`, unfortunately rectangles with rounded borders are no longer supported.
 - `Quad`, `Triangle` and `Polyline` have been substituted by a general-purpose `Polygon` shape.
@@ -33,7 +35,7 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.2"
+bevy_prototype_lyon = "0.3"
 ```
 
 Then, you can start by drawing simple shapes:
@@ -72,3 +74,14 @@ fn setup(mut commands: Commands) {
 ```
 
 Don't forget to check out the [examples](examples/) to learn more!
+
+## Bevy versions supported
+
+I strive to support the latest version of Bevy. Support for a version of Bevy is dropped as soon as a new one is released.
+
+The following table shows the latest version of `bevy_prototype_lyon` that supports a certain version of Bevy.
+
+|bevy|bevy_prototype_lyon|
+|---|---|
+|0.5|0.3|
+|0.4|0.2|

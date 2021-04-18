@@ -1,10 +1,6 @@
 //! Render graph settings.
 
-use bevy::{
-    asset::{Assets, HandleUntyped},
-    ecs::system::ResMut,
-    reflect::TypeUuid,
-    render::{
+use bevy::{asset::{Assets, HandleUntyped}, prelude::World, reflect::TypeUuid, render::{
         pipeline::{
             BlendFactor, BlendOperation, BlendState, ColorTargetState, ColorWrite, CompareFunction,
             CullMode, DepthBiasState, DepthStencilState, FrontFace, PipelineDescriptor,
@@ -12,14 +8,13 @@ use bevy::{
         },
         shader::{Shader, ShaderStage, ShaderStages},
         texture::TextureFormat,
-    },
-};
+    }};
 
 #[allow(missing_docs, clippy::unreadable_literal)]
 pub const SHAPE_PIPELINE_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(PipelineDescriptor::TYPE_UUID, 3868147544761532180);
 
-fn build_shape_pipeline(mut shaders: ResMut<Assets<Shader>>) -> PipelineDescriptor {
+fn build_shape_pipeline(shaders: &mut Assets<Shader>) -> PipelineDescriptor {
     PipelineDescriptor {
         depth_stencil: Some(DepthStencilState {
             format: TextureFormat::Depth32Float,
@@ -62,19 +57,29 @@ fn build_shape_pipeline(mut shaders: ResMut<Assets<Shader>>) -> PipelineDescript
         ..PipelineDescriptor::new(ShaderStages {
             vertex: shaders.add(Shader::from_glsl(
                 ShaderStage::Vertex,
-                include_str!("shape.vert"),
+                if cfg!(target_arch = "wasm32") {
+                    include_str!("shape.es.vert")
+                } else {
+                    include_str!("shape.vert")
+                },
             )),
             fragment: Some(shaders.add(Shader::from_glsl(
                 ShaderStage::Fragment,
-                include_str!("shape.frag"),
+                if cfg!(target_arch = "wasm32") {
+                    include_str!("shape.es.frag")
+                } else {
+                    include_str!("shape.frag")
+                },
             ))),
         })
     }
 }
 
-pub(crate) fn add_shape_pipeline(
-    mut pipelines: ResMut<Assets<PipelineDescriptor>>,
-    shaders: ResMut<Assets<Shader>>,
-) {
-    pipelines.set_untracked(SHAPE_PIPELINE_HANDLE, build_shape_pipeline(shaders));
+pub(crate) fn add_shape_pipeline(world: &mut World) {
+    let world = world.cell();
+    let mut pipelines = world
+        .get_resource_mut::<Assets<PipelineDescriptor>>()
+        .unwrap();
+    let mut shaders = world.get_resource_mut::<Assets<Shader>>().unwrap();
+    pipelines.set_untracked(SHAPE_PIPELINE_HANDLE, build_shape_pipeline(&mut shaders));
 }

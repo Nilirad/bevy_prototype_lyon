@@ -1,6 +1,10 @@
 //! Render graph settings.
 
-use bevy::{asset::{Assets, HandleUntyped}, prelude::World, reflect::TypeUuid, render::{
+use bevy::{
+    asset::{Assets, HandleUntyped},
+    prelude::World,
+    reflect::TypeUuid,
+    render::{
         pipeline::{
             BlendFactor, BlendOperation, BlendState, ColorTargetState, ColorWrite, CompareFunction,
             CullMode, DepthBiasState, DepthStencilState, FrontFace, PipelineDescriptor,
@@ -8,7 +12,8 @@ use bevy::{asset::{Assets, HandleUntyped}, prelude::World, reflect::TypeUuid, re
         },
         shader::{Shader, ShaderStage, ShaderStages},
         texture::TextureFormat,
-    }};
+    },
+};
 
 #[allow(missing_docs, clippy::unreadable_literal)]
 pub const SHAPE_PIPELINE_HANDLE: HandleUntyped =

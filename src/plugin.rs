@@ -108,7 +108,7 @@ impl Plugin for ShapePlugin {
                 SystemStage::parallel(),
             )
             .add_system_to_stage(Stage::Shape, complete_shape_bundle.system());
-        
+
         crate::render::add_shape_pipeline(app.world_mut());
     }
 }

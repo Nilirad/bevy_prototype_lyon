@@ -17,8 +17,13 @@
 Currently Bevy does not support drawing custom shapes in an easy way. This crate uses a variation of Bevy's `SpriteBundle` with custom meshes to draw shapes. The [**lyon**](https://docs.rs/lyon_tessellation) crate is used to generate those custom mesh.
 
 ## Changelog
+
+### 0.3.1
+- Restored support for bevy_webgl2 (lost on v0.3.0).
+
 ### 0.3.0
 - Support for Bevy 0.5
+- Shapes with outline
 
 ### 0.2.0
 - Complete API reworking
@@ -35,7 +40,7 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.3"
+bevy_prototype_lyon = "0.3.1"
 ```
 
 Then, you can start by drawing simple shapes:

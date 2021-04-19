@@ -166,7 +166,7 @@ fn complete_shape_bundle(
     }
 }
 
-#[allow(clippy::clippy::trivially_copy_pass_by_ref)] // lyon takes &FillOptions
+#[allow(clippy::trivially_copy_pass_by_ref)] // lyon takes &FillOptions
 fn fill(
     tess: &mut ResMut<FillTessellator>,
     path: &Path,
@@ -188,7 +188,7 @@ fn fill(
     }
 }
 
-#[allow(clippy::clippy::trivially_copy_pass_by_ref)] // lyon takes &StrokeOptions
+#[allow(clippy::trivially_copy_pass_by_ref)] // lyon takes &StrokeOptions
 fn stroke(
     tess: &mut ResMut<StrokeTessellator>,
     path: &Path,

@@ -290,7 +290,7 @@ fn get_corrected_relative_vector(x: f64, y: f64) -> Vector {
     Vector::new(x as f32, get_y_in_bevy_orientation(y))
 }
 impl Geometry for SvgPathShape {
-    #[allow(clippy::clippy::too_many_lines)]
+    #[allow(clippy::too_many_lines)]
     fn add_geometry(&self, b: &mut Builder) {
         let builder = Builder::new();
         let mut svg_builder = WithSvg::new(builder);

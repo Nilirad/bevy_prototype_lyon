@@ -22,7 +22,7 @@
 // lints that need revisiting
 
 // TODO: Add lint and fix names
-#![allow(clippy::clippy::module_name_repetitions)]
+#![allow(clippy::module_name_repetitions)]
 
 // Could have many false positives. Uncomment if needed.
 //#![allow(clippy::must_use_candidate)]

@@ -19,6 +19,7 @@ use bevy::{
 pub const SHAPE_PIPELINE_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(PipelineDescriptor::TYPE_UUID, 3868147544761532180);
 
+#[allow(clippy::too_many_lines)]
 fn build_shape_pipeline(shaders: &mut Assets<Shader>) -> PipelineDescriptor {
     PipelineDescriptor {
         depth_stencil: Some(DepthStencilState {

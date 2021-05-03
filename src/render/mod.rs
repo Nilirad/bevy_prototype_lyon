@@ -6,9 +6,10 @@ use bevy::{
     reflect::TypeUuid,
     render::{
         pipeline::{
-            BlendFactor, BlendOperation, BlendState, ColorTargetState, ColorWrite, CompareFunction,
-            CullMode, DepthBiasState, DepthStencilState, FrontFace, PipelineDescriptor,
-            PolygonMode, PrimitiveState, PrimitiveTopology, StencilFaceState, StencilState,
+            BlendComponent, BlendFactor, BlendOperation, BlendState, ColorTargetState, ColorWrite,
+            CompareFunction, DepthBiasState, DepthStencilState, Face, FrontFace,
+            PipelineDescriptor, PolygonMode, PrimitiveState, PrimitiveTopology, StencilFaceState,
+            StencilState,
         },
         shader::{Shader, ShaderStage, ShaderStages},
         texture::TextureFormat,
@@ -22,6 +23,15 @@ pub const SHAPE_PIPELINE_HANDLE: HandleUntyped =
 #[allow(clippy::too_many_lines)]
 fn build_shape_pipeline(shaders: &mut Assets<Shader>) -> PipelineDescriptor {
     PipelineDescriptor {
+        primitive: PrimitiveState {
+            topology: PrimitiveTopology::TriangleList,
+            strip_index_format: None,
+            front_face: FrontFace::Cw,
+            cull_mode: Some(Face::Back),
+            polygon_mode: PolygonMode::Fill,
+            clamp_depth: false,
+            conservative: false,
+        },
         depth_stencil: Some(DepthStencilState {
             format: TextureFormat::Depth32Float,
             depth_write_enabled: true,
@@ -37,29 +47,23 @@ fn build_shape_pipeline(shaders: &mut Assets<Shader>) -> PipelineDescriptor {
                 slope_scale: 0.0,
                 clamp: 0.0,
             },
-            clamp_depth: false,
         }),
         color_target_states: vec![ColorTargetState {
             format: TextureFormat::default(),
-            color_blend: BlendState {
-                src_factor: BlendFactor::SrcAlpha,
-                dst_factor: BlendFactor::OneMinusSrcAlpha,
-                operation: BlendOperation::Add,
-            },
-            alpha_blend: BlendState {
-                src_factor: BlendFactor::One,
-                dst_factor: BlendFactor::One,
-                operation: BlendOperation::Add,
-            },
+            blend: Some(BlendState {
+                alpha: BlendComponent {
+                    src_factor: BlendFactor::One,
+                    dst_factor: BlendFactor::One,
+                    operation: BlendOperation::Add,
+                },
+                color: BlendComponent {
+                    src_factor: BlendFactor::SrcAlpha,
+                    dst_factor: BlendFactor::OneMinusSrcAlpha,
+                    operation: BlendOperation::Add,
+                },
+            }),
             write_mask: ColorWrite::ALL,
         }],
-        primitive: PrimitiveState {
-            topology: PrimitiveTopology::TriangleList,
-            strip_index_format: None,
-            front_face: FrontFace::Cw,
-            cull_mode: CullMode::Back,
-            polygon_mode: PolygonMode::Fill,
-        },
         ..PipelineDescriptor::new(ShaderStages {
             vertex: shaders.add(Shader::from_glsl(
                 ShaderStage::Vertex,

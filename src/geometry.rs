@@ -56,7 +56,7 @@ pub trait Geometry {
 /// This implementation permits to use a Lyon [`Path`] as a [`Geometry`].
 impl Geometry for Path {
     fn add_geometry(&self, b: &mut Builder) {
-        b.concatenate(&[self.as_slice()])
+        b.concatenate(&[self.as_slice()]);
     }
 }
 

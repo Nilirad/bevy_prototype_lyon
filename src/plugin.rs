@@ -22,7 +22,6 @@ use bevy::{
     log::error,
     render::{
         color::Color,
-        draw::Visible,
         mesh::{Indices, Mesh},
         pipeline::PrimitiveTopology,
     },
@@ -119,18 +118,9 @@ fn complete_shape_bundle_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<
-        (
-            &DrawMode,
-            &Path,
-            &mut Handle<Mesh>,
-            &ShapeColors,
-            &mut Visible,
-        ),
-        Added<Path>,
-    >,
+    mut query: Query<(&DrawMode, &Path, &mut Handle<Mesh>, &ShapeColors), Added<Path>>,
 ) {
-    for (tess_mode, path, mut mesh, colors, mut visible) in query.iter_mut() {
+    for (tess_mode, path, mut mesh, colors) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 
         match tess_mode {
@@ -162,7 +152,6 @@ fn complete_shape_bundle_system(
         }
 
         *mesh = meshes.add(build_mesh(&buffers));
-        visible.is_visible = true;
     }
 }
 

@@ -72,8 +72,8 @@ impl Default for ShapeBundle {
                 SHAPE_PIPELINE_HANDLE.typed(),
             )]),
             visible: Visible {
-                is_visible: false,
                 is_transparent: true,
+                ..Visible::default()
             },
             main_pass: MainPass,
             draw: Draw::default(),

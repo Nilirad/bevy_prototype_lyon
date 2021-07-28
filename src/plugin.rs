@@ -12,12 +12,12 @@
 //! `ShapeBundle`.
 
 use bevy::{
-    app::{AppBuilder, Plugin},
+    app::{App, Plugin},
     asset::{Assets, Handle},
     ecs::{
         query::Added,
         schedule::{StageLabel, SystemStage},
-        system::{IntoSystem, Query, ResMut},
+        system::{Query, ResMut},
     },
     log::error,
     render::{
@@ -97,7 +97,7 @@ impl StrokeVertexConstructor<Vertex> for VertexConstructor {
 pub struct ShapePlugin;
 
 impl Plugin for ShapePlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         let fill_tess = FillTessellator::new();
         let stroke_tess = StrokeTessellator::new();
         app.insert_resource(fill_tess)
@@ -107,16 +107,15 @@ impl Plugin for ShapePlugin {
                 Stage::Shape,
                 SystemStage::parallel(),
             )
-            .add_system_to_stage(Stage::Shape, complete_shape_bundle.system());
+            .add_system_to_stage(Stage::Shape, complete_shape_bundle_system);
 
-        crate::render::add_shape_pipeline(app.world_mut());
+        crate::render::add_shape_pipeline(&mut app.world);
     }
 }
 
-/// A bevy system. Queries all the [`ShapeBundle`]s to complete them with a
-/// mesh.
+/// Queries all the [`ShapeBundle`]s to complete them with a mesh.
 #[allow(clippy::type_complexity)]
-fn complete_shape_bundle(
+fn complete_shape_bundle_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,

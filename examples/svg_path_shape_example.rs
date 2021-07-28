@@ -2,12 +2,12 @@ use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 
 fn main() {
-    App::build()
+    App::new()
         //Added msaa to reduce aliasing
         .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_startup_system(startup_system.system())
+        .add_startup_system(startup_system)
         .run();
 }
 struct Name(String);

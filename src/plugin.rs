@@ -17,7 +17,7 @@ use bevy::{
     ecs::{
         query::Added,
         schedule::{StageLabel, SystemStage},
-        system::{IntoSystem, Query, ResMut},
+        system::{Query, ResMut},
     },
     log::error,
     render::{

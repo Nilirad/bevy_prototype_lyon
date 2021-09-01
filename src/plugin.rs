@@ -15,9 +15,7 @@ use bevy::{
     app::{App, Plugin},
     asset::{Assets, Handle},
     ecs::{
-        query::Added,
-        query::Changed,
-        query::Or,
+        query::{Added, Changed, Or},
         schedule::{StageLabel, SystemStage},
         system::{Query, ResMut},
     },

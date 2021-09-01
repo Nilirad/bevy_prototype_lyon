@@ -16,6 +16,8 @@ use bevy::{
     asset::{Assets, Handle},
     ecs::{
         query::Added,
+        query::Changed,
+        query::Or,
         schedule::{StageLabel, SystemStage},
         system::{Query, ResMut},
     },
@@ -102,13 +104,17 @@ impl Plugin for ShapePlugin {
     }
 }
 
-/// Queries all the [`ShapeBundle`]s to complete them with a mesh.
+/// Queries all the [`ShapeBundle`]s to mesh them when they are added
+/// or re-mesh them when they are changed.
 #[allow(clippy::type_complexity)]
 fn complete_shape_bundle_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<(&DrawMode, &Path, &mut Handle<Mesh>, &ShapeColors), Added<Path>>,
+    mut query: Query<
+        (&DrawMode, &Path, &mut Handle<Mesh>, &ShapeColors),
+        Or<(Added<Path>, Changed<ShapeColors>, Changed<DrawMode>)>,
+    >,
 ) {
     for (tess_mode, path, mut mesh, colors) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();

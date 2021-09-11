@@ -12,34 +12,39 @@ use lyon_tessellation::path::{path::Builder, Path};
 // TODO: HP bar animation
 // TODO: Heart flash animation
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+enum GameState {
+    Playing,
+    GameOver,
+}
+
 // Credits: https://commons.wikimedia.org/wiki/File:Octicons-heart.svg
 const SVG_HEART: &str = "M19.2 43.2c19.95-15.7 19.2-21.25 19.2-25.6s-3.6-9.6-9.6-9.6s-9.6 6.4-9.6 6.4s-3.6-6.4-9.6-6.4s-9.6 5.25-9.6 9.6s-.75 9.9 19.2 25.6z";
 
 struct Player;
 struct Health(f32);
-struct Lives(i32);
+struct Lives(u32);
 struct DamageCooldown {
     never_damaged: bool,
     timer: Timer,
 }
 struct HealthBar;
-struct Heart1;
-struct Heart2;
-struct Heart3;
+struct Heart(u32);
 
 fn main() {
     App::new()
         .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
+        .add_state(GameState::Playing)
         .add_startup_system(setup_ui_system)
         .add_startup_system(setup_gameplay_system)
         .add_system_set(
-            SystemSet::new()
+            SystemSet::on_update(GameState::Playing)
                 .label("gameplay")
                 .with_system(move_player_system)
                 .with_system(damage_player_system)
-                .with_system(reset_dead_player_system),
+                .with_system(handle_player_death_system),
         )
         .add_system_set(
             SystemSet::new()
@@ -160,9 +165,9 @@ fn setup_ui_system(mut commands: Commands) {
         .with_children(|parent| {
             parent.spawn_bundle(hp_bar_foreground).insert(HealthBar);
         });
-    commands.spawn_bundle(heart1).insert(Heart1);
-    commands.spawn_bundle(heart2).insert(Heart2);
-    commands.spawn_bundle(heart3).insert(Heart3);
+    commands.spawn_bundle(heart1).insert(Heart(1));
+    commands.spawn_bundle(heart2).insert(Heart(2));
+    commands.spawn_bundle(heart3).insert(Heart(3));
 }
 
 fn setup_gameplay_system(mut commands: Commands) {
@@ -254,47 +259,31 @@ fn update_health_bar_system(
 }
 
 fn update_hearts_system(
-    mut heart_1_query: Query<
-        (&mut ShapeColors, &mut DrawMode),
-        (With<Heart1>, Without<Heart2>, Without<Heart3>),
-    >,
-    mut heart_2_query: Query<
-        (&mut ShapeColors, &mut DrawMode),
-        (With<Heart2>, Without<Heart1>, Without<Heart3>),
-    >,
-    mut heart_3_query: Query<
-        (&mut ShapeColors, &mut DrawMode),
-        (With<Heart3>, Without<Heart1>, Without<Heart2>),
-    >,
+    mut hearts_query: Query<(&mut ShapeColors, &mut DrawMode, &Heart)>,
     player_query: Query<&Lives, With<Player>>,
 ) {
     let player_lives = player_query.single().unwrap().0;
-    let heart_1_components = heart_1_query.single_mut().unwrap();
-    let heart_2_components = heart_2_query.single_mut().unwrap();
-    let heart_3_components = heart_3_query.single_mut().unwrap();
-
-    set_heart(heart_1_components, player_lives >= 1);
-    set_heart(heart_2_components, player_lives >= 2);
-    set_heart(heart_3_components, player_lives >= 3);
+    for (mut colors, mut draw_mode, heart) in hearts_query.iter_mut() {
+        set_heart(&mut colors, &mut draw_mode, player_lives >= heart.0);
+    }
 }
 
-fn set_heart(heart_components: (Mut<ShapeColors>, Mut<DrawMode>), filled: bool) {
-    let (mut shape_colors, mut draw_mode) = heart_components;
-
+fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, filled: bool) {
     if filled {
-        *shape_colors = ShapeColors::outlined(Color::RED, Color::BLACK);
+        *colors = ShapeColors::outlined(Color::RED, Color::BLACK);
         *draw_mode = DrawMode::Outlined {
             fill_options: FillOptions::default(),
             outline_options: StrokeOptions::default().with_line_width(5.0),
         }
     } else {
-        *shape_colors = ShapeColors::new(Color::BLACK);
+        *colors = ShapeColors::new(Color::BLACK);
         *draw_mode = DrawMode::Fill(FillOptions::default());
     }
 }
 
-fn reset_dead_player_system(
+fn handle_player_death_system(
     mut query: Query<(&mut Health, &mut Lives, &mut Transform, &mut DamageCooldown), With<Player>>,
+    mut game_state: ResMut<State<GameState>>,
 ) {
     let (mut health, mut lives, mut transform, mut damage_cooldown) = query.single_mut().unwrap();
 
@@ -308,8 +297,7 @@ fn reset_dead_player_system(
                 timer: Timer::from_seconds(0.5, false),
             };
         } else {
-            // TODO: Game over.
-            println!("Game over");
+            game_state.set(GameState::GameOver).unwrap();
         }
     }
 }

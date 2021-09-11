@@ -8,6 +8,10 @@ use bevy_prototype_lyon::{
 
 use lyon_tessellation::path::{path::Builder, Path};
 
+// TODO: Damage animation
+// TODO: HP bar animation
+// TODO: Heart flash animation
+
 // Credits: https://commons.wikimedia.org/wiki/File:Octicons-heart.svg
 const SVG_HEART: &str = "M19.2 43.2c19.95-15.7 19.2-21.25 19.2-25.6s-3.6-9.6-9.6-9.6s-9.6 6.4-9.6 6.4s-3.6-6.4-9.6-6.4s-9.6 5.25-9.6 9.6s-.75 9.9 19.2 25.6z";
 
@@ -24,27 +28,32 @@ struct Heart2;
 struct Heart3;
 
 fn main() {
-    // TODO: gameplay and ui system sets.
     App::new()
         .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_startup_system(setup_ui_system)
         .add_startup_system(setup_gameplay_system)
-        .add_system(move_player_system)
-        .add_system(damage_player_system)
-        .add_system(update_health_bar_system)
-        .add_system(reset_dead_player_system)
-        .add_system(update_hearts_system)
+        .add_system_set(
+            SystemSet::new()
+                .label("gameplay")
+                .with_system(move_player_system)
+                .with_system(damage_player_system)
+                .with_system(reset_dead_player_system),
+        )
+        .add_system_set(
+            SystemSet::new()
+                .after("gameplay")
+                .with_system(update_health_bar_system)
+                .with_system(update_hearts_system),
+        )
         .run();
 }
-
-// TODO: Add back third dimension for z-ordering. (Edit vertex constructors and shaders.)
 
 fn setup_ui_system(mut commands: Commands) {
     commands.spawn_bundle(UiCameraBundle::default());
 
-    /* let hp_bar_background = GeometryBuilder::build_ui_as(
+    let hp_bar_background = GeometryBuilder::build_ui_as(
         &shapes::Rectangle {
             width: 310.0,
             height: 50.0,
@@ -62,8 +71,7 @@ fn setup_ui_system(mut commands: Commands) {
             },
             ..Default::default()
         },
-        0.0,
-    ); */
+    );
 
     let hp_bar_foreground = GeometryBuilder::build_ui_as(
         &shapes::Rectangle {
@@ -76,14 +84,13 @@ fn setup_ui_system(mut commands: Commands) {
         Style {
             position_type: PositionType::Absolute,
             position: Rect {
-                left: Val::Px(25.0),
+                left: Val::Px(5.0),
                 right: Val::Auto,
-                top: Val::Px(25.0),
+                top: Val::Px(5.0),
                 bottom: Val::Auto,
             },
             ..Default::default()
         },
-        -1.0,
     );
 
     let heart_shape = shapes::SvgPathShape {
@@ -108,7 +115,6 @@ fn setup_ui_system(mut commands: Commands) {
             },
             ..Default::default()
         },
-        -1.0,
     );
 
     let heart2 = GeometryBuilder::build_ui_as(
@@ -128,7 +134,6 @@ fn setup_ui_system(mut commands: Commands) {
             },
             ..Default::default()
         },
-        -1.0,
     );
 
     let heart3 = GeometryBuilder::build_ui_as(
@@ -148,11 +153,13 @@ fn setup_ui_system(mut commands: Commands) {
             },
             ..Default::default()
         },
-        -1.0,
     );
 
-    commands.spawn_bundle(hp_bar_foreground).insert(HealthBar);
-    //commands.spawn_bundle(hp_bar_background);
+    commands
+        .spawn_bundle(hp_bar_background)
+        .with_children(|parent| {
+            parent.spawn_bundle(hp_bar_foreground).insert(HealthBar);
+        });
     commands.spawn_bundle(heart1).insert(Heart1);
     commands.spawn_bundle(heart2).insert(Heart2);
     commands.spawn_bundle(heart3).insert(Heart3);

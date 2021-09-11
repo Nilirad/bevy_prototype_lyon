@@ -36,6 +36,8 @@ impl Default for RectangleOrigin {
     }
 }
 
+// TODO: Implement Rectangle::square(f32). Also use extents: Vec2 instead of width/height
+
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rectangle {

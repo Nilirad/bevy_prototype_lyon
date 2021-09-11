@@ -117,19 +117,12 @@ impl GeometryBuilder {
     /// Returns a [`UiShapeBundle`] using the data contained in the path
     /// builder.
     #[must_use]
-    pub fn build_ui(
-        self,
-        colors: ShapeColors,
-        mode: DrawMode,
-        style: Style,
-        z: f32,
-    ) -> UiShapeBundle {
+    pub fn build_ui(self, colors: ShapeColors, mode: DrawMode, style: Style) -> UiShapeBundle {
         UiShapeBundle {
             path: self.0.build(),
             colors,
             mode,
             style,
-            transform: Transform::from_xyz(0.0, 0.0, z),
             ..UiShapeBundle::default()
         }
     }
@@ -173,11 +166,10 @@ impl GeometryBuilder {
         colors: ShapeColors,
         mode: DrawMode,
         style: Style,
-        z: f32,
     ) -> UiShapeBundle {
         let mut multishape = Self::new();
         multishape.add(shape);
-        multishape.build_ui(colors, mode, style, z)
+        multishape.build_ui(colors, mode, style)
     }
 }
 

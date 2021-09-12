@@ -8,7 +8,7 @@ use bevy_prototype_lyon::{
 
 use lyon_tessellation::path::{path::Builder, Path};
 
-// TODO: Damage animation
+// TODO: Death animation
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum GameState {
@@ -30,6 +30,8 @@ const SPAWN_X_POSITION: f32 = -300.0;
 const CHARACHTER_TICK_X_DISPLACEMENT: f32 = 5.0;
 const DAMAGE_TRESHOLD_X_POSITION: f32 = -100.0;
 const DAMAGE_AMOUNT: f32 = 3.0;
+const DAMAGE_ANIMATION_SECS: f32 = 0.4;
+const CHARACTER_DAMAGE_ANGLE: f32 = -std::f32::consts::PI / 16.0;
 const HEALTH_CHANGE_ANIMATION_SECS: f32 = 0.25;
 const LIFE_LOST_ANIMATION_SECS: f32 = 0.1;
 const DAMAGE_COOLDOWN_SECS: f32 = 0.5;
@@ -75,7 +77,8 @@ fn main() {
                         .after("animate_hp_bar")
                         .label("update_health_bar"),
                 )
-                .with_system(update_hearts_system.after("update_health_bar")),
+                .with_system(update_hearts_system.after("update_health_bar"))
+                .with_system(damage_animation_system),
         )
         .run();
 }
@@ -246,6 +249,9 @@ fn setup_gameplay_system(mut commands: Commands) {
         Transform::from_xyz(SPAWN_X_POSITION, 0.0, 0.0),
     );
 
+    let mut damage_animation_timer = Timer::from_seconds(DAMAGE_ANIMATION_SECS, false);
+    damage_animation_timer.tick(std::time::Duration::from_secs_f32(DAMAGE_ANIMATION_SECS));
+
     commands.spawn_bundle(lava_pool);
     commands
         .spawn_bundle(character)
@@ -255,6 +261,11 @@ fn setup_gameplay_system(mut commands: Commands) {
         .insert(DamageCooldown {
             never_damaged: true,
             timer: Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false),
+        })
+        .insert(Animation {
+            timer: damage_animation_timer,
+            initial_value: CHARACTER_DAMAGE_ANGLE,
+            final_value: 0.0,
         });
 }
 
@@ -411,4 +422,28 @@ fn animate_hp_bar_system(
         }
         animation.final_value = health_change.to;
     }
+}
+
+fn damage_animation_system(
+    mut health_change_event_reader: EventReader<HealthChangeEvent>,
+    mut query: Query<(&mut Animation, &mut Transform, &mut ShapeColors), With<Character>>,
+    time: Res<Time>,
+) {
+    let (mut animation, mut transform, mut shape_colors) = query.single_mut().unwrap();
+    animation.timer.tick(time.delta());
+    for health_change in health_change_event_reader.iter() {
+        if health_change.to < health_change.from && health_change.to != 0.0 {
+            animation.timer.reset();
+        }
+    }
+
+    transform.rotation = Quat::from_axis_angle(
+        Vec3::Z,
+        animation.initial_value * animation.timer.percent_left(),
+    );
+
+    let red = animation.timer.percent_left();
+    let green_blue = animation.timer.percent();
+
+    *shape_colors = ShapeColors::outlined(Color::rgb(red, green_blue, green_blue), Color::BLACK);
 }

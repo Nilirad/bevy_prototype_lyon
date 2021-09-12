@@ -9,13 +9,17 @@ use bevy_prototype_lyon::{
 use lyon_tessellation::path::{path::Builder, Path};
 
 // TODO: Damage animation
-// TODO: HP bar animation
 // TODO: Heart flash animation
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum GameState {
     Playing,
     GameOver,
+}
+
+struct HealthChangeEvent {
+    from: f32,
+    to: f32,
 }
 
 // Credits: https://commons.wikimedia.org/wiki/File:Octicons-heart.svg
@@ -30,6 +34,11 @@ struct DamageCooldown {
 }
 struct HealthBar;
 struct Heart(u32);
+struct Animation {
+    timer: Timer,
+    initial_value: f32,
+    final_value: f32,
+}
 
 fn main() {
     App::new()
@@ -37,6 +46,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_state(GameState::Playing)
+        .add_event::<HealthChangeEvent>()
         .add_startup_system(setup_ui_system)
         .add_startup_system(setup_gameplay_system)
         .add_system_set(
@@ -49,8 +59,13 @@ fn main() {
         .add_system_set(
             SystemSet::new()
                 .after("gameplay")
-                .with_system(update_health_bar_system)
-                .with_system(update_hearts_system),
+                .with_system(animate_hp_bar_system.label("animate_hp_bar"))
+                .with_system(
+                    update_health_bar_system
+                        .after("animate_hp_bar")
+                        .label("update_health_bar"),
+                )
+                .with_system(update_hearts_system.after("update_health_bar")),
         )
         .run();
 }
@@ -163,7 +178,14 @@ fn setup_ui_system(mut commands: Commands) {
     commands
         .spawn_bundle(hp_bar_background)
         .with_children(|parent| {
-            parent.spawn_bundle(hp_bar_foreground).insert(HealthBar);
+            parent
+                .spawn_bundle(hp_bar_foreground)
+                .insert(HealthBar)
+                .insert(Animation {
+                    timer: Timer::from_seconds(0.25, false),
+                    initial_value: 0.0,
+                    final_value: 10.0,
+                });
         });
     commands.spawn_bundle(heart1).insert(Heart(1));
     commands.spawn_bundle(heart2).insert(Heart(2));
@@ -221,6 +243,7 @@ fn move_player_system(mut query: Query<&mut Transform, With<Player>>) {
 fn damage_player_system(
     mut query: Query<(&mut Health, &mut DamageCooldown, &Transform), With<Player>>,
     time: Res<Time>,
+    mut health_change_event_writer: EventWriter<HealthChangeEvent>,
 ) {
     let (mut health, mut damage_cooldown, transform) = query.single_mut().unwrap();
     let pos_x = transform.translation.x;
@@ -229,33 +252,51 @@ fn damage_player_system(
         damage_cooldown.timer.tick(time.delta());
     }
 
+    // TODO: Refactor. See in particular if you can simply use timer without the bool.
     if pos_x > -100.0 {
         if damage_cooldown.never_damaged {
             damage_cooldown.never_damaged = false;
-            health.0 = (health.0 - 3.0).max(0.0);
+            let initial_health = health.0;
+            let damage = calculate_damage(health.0, 3.0);
+            health.0 -= damage;
+            health_change_event_writer.send(HealthChangeEvent {
+                from: initial_health,
+                to: health.0,
+            });
         } else if damage_cooldown.timer.finished() {
-            health.0 = (health.0 - 3.0).max(0.0);
+            let initial_health = health.0;
+            let damage = calculate_damage(health.0, 3.0);
+            health.0 -= damage;
+            health_change_event_writer.send(HealthChangeEvent {
+                from: initial_health,
+                to: health.0,
+            });
             damage_cooldown.timer.reset();
         }
     }
 }
 
-fn update_health_bar_system(
-    mut health_bar_query: Query<&mut Path, With<HealthBar>>,
-    player_query: Query<&Health, With<Player>>,
-) {
-    let player_health = player_query.single().unwrap().0;
+fn calculate_damage(cur_health: f32, desired_damage: f32) -> f32 {
+    let new_health = (cur_health - desired_damage).max(0.0);
+    cur_health - new_health
+}
+
+fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation), With<HealthBar>>) {
+    let (mut path, animation) = health_bar_query.single_mut().unwrap();
+
+    let animation_progress = animation.timer.percent();
+    let displayed_health = animation.initial_value
+        + animation_progress * (animation.final_value - animation.initial_value);
 
     let mut b = Builder::new();
     let newrect = shapes::Rectangle {
-        width: player_health * 30.0,
+        width: displayed_health * 30.0,
         height: 40.0,
         origin: shapes::RectangleOrigin::TopLeft,
     };
     newrect.add_geometry(&mut b);
 
-    let mut health_bar = health_bar_query.single_mut().unwrap();
-    *health_bar = b.build();
+    *path = b.build();
 }
 
 fn update_hearts_system(
@@ -284,12 +325,17 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, filled: bool) {
 fn handle_player_death_system(
     mut query: Query<(&mut Health, &mut Lives, &mut Transform, &mut DamageCooldown), With<Player>>,
     mut game_state: ResMut<State<GameState>>,
+    mut health_change_event_writer: EventWriter<HealthChangeEvent>,
 ) {
     let (mut health, mut lives, mut transform, mut damage_cooldown) = query.single_mut().unwrap();
 
     if health.0 <= 0.0 {
         lives.0 -= 1;
         if lives.0 > 0 {
+            health_change_event_writer.send(HealthChangeEvent {
+                from: 0.0,
+                to: 10.0,
+            });
             health.0 = 10.0;
             transform.translation.x = -300.0;
             *damage_cooldown = DamageCooldown {
@@ -299,5 +345,22 @@ fn handle_player_death_system(
         } else {
             game_state.set(GameState::GameOver).unwrap();
         }
+    }
+}
+
+fn animate_hp_bar_system(
+    mut health_change_event_reader: EventReader<HealthChangeEvent>,
+    mut query: Query<&mut Animation, With<HealthBar>>,
+    time: Res<Time>,
+) {
+    let mut animation = query.single_mut().unwrap();
+    animation.timer.tick(time.delta());
+
+    for health_change in health_change_event_reader.iter() {
+        if animation.timer.finished() {
+            animation.timer.reset();
+            animation.initial_value = health_change.from;
+        }
+        animation.final_value = health_change.to;
     }
 }

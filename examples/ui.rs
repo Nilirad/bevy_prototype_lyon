@@ -25,7 +25,17 @@ struct HealthChangeEvent {
 // Credits: https://commons.wikimedia.org/wiki/File:Octicons-heart.svg
 const SVG_HEART: &str = "M19.2 43.2c19.95-15.7 19.2-21.25 19.2-25.6s-3.6-9.6-9.6-9.6s-9.6 6.4-9.6 6.4s-3.6-6.4-9.6-6.4s-9.6 5.25-9.6 9.6s-.75 9.9 19.2 25.6z";
 
-struct Player;
+const MAX_HEALTH: f32 = 10.0;
+const MAX_LIVES: u32 = 3;
+const SPAWN_X_POSITION: f32 = -300.0;
+const CHARACHTER_TICK_X_DISPLACEMENT: f32 = 5.0;
+const DAMAGE_TRESHOLD_X_POSITION: f32 = -100.0;
+const DAMAGE_AMOUNT: f32 = 3.0;
+const HEALTH_CHANGE_ANIMATION_SECS: f32 = 0.25;
+const DAMAGE_COOLDOWN_SECS: f32 = 0.5;
+const HEALTH_BAR_WIDTH: f32 = 300.0;
+
+struct Character;
 struct Health(f32);
 struct Lives(u32);
 struct DamageCooldown {
@@ -95,7 +105,7 @@ fn setup_ui_system(mut commands: Commands) {
 
     let hp_bar_foreground = GeometryBuilder::build_ui_as(
         &shapes::Rectangle {
-            width: 300.0,
+            width: HEALTH_BAR_WIDTH,
             height: 40.0,
             origin: shapes::RectangleOrigin::TopLeft,
         },
@@ -182,9 +192,9 @@ fn setup_ui_system(mut commands: Commands) {
                 .spawn_bundle(hp_bar_foreground)
                 .insert(HealthBar)
                 .insert(Animation {
-                    timer: Timer::from_seconds(0.25, false),
+                    timer: Timer::from_seconds(HEALTH_CHANGE_ANIMATION_SECS, false),
                     initial_value: 0.0,
-                    final_value: 10.0,
+                    final_value: MAX_HEALTH,
                 });
         });
     commands.spawn_bundle(heart1).insert(Heart(1));
@@ -209,7 +219,7 @@ fn setup_gameplay_system(mut commands: Commands) {
         Transform::default(),
     );
 
-    let player = GeometryBuilder::build_as(
+    let character = GeometryBuilder::build_as(
         &RegularPolygon {
             sides: 3,
             feature: RegularPolygonFeature::Radius(30.0),
@@ -220,28 +230,28 @@ fn setup_gameplay_system(mut commands: Commands) {
             fill_options: FillOptions::default(),
             outline_options: StrokeOptions::default().with_line_width(3.0),
         },
-        Transform::from_xyz(-300.0, 0.0, 0.0),
+        Transform::from_xyz(SPAWN_X_POSITION, 0.0, 0.0),
     );
 
     commands.spawn_bundle(lava_pool);
     commands
-        .spawn_bundle(player)
-        .insert(Player)
-        .insert(Health(10.0))
-        .insert(Lives(3))
+        .spawn_bundle(character)
+        .insert(Character)
+        .insert(Health(MAX_HEALTH))
+        .insert(Lives(MAX_LIVES))
         .insert(DamageCooldown {
             never_damaged: true,
-            timer: Timer::from_seconds(0.5, false),
+            timer: Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false),
         });
 }
 
-fn move_player_system(mut query: Query<&mut Transform, With<Player>>) {
+fn move_player_system(mut query: Query<&mut Transform, With<Character>>) {
     let mut transform = query.single_mut().unwrap();
-    transform.translation.x = (transform.translation.x + 5.0).min(0.0);
+    transform.translation.x = (transform.translation.x + CHARACHTER_TICK_X_DISPLACEMENT).min(0.0);
 }
 
 fn damage_player_system(
-    mut query: Query<(&mut Health, &mut DamageCooldown, &Transform), With<Player>>,
+    mut query: Query<(&mut Health, &mut DamageCooldown, &Transform), With<Character>>,
     time: Res<Time>,
     mut health_change_event_writer: EventWriter<HealthChangeEvent>,
 ) {
@@ -253,11 +263,11 @@ fn damage_player_system(
     }
 
     // TODO: Refactor. See in particular if you can simply use timer without the bool.
-    if pos_x > -100.0 {
+    if pos_x > DAMAGE_TRESHOLD_X_POSITION {
         if damage_cooldown.never_damaged {
             damage_cooldown.never_damaged = false;
             let initial_health = health.0;
-            let damage = calculate_damage(health.0, 3.0);
+            let damage = calculate_damage(health.0, DAMAGE_AMOUNT);
             health.0 -= damage;
             health_change_event_writer.send(HealthChangeEvent {
                 from: initial_health,
@@ -265,7 +275,7 @@ fn damage_player_system(
             });
         } else if damage_cooldown.timer.finished() {
             let initial_health = health.0;
-            let damage = calculate_damage(health.0, 3.0);
+            let damage = calculate_damage(health.0, DAMAGE_AMOUNT);
             health.0 -= damage;
             health_change_event_writer.send(HealthChangeEvent {
                 from: initial_health,
@@ -285,12 +295,12 @@ fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation),
     let (mut path, animation) = health_bar_query.single_mut().unwrap();
 
     let animation_progress = animation.timer.percent();
-    let displayed_health = animation.initial_value
+    let animated_health_value = animation.initial_value
         + animation_progress * (animation.final_value - animation.initial_value);
 
     let mut b = Builder::new();
     let newrect = shapes::Rectangle {
-        width: displayed_health * 30.0,
+        width: HEALTH_BAR_WIDTH * animated_health_value / MAX_HEALTH,
         height: 40.0,
         origin: shapes::RectangleOrigin::TopLeft,
     };
@@ -301,7 +311,7 @@ fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation),
 
 fn update_hearts_system(
     mut hearts_query: Query<(&mut ShapeColors, &mut DrawMode, &Heart)>,
-    player_query: Query<&Lives, With<Player>>,
+    player_query: Query<&Lives, With<Character>>,
 ) {
     let player_lives = player_query.single().unwrap().0;
     for (mut colors, mut draw_mode, heart) in hearts_query.iter_mut() {
@@ -323,7 +333,10 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, filled: bool) {
 }
 
 fn handle_player_death_system(
-    mut query: Query<(&mut Health, &mut Lives, &mut Transform, &mut DamageCooldown), With<Player>>,
+    mut query: Query<
+        (&mut Health, &mut Lives, &mut Transform, &mut DamageCooldown),
+        With<Character>,
+    >,
     mut game_state: ResMut<State<GameState>>,
     mut health_change_event_writer: EventWriter<HealthChangeEvent>,
 ) {
@@ -334,13 +347,13 @@ fn handle_player_death_system(
         if lives.0 > 0 {
             health_change_event_writer.send(HealthChangeEvent {
                 from: 0.0,
-                to: 10.0,
+                to: MAX_HEALTH,
             });
-            health.0 = 10.0;
-            transform.translation.x = -300.0;
+            health.0 = MAX_HEALTH;
+            transform.translation.x = SPAWN_X_POSITION;
             *damage_cooldown = DamageCooldown {
                 never_damaged: true,
-                timer: Timer::from_seconds(0.5, false),
+                timer: Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false),
             };
         } else {
             game_state.set(GameState::GameOver).unwrap();

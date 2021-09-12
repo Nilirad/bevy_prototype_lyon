@@ -9,7 +9,6 @@ use bevy_prototype_lyon::{
 use lyon_tessellation::path::{path::Builder, Path};
 
 // TODO: Damage animation
-// TODO: Heart flash animation
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum GameState {
@@ -32,6 +31,7 @@ const CHARACHTER_TICK_X_DISPLACEMENT: f32 = 5.0;
 const DAMAGE_TRESHOLD_X_POSITION: f32 = -100.0;
 const DAMAGE_AMOUNT: f32 = 3.0;
 const HEALTH_CHANGE_ANIMATION_SECS: f32 = 0.25;
+const LIFE_LOST_ANIMATION_SECS: f32 = 0.1;
 const DAMAGE_COOLDOWN_SECS: f32 = 0.5;
 const HEALTH_BAR_WIDTH: f32 = 300.0;
 
@@ -197,9 +197,22 @@ fn setup_ui_system(mut commands: Commands) {
                     final_value: MAX_HEALTH,
                 });
         });
-    commands.spawn_bundle(heart1).insert(Heart(1));
-    commands.spawn_bundle(heart2).insert(Heart(2));
-    commands.spawn_bundle(heart3).insert(Heart(3));
+
+    let mut life_lost_timer = Timer::from_seconds(LIFE_LOST_ANIMATION_SECS, false);
+    life_lost_timer.pause();
+
+    commands
+        .spawn_bundle(heart1)
+        .insert(Heart(1))
+        .insert(life_lost_timer.clone());
+    commands
+        .spawn_bundle(heart2)
+        .insert(Heart(2))
+        .insert(life_lost_timer.clone());
+    commands
+        .spawn_bundle(heart3)
+        .insert(Heart(3))
+        .insert(life_lost_timer.clone());
 }
 
 fn setup_gameplay_system(mut commands: Commands) {
@@ -310,16 +323,23 @@ fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation),
 }
 
 fn update_hearts_system(
-    mut hearts_query: Query<(&mut ShapeColors, &mut DrawMode, &Heart)>,
+    mut hearts_query: Query<(&mut ShapeColors, &mut DrawMode, &Heart, &mut Timer)>,
     player_query: Query<&Lives, With<Character>>,
+    time: Res<Time>,
 ) {
     let player_lives = player_query.single().unwrap().0;
-    for (mut colors, mut draw_mode, heart) in hearts_query.iter_mut() {
-        set_heart(&mut colors, &mut draw_mode, player_lives >= heart.0);
+    for (mut colors, mut draw_mode, heart, mut timer) in hearts_query.iter_mut() {
+        timer.tick(time.delta());
+        set_heart(
+            &mut colors,
+            &mut draw_mode,
+            &mut timer,
+            player_lives >= heart.0,
+        );
     }
 }
 
-fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, filled: bool) {
+fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Timer, filled: bool) {
     if filled {
         *colors = ShapeColors::outlined(Color::RED, Color::BLACK);
         *draw_mode = DrawMode::Outlined {
@@ -327,8 +347,23 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, filled: bool) {
             outline_options: StrokeOptions::default().with_line_width(5.0),
         }
     } else {
-        *colors = ShapeColors::new(Color::BLACK);
-        *draw_mode = DrawMode::Fill(FillOptions::default());
+        if timer.paused() {
+            timer.unpause();
+        }
+
+        if timer.finished() {
+            *colors = ShapeColors::new(Color::BLACK);
+            *draw_mode = DrawMode::Outlined {
+                fill_options: FillOptions::default(),
+                outline_options: StrokeOptions::default().with_line_width(5.0),
+            }
+        } else {
+            *colors = ShapeColors::outlined(Color::WHITE, Color::BLACK);
+            *draw_mode = DrawMode::Outlined {
+                fill_options: FillOptions::default(),
+                outline_options: StrokeOptions::default().with_line_width(5.0),
+            }
+        }
     }
 }
 

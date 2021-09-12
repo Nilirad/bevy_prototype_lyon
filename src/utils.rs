@@ -6,6 +6,8 @@ use lyon_tessellation::{
     FillOptions, StrokeOptions,
 };
 
+// TODO: Include shape color(s) in DrawMode (Rename to DrawOptions).
+
 /// Determines how a shape will be drawn.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DrawMode {

@@ -65,9 +65,11 @@ fn main() {
         .add_event::<HealthChangeEvent>()
         .add_startup_system(setup_ui_system)
         .add_startup_system(setup_gameplay_system)
+        .add_system(tick_timers_system.label("tick_timers"))
         .add_system_set(
             SystemSet::on_update(GameState::Playing)
                 .label("gameplay")
+                .after("tick_timers")
                 .with_system(move_character_system)
                 .with_system(damage_character_system)
                 .with_system(handle_character_death_system),
@@ -345,11 +347,9 @@ fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation),
 fn update_hearts_system(
     mut hearts_query: Query<(&mut ShapeColors, &mut DrawMode, &Heart, &mut Timer)>,
     character_query: Query<&Lives, With<Character>>,
-    time: Res<Time>,
 ) {
     let character_lives = character_query.single().0;
     for (mut colors, mut draw_mode, heart, mut timer) in hearts_query.iter_mut() {
-        timer.tick(time.delta());
         set_heart(
             &mut colors,
             &mut draw_mode,
@@ -400,13 +400,11 @@ fn handle_character_death_system(
     >,
     mut game_state: ResMut<State<GameState>>,
     mut health_change_event_writer: EventWriter<HealthChangeEvent>,
-    time: Res<Time>,
 ) {
     let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
         query.single_mut();
 
     if health.0 <= 0.0 {
-        death_animation_timer.0.tick(time.delta());
         if death_animation_timer.0.paused() {
             death_animation_timer.0.unpause();
             lives.0 -= 1;
@@ -434,10 +432,8 @@ fn handle_character_death_system(
 fn animate_hp_bar_system(
     mut health_change_event_reader: EventReader<HealthChangeEvent>,
     mut query: Query<&mut Animation, With<HealthBar>>,
-    time: Res<Time>,
 ) {
     let mut animation = query.single_mut();
-    animation.timer.tick(time.delta());
 
     for health_change in health_change_event_reader.iter() {
         if animation.timer.finished() {
@@ -451,10 +447,9 @@ fn animate_hp_bar_system(
 fn damage_animation_system(
     mut health_change_event_reader: EventReader<HealthChangeEvent>,
     mut query: Query<(&mut Animation, &mut Transform, &mut ShapeColors), With<Character>>,
-    time: Res<Time>,
 ) {
     let (mut animation, mut transform, mut shape_colors) = query.single_mut();
-    animation.timer.tick(time.delta());
+
     for health_change in health_change_event_reader.iter() {
         if health_change.to < health_change.from && health_change.to != 0.0 {
             animation.timer.reset();
@@ -483,5 +478,28 @@ fn character_death_animation_system(
             Quat::from_axis_angle(Vec3::Z, CHARACTER_DEAD_ANGLE * animation_progress);
         shape_colors.main.set_a(1.0 - animation_progress);
         shape_colors.outline.set_a(1.0 - animation_progress);
+    }
+}
+
+fn tick_timers_system(
+    mut timer_query: Query<&mut Timer>,
+    // mut damage_cooldown_query: Query<&mut DamageCooldown>,
+    mut animation_query: Query<&mut Animation>,
+    mut death_animation_timer_query: Query<&mut DeathAnimationTimer>,
+    time: Res<Time>,
+) {
+    let delta = time.delta();
+
+    for mut timer in timer_query.iter_mut() {
+        timer.tick(delta);
+    }
+    /* for mut damage_cooldown in damage_cooldown_query.iter_mut() {
+        damage_cooldown.timer.tick(delta);
+    } */
+    for mut animation in animation_query.iter_mut() {
+        animation.timer.tick(delta);
+    }
+    for mut death_animation_timer in death_animation_timer_query.iter_mut() {
+        death_animation_timer.0.tick(delta);
     }
 }

@@ -70,9 +70,9 @@ fn main() {
         .add_system_set(
             SystemSet::on_update(GameState::Playing)
                 .label("gameplay")
-                .with_system(move_player_system)
-                .with_system(damage_player_system)
-                .with_system(handle_player_death_system),
+                .with_system(move_character_system)
+                .with_system(damage_character_system)
+                .with_system(handle_character_death_system),
         )
         .add_system_set(
             SystemSet::new()
@@ -280,12 +280,12 @@ fn setup_gameplay_system(mut commands: Commands) {
         .insert(DeathAnimationTimer(death_animation_timer));
 }
 
-fn move_player_system(mut query: Query<&mut Transform, With<Character>>) {
+fn move_character_system(mut query: Query<&mut Transform, With<Character>>) {
     let mut transform = query.single_mut().unwrap();
     transform.translation.x = (transform.translation.x + CHARACHTER_TICK_X_DISPLACEMENT).min(0.0);
 }
 
-fn damage_player_system(
+fn damage_character_system(
     mut query: Query<(&mut Health, &mut DamageCooldown, &Transform), With<Character>>,
     time: Res<Time>,
     mut health_change_event_writer: EventWriter<HealthChangeEvent>,
@@ -346,17 +346,17 @@ fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation),
 
 fn update_hearts_system(
     mut hearts_query: Query<(&mut ShapeColors, &mut DrawMode, &Heart, &mut Timer)>,
-    player_query: Query<&Lives, With<Character>>,
+    character_query: Query<&Lives, With<Character>>,
     time: Res<Time>,
 ) {
-    let player_lives = player_query.single().unwrap().0;
+    let character_lives = character_query.single().unwrap().0;
     for (mut colors, mut draw_mode, heart, mut timer) in hearts_query.iter_mut() {
         timer.tick(time.delta());
         set_heart(
             &mut colors,
             &mut draw_mode,
             &mut timer,
-            player_lives >= heart.0,
+            character_lives >= heart.0,
         );
     }
 }
@@ -389,7 +389,7 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Tim
     }
 }
 
-fn handle_player_death_system(
+fn handle_character_death_system(
     mut query: Query<
         (
             &mut Health,

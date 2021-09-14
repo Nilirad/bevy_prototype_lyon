@@ -1,5 +1,6 @@
 //! Shows how to use shapes for the UI camera.
 
+use std::f32::consts::{FRAC_PI_2, PI};
 use std::time::Duration;
 
 use bevy::prelude::*;
@@ -10,6 +11,7 @@ use bevy_prototype_lyon::{
 
 use lyon_tessellation::path::{path::Builder, Path};
 
+// TODO: Bundle spawning of hearts
 // TODO: Refactor keeping in mind character states?
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -18,7 +20,7 @@ enum GameState {
     GameOver,
 }
 
-struct HealthChangeEvent {
+struct HealthChangedEvent {
     from: f32,
     to: f32,
 }
@@ -32,13 +34,13 @@ const SPAWN_X_POSITION: f32 = -300.0;
 const CHARACHTER_TICK_X_DISPLACEMENT: f32 = 5.0;
 const DAMAGE_TRESHOLD_X_POSITION: f32 = -100.0;
 const DAMAGE_AMOUNT: f32 = 3.0;
-const DAMAGE_ANIMATION_SECS: f32 = 0.4;
-const CHARACTER_DAMAGE_ANGLE: f32 = -std::f32::consts::PI / 16.0;
-const CHARACTER_DEAD_ANGLE: f32 = -std::f32::consts::FRAC_PI_2;
-const HEALTH_CHANGE_ANIMATION_SECS: f32 = 0.25;
-const LIFE_LOST_ANIMATION_SECS: f32 = 0.1;
-const DEATH_ANIMATION_SECS: f32 = 0.7;
-const DAMAGE_COOLDOWN_SECS: f32 = 0.5;
+const DAMAGE_ANIMATION_TIME: Duration = Duration::from_millis(400);
+const CHARACTER_DAMAGE_ANGLE: f32 = -PI / 16.0;
+const CHARACTER_DEAD_ANGLE: f32 = -FRAC_PI_2;
+const HEALTH_CHANGED_ANIMATION_TIME: Duration = Duration::from_millis(250);
+const HEART_LOST_ANIMATION_TIME: Duration = Duration::from_millis(100);
+const DEATH_ANIMATION_TIME: Duration = Duration::from_millis(700);
+const DAMAGE_COOLDOWN_TIME: Duration = Duration::from_millis(500);
 const HEALTH_BAR_WIDTH: f32 = 300.0;
 
 struct Character;
@@ -60,7 +62,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_state(GameState::Playing)
-        .add_event::<HealthChangeEvent>()
+        .add_event::<HealthChangedEvent>()
         .add_startup_system(setup_ui_system)
         .add_startup_system(setup_gameplay_system)
         .add_system(tick_timers_system.label("tick_timers"))
@@ -200,13 +202,13 @@ fn setup_ui_system(mut commands: Commands) {
                 .spawn_bundle(hp_bar_foreground)
                 .insert(HealthBar)
                 .insert(Animation {
-                    timer: Timer::from_seconds(HEALTH_CHANGE_ANIMATION_SECS, false),
+                    timer: Timer::new(HEALTH_CHANGED_ANIMATION_TIME, false),
                     initial_value: 0.0,
                     final_value: MAX_HEALTH,
                 });
         });
 
-    let mut life_lost_timer = Timer::from_seconds(LIFE_LOST_ANIMATION_SECS, false);
+    let mut life_lost_timer = Timer::new(HEART_LOST_ANIMATION_TIME, false);
     life_lost_timer.pause();
 
     commands
@@ -254,13 +256,13 @@ fn setup_gameplay_system(mut commands: Commands) {
         Transform::from_xyz(SPAWN_X_POSITION, 0.0, 0.0),
     );
 
-    let mut damage_cooldown_timer = Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false);
-    damage_cooldown_timer.tick(std::time::Duration::from_secs_f32(DAMAGE_COOLDOWN_SECS));
+    let mut damage_cooldown_timer = Timer::new(DAMAGE_COOLDOWN_TIME, false);
+    damage_cooldown_timer.tick(DAMAGE_COOLDOWN_TIME);
 
-    let mut damage_animation_timer = Timer::from_seconds(DAMAGE_ANIMATION_SECS, false);
-    damage_animation_timer.tick(std::time::Duration::from_secs_f32(DAMAGE_ANIMATION_SECS));
+    let mut damage_animation_timer = Timer::new(DAMAGE_ANIMATION_TIME, false);
+    damage_animation_timer.tick(DAMAGE_ANIMATION_TIME);
 
-    let mut death_animation_timer = Timer::from_seconds(DEATH_ANIMATION_SECS, false);
+    let mut death_animation_timer = Timer::new(DEATH_ANIMATION_TIME, false);
     death_animation_timer.pause();
 
     commands.spawn_bundle(lava_pool);
@@ -285,7 +287,7 @@ fn move_character_system(mut query: Query<&mut Transform, With<Character>>) {
 
 fn damage_character_system(
     mut query: Query<(&mut Health, &mut DamageCooldown, &Transform), With<Character>>,
-    mut health_change_event_writer: EventWriter<HealthChangeEvent>,
+    mut health_changed_event_writer: EventWriter<HealthChangedEvent>,
 ) {
     let (mut health, mut damage_cooldown, transform) = query.single_mut();
     let pos_x = transform.translation.x;
@@ -295,7 +297,7 @@ fn damage_character_system(
             damage_cooldown.0.reset();
             let initial_health = health.0;
             health.0 -= calculate_damage(health.0, DAMAGE_AMOUNT);
-            health_change_event_writer.send(HealthChangeEvent {
+            health_changed_event_writer.send(HealthChangedEvent {
                 from: initial_health,
                 to: health.0,
             });
@@ -381,7 +383,7 @@ fn handle_character_death_system(
         With<Character>,
     >,
     mut game_state: ResMut<State<GameState>>,
-    mut health_change_event_writer: EventWriter<HealthChangeEvent>,
+    mut health_changed_event_writer: EventWriter<HealthChangedEvent>,
 ) {
     let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
         query.single_mut();
@@ -392,15 +394,13 @@ fn handle_character_death_system(
             lives.0 -= 1;
         } else if death_animation_timer.0.finished() {
             if lives.0 > 0 {
-                health_change_event_writer.send(HealthChangeEvent {
+                health_changed_event_writer.send(HealthChangedEvent {
                     from: 0.0,
                     to: MAX_HEALTH,
                 });
                 health.0 = MAX_HEALTH;
                 transform.translation.x = SPAWN_X_POSITION;
-                damage_cooldown
-                    .0
-                    .tick(Duration::from_secs_f32(DAMAGE_COOLDOWN_SECS));
+                damage_cooldown.0.tick(DAMAGE_COOLDOWN_TIME);
                 death_animation_timer.0.pause();
                 death_animation_timer.0.reset();
             } else {
@@ -411,28 +411,28 @@ fn handle_character_death_system(
 }
 
 fn animate_hp_bar_system(
-    mut health_change_event_reader: EventReader<HealthChangeEvent>,
+    mut health_changed_event_reader: EventReader<HealthChangedEvent>,
     mut query: Query<&mut Animation, With<HealthBar>>,
 ) {
     let mut animation = query.single_mut();
 
-    for health_change in health_change_event_reader.iter() {
+    for health_changed in health_changed_event_reader.iter() {
         if animation.timer.finished() {
             animation.timer.reset();
-            animation.initial_value = health_change.from;
+            animation.initial_value = health_changed.from;
         }
-        animation.final_value = health_change.to;
+        animation.final_value = health_changed.to;
     }
 }
 
 fn damage_animation_system(
-    mut health_change_event_reader: EventReader<HealthChangeEvent>,
+    mut health_changed_event_reader: EventReader<HealthChangedEvent>,
     mut query: Query<(&mut Animation, &mut Transform, &mut ShapeColors), With<Character>>,
 ) {
     let (mut animation, mut transform, mut shape_colors) = query.single_mut();
 
-    for health_change in health_change_event_reader.iter() {
-        if health_change.to < health_change.from && health_change.to != 0.0 {
+    for health_changed in health_changed_event_reader.iter() {
+        if health_changed.to < health_changed.from && health_changed.to != 0.0 {
             animation.timer.reset();
         }
     }

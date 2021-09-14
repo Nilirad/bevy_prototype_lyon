@@ -1,14 +1,15 @@
 //! Shows how to use shapes for the UI camera.
 
-use std::f32::consts::{FRAC_PI_2, PI};
-use std::time::Duration;
+use std::{
+    f32::consts::{FRAC_PI_2, PI},
+    time::Duration,
+};
 
 use bevy::prelude::*;
 use bevy_prototype_lyon::{
     prelude::*,
     shapes::{RegularPolygon, RegularPolygonFeature},
 };
-
 use lyon_tessellation::path::{path::Builder, Path};
 
 // TODO: Use states to reset player data in initialization or after death?
@@ -251,17 +252,15 @@ fn damage_character_system(
 
     let mut damage_applied = false;
 
-    if transform.translation.x > DAMAGE_TRESHOLD_X_POSITION {
-        if damage_cooldown.0.finished() {
-            damage_cooldown.0.reset();
-            let initial_health = health.0;
-            health.0 -= calculate_damage(health.0, DAMAGE_AMOUNT);
-            health_changed_event_writer.send(HealthChangedEvent {
-                from: initial_health,
-                to: health.0,
-            });
-            damage_applied = true;
-        }
+    if transform.translation.x > DAMAGE_TRESHOLD_X_POSITION && damage_cooldown.0.finished() {
+        damage_cooldown.0.reset();
+        let initial_health = health.0;
+        health.0 -= calculate_damage(health.0, DAMAGE_AMOUNT);
+        health_changed_event_writer.send(HealthChangedEvent {
+            from: initial_health,
+            to: health.0,
+        });
+        damage_applied = true;
     }
 
     if damage_applied {
@@ -327,10 +326,6 @@ fn update_hearts_system(
 fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Timer, filled: bool) {
     if filled {
         *colors = ShapeColors::outlined(Color::RED, Color::BLACK);
-        *draw_mode = DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(5.0),
-        }
     } else {
         if timer.paused() {
             timer.unpause();
@@ -338,17 +333,14 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Tim
 
         if timer.finished() {
             *colors = ShapeColors::new(Color::BLACK);
-            *draw_mode = DrawMode::Outlined {
-                fill_options: FillOptions::default(),
-                outline_options: StrokeOptions::default().with_line_width(5.0),
-            }
         } else {
             *colors = ShapeColors::outlined(Color::WHITE, Color::BLACK);
-            *draw_mode = DrawMode::Outlined {
-                fill_options: FillOptions::default(),
-                outline_options: StrokeOptions::default().with_line_width(5.0),
-            }
         }
+    }
+
+    *draw_mode = DrawMode::Outlined {
+        fill_options: FillOptions::default(),
+        outline_options: StrokeOptions::default().with_line_width(5.0),
     }
 }
 

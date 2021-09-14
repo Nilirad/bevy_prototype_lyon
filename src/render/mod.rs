@@ -98,7 +98,7 @@ pub(crate) fn add_shape_pipeline(world: &mut World) {
     pipelines.set_untracked(SHAPE_PIPELINE_HANDLE, build_shape_pipeline(&mut shaders));
 }
 
-#[allow(clippy::clippy::too_many_lines)]
+#[allow(clippy::too_many_lines)]
 fn build_ui_shape_pipeline(shaders: &mut Assets<Shader>) -> PipelineDescriptor {
     PipelineDescriptor {
         depth_stencil: Some(DepthStencilState {

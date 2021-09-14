@@ -8,8 +8,6 @@ use bevy_prototype_lyon::{
 
 use lyon_tessellation::path::{path::Builder, Path};
 
-// TODO: Death animation
-
 // TODO: Dedicated system for timers?
 // TODO: Refactor keeping in mind character states?
 
@@ -84,8 +82,8 @@ fn main() {
                         .label("update_health_bar"),
                 )
                 .with_system(update_hearts_system.after("update_health_bar"))
-                .with_system(damage_animation_system)
-                .with_system(character_death_animation_system),
+                .with_system(damage_animation_system.label("damage_animation"))
+                .with_system(character_death_animation_system.after("damage_animation")),
         )
         .run();
 }
@@ -474,8 +472,6 @@ fn damage_animation_system(
     *shape_colors = ShapeColors::outlined(Color::rgb(red, green_blue, green_blue), Color::BLACK);
 }
 
-// TODO: Sometimes death animation doesn't work. Timers are working correctly. May it be
-// a change detection issue?
 fn character_death_animation_system(
     mut query: Query<(&mut Transform, &mut ShapeColors, &DeathAnimationTimer), With<Character>>,
 ) {

@@ -14,8 +14,10 @@ use lyon_tessellation::path::{path::Builder, Path};
 // TODO: Refactor keeping in mind character states?
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
-enum GameState {
-    Playing,
+enum CharacterState {
+    Normal,
+    Hurt,
+    Dying,
     GameOver,
 }
 
@@ -60,27 +62,29 @@ fn main() {
         .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_state(GameState::Playing)
+        .add_state(CharacterState::Normal)
         .add_event::<HealthChangedEvent>()
         .add_startup_system(setup_ui_system)
         .add_startup_system(setup_gameplay_system)
-        .add_system(tick_timers_system.label("tick_timers"))
+        .add_system(tick_timers_system)
         .add_system_set(
-            SystemSet::on_update(GameState::Playing)
-                .label("gameplay")
-                .after("tick_timers")
+            SystemSet::on_update(CharacterState::Normal)
                 .with_system(move_character_system.label("move_character"))
                 .with_system(damage_character_system.after("move_character")),
         )
         .add_system_set(
+            SystemSet::on_update(CharacterState::Hurt)
+                .with_system(move_character_system)
+                .with_system(damage_animation_system),
+        )
+        .add_system_set(
+            SystemSet::on_update(CharacterState::Dying)
+                .with_system(character_death_animation_system),
+        )
+        .add_system_set(
             SystemSet::new()
-                .after("gameplay")
-                .with_system(update_health_bar_system.label("update_health_bar"))
-                .with_system(update_hearts_system.after("update_health_bar"))
-                // The following ordering is to ensure that damage animation doesn't cancel
-                // death animation.
-                .with_system(damage_animation_system.label("damage_animation"))
-                .with_system(character_death_animation_system.after("damage_animation")),
+                .with_system(update_health_bar_system)
+                .with_system(update_hearts_system),
         )
         .run();
 }
@@ -248,7 +252,7 @@ fn damage_character_system(
         ),
         With<Character>,
     >,
-    mut game_state: ResMut<State<GameState>>,
+    mut game_state: ResMut<State<CharacterState>>,
     mut health_changed_event_writer: EventWriter<HealthChangedEvent>,
 ) {
     let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
@@ -282,7 +286,7 @@ fn damage_character_system(
                 death_animation_timer.0.pause();
                 death_animation_timer.0.reset();
             } else {
-                game_state.set(GameState::GameOver).unwrap();
+                game_state.set(CharacterState::GameOver).unwrap();
             }
         }
     }

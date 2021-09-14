@@ -11,7 +11,6 @@ use bevy_prototype_lyon::{
 
 use lyon_tessellation::path::{path::Builder, Path};
 
-// TODO: Bundle spawning of hearts
 // TODO: Refactor keeping in mind character states?
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -138,63 +137,6 @@ fn setup_ui_system(mut commands: Commands) {
         svg_path_string: SVG_HEART.to_owned(),
     };
 
-    let heart1 = GeometryBuilder::build_ui_as(
-        &heart_shape,
-        ShapeColors::outlined(Color::RED, Color::BLACK),
-        DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(5.0),
-        },
-        Style {
-            position_type: PositionType::Absolute,
-            position: Rect {
-                left: Val::Px(30.0),
-                right: Val::Auto,
-                top: Val::Px(80.0),
-                bottom: Val::Auto,
-            },
-            ..Default::default()
-        },
-    );
-
-    let heart2 = GeometryBuilder::build_ui_as(
-        &heart_shape,
-        ShapeColors::outlined(Color::RED, Color::BLACK),
-        DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(5.0),
-        },
-        Style {
-            position_type: PositionType::Absolute,
-            position: Rect {
-                left: Val::Px(80.0),
-                right: Val::Auto,
-                top: Val::Px(80.0),
-                bottom: Val::Auto,
-            },
-            ..Default::default()
-        },
-    );
-
-    let heart3 = GeometryBuilder::build_ui_as(
-        &heart_shape,
-        ShapeColors::outlined(Color::RED, Color::BLACK),
-        DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(5.0),
-        },
-        Style {
-            position_type: PositionType::Absolute,
-            position: Rect {
-                left: Val::Px(130.0),
-                right: Val::Auto,
-                top: Val::Px(80.0),
-                bottom: Val::Auto,
-            },
-            ..Default::default()
-        },
-    );
-
     commands
         .spawn_bundle(hp_bar_background)
         .with_children(|parent| {
@@ -211,18 +153,32 @@ fn setup_ui_system(mut commands: Commands) {
     let mut life_lost_timer = Timer::new(HEART_LOST_ANIMATION_TIME, false);
     life_lost_timer.pause();
 
-    commands
-        .spawn_bundle(heart1)
-        .insert(Heart(1))
-        .insert(life_lost_timer.clone());
-    commands
-        .spawn_bundle(heart2)
-        .insert(Heart(2))
-        .insert(life_lost_timer.clone());
-    commands
-        .spawn_bundle(heart3)
-        .insert(Heart(3))
-        .insert(life_lost_timer.clone());
+    for i in 1..=3 {
+        let offset = 50.0 * (i - 1) as f32;
+        let heart = GeometryBuilder::build_ui_as(
+            &heart_shape,
+            ShapeColors::outlined(Color::RED, Color::BLACK),
+            DrawMode::Outlined {
+                fill_options: FillOptions::default(),
+                outline_options: StrokeOptions::default().with_line_width(5.0),
+            },
+            Style {
+                position_type: PositionType::Absolute,
+                position: Rect {
+                    left: Val::Px(30.0 + offset),
+                    right: Val::Auto,
+                    top: Val::Px(80.0),
+                    bottom: Val::Auto,
+                },
+                ..Default::default()
+            },
+        );
+
+        commands
+            .spawn_bundle(heart)
+            .insert(Heart(i))
+            .insert(life_lost_timer.clone());
+    }
 }
 
 fn setup_gameplay_system(mut commands: Commands) {

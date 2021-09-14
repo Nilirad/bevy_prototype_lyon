@@ -279,7 +279,7 @@ fn setup_gameplay_system(mut commands: Commands) {
 }
 
 fn move_character_system(mut query: Query<&mut Transform, With<Character>>) {
-    let mut transform = query.single_mut().unwrap();
+    let mut transform = query.single_mut();
     transform.translation.x = (transform.translation.x + CHARACHTER_TICK_X_DISPLACEMENT).min(0.0);
 }
 
@@ -288,7 +288,7 @@ fn damage_character_system(
     time: Res<Time>,
     mut health_change_event_writer: EventWriter<HealthChangeEvent>,
 ) {
-    let (mut health, mut damage_cooldown, transform) = query.single_mut().unwrap();
+    let (mut health, mut damage_cooldown, transform) = query.single_mut();
     let pos_x = transform.translation.x;
 
     if !damage_cooldown.never_damaged {
@@ -325,7 +325,7 @@ fn calculate_damage(cur_health: f32, desired_damage: f32) -> f32 {
 }
 
 fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation), With<HealthBar>>) {
-    let (mut path, animation) = health_bar_query.single_mut().unwrap();
+    let (mut path, animation) = health_bar_query.single_mut();
 
     let animation_progress = animation.timer.percent();
     let animated_health_value = animation.initial_value
@@ -347,7 +347,7 @@ fn update_hearts_system(
     character_query: Query<&Lives, With<Character>>,
     time: Res<Time>,
 ) {
-    let character_lives = character_query.single().unwrap().0;
+    let character_lives = character_query.single().0;
     for (mut colors, mut draw_mode, heart, mut timer) in hearts_query.iter_mut() {
         timer.tick(time.delta());
         set_heart(
@@ -403,7 +403,7 @@ fn handle_character_death_system(
     time: Res<Time>,
 ) {
     let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
-        query.single_mut().unwrap();
+        query.single_mut();
 
     if health.0 <= 0.0 {
         death_animation_timer.0.tick(time.delta());
@@ -436,7 +436,7 @@ fn animate_hp_bar_system(
     mut query: Query<&mut Animation, With<HealthBar>>,
     time: Res<Time>,
 ) {
-    let mut animation = query.single_mut().unwrap();
+    let mut animation = query.single_mut();
     animation.timer.tick(time.delta());
 
     for health_change in health_change_event_reader.iter() {
@@ -453,7 +453,7 @@ fn damage_animation_system(
     mut query: Query<(&mut Animation, &mut Transform, &mut ShapeColors), With<Character>>,
     time: Res<Time>,
 ) {
-    let (mut animation, mut transform, mut shape_colors) = query.single_mut().unwrap();
+    let (mut animation, mut transform, mut shape_colors) = query.single_mut();
     animation.timer.tick(time.delta());
     for health_change in health_change_event_reader.iter() {
         if health_change.to < health_change.from && health_change.to != 0.0 {
@@ -475,7 +475,7 @@ fn damage_animation_system(
 fn character_death_animation_system(
     mut query: Query<(&mut Transform, &mut ShapeColors, &DeathAnimationTimer), With<Character>>,
 ) {
-    let (mut transform, mut shape_colors, death_animation_timer) = query.single_mut().unwrap();
+    let (mut transform, mut shape_colors, death_animation_timer) = query.single_mut();
     let animation_progress = death_animation_timer.0.percent();
 
     if !death_animation_timer.0.paused() {

@@ -15,7 +15,7 @@ use bevy::{
     app::{App, Plugin},
     asset::{Assets, Handle},
     ecs::{
-        query::{Added, Changed, Or},
+        query::{Changed, Or},
         schedule::{StageLabel, SystemStage},
         system::{Query, ResMut},
     },
@@ -99,6 +99,7 @@ impl Plugin for ShapePlugin {
             .add_system_to_stage(Stage::Shape, complete_shape_bundle_system);
 
         crate::render::add_shape_pipeline(&mut app.world);
+        crate::render::add_ui_shape_pipeline(&mut app.world);
     }
 }
 
@@ -111,9 +112,11 @@ fn complete_shape_bundle_system(
     mut stroke_tess: ResMut<StrokeTessellator>,
     mut query: Query<
         (&DrawMode, &Path, &mut Handle<Mesh>, &ShapeColors),
-        Or<(Added<Path>, Changed<ShapeColors>, Changed<DrawMode>)>,
+        Or<(Changed<Path>, Changed<ShapeColors>, Changed<DrawMode>)>,
     >,
 ) {
+    // TODO: Handle `Shape` component changed.
+
     for (tess_mode, path, mut mesh, colors) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 

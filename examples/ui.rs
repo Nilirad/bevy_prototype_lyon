@@ -69,20 +69,16 @@ fn main() {
             SystemSet::on_update(GameState::Playing)
                 .label("gameplay")
                 .after("tick_timers")
-                .with_system(move_character_system)
-                .with_system(damage_character_system)
-                .with_system(handle_character_death_system),
+                .with_system(move_character_system.label("move_character"))
+                .with_system(damage_character_system.after("move_character")),
         )
         .add_system_set(
             SystemSet::new()
                 .after("gameplay")
-                .with_system(animate_hp_bar_system.label("animate_hp_bar"))
-                .with_system(
-                    update_health_bar_system
-                        .after("animate_hp_bar")
-                        .label("update_health_bar"),
-                )
+                .with_system(update_health_bar_system.label("update_health_bar"))
                 .with_system(update_hearts_system.after("update_health_bar"))
+                // The following ordering is to ensure that damage animation doesn't cancel
+                // death animation.
                 .with_system(damage_animation_system.label("damage_animation"))
                 .with_system(character_death_animation_system.after("damage_animation")),
         )
@@ -242,13 +238,23 @@ fn move_character_system(mut query: Query<&mut Transform, With<Character>>) {
 }
 
 fn damage_character_system(
-    mut query: Query<(&mut Health, &mut DamageCooldown, &Transform), With<Character>>,
+    mut query: Query<
+        (
+            &mut Health,
+            &mut Lives,
+            &mut Transform,
+            &mut DamageCooldown,
+            &mut DeathAnimationTimer,
+        ),
+        With<Character>,
+    >,
+    mut game_state: ResMut<State<GameState>>,
     mut health_changed_event_writer: EventWriter<HealthChangedEvent>,
 ) {
-    let (mut health, mut damage_cooldown, transform) = query.single_mut();
-    let pos_x = transform.translation.x;
+    let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
+        query.single_mut();
 
-    if pos_x > DAMAGE_TRESHOLD_X_POSITION {
+    if transform.translation.x > DAMAGE_TRESHOLD_X_POSITION {
         if damage_cooldown.0.finished() {
             damage_cooldown.0.reset();
             let initial_health = health.0;
@@ -259,6 +265,27 @@ fn damage_character_system(
             });
         }
     }
+
+    if health.0 <= 0.0 {
+        if death_animation_timer.0.paused() {
+            death_animation_timer.0.unpause();
+            lives.0 -= 1;
+        } else if death_animation_timer.0.finished() {
+            if lives.0 > 0 {
+                health_changed_event_writer.send(HealthChangedEvent {
+                    from: 0.0,
+                    to: MAX_HEALTH,
+                });
+                health.0 = MAX_HEALTH;
+                transform.translation.x = SPAWN_X_POSITION;
+                damage_cooldown.0.tick(DAMAGE_COOLDOWN_TIME);
+                death_animation_timer.0.pause();
+                death_animation_timer.0.reset();
+            } else {
+                game_state.set(GameState::GameOver).unwrap();
+            }
+        }
+    }
 }
 
 fn calculate_damage(cur_health: f32, desired_damage: f32) -> f32 {
@@ -266,8 +293,19 @@ fn calculate_damage(cur_health: f32, desired_damage: f32) -> f32 {
     cur_health - new_health
 }
 
-fn update_health_bar_system(mut health_bar_query: Query<(&mut Path, &Animation), With<HealthBar>>) {
-    let (mut path, animation) = health_bar_query.single_mut();
+fn update_health_bar_system(
+    mut health_bar_query: Query<(&mut Path, &mut Animation), With<HealthBar>>,
+    mut health_changed_event_reader: EventReader<HealthChangedEvent>,
+) {
+    let (mut path, mut animation) = health_bar_query.single_mut();
+
+    for health_changed in health_changed_event_reader.iter() {
+        if animation.timer.finished() {
+            animation.timer.reset();
+            animation.initial_value = health_changed.from;
+        }
+        animation.final_value = health_changed.to;
+    }
 
     let animation_progress = animation.timer.percent();
     let animated_health_value = animation.initial_value
@@ -324,60 +362,6 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Tim
                 outline_options: StrokeOptions::default().with_line_width(5.0),
             }
         }
-    }
-}
-
-fn handle_character_death_system(
-    mut query: Query<
-        (
-            &mut Health,
-            &mut Lives,
-            &mut Transform,
-            &mut DamageCooldown,
-            &mut DeathAnimationTimer,
-        ),
-        With<Character>,
-    >,
-    mut game_state: ResMut<State<GameState>>,
-    mut health_changed_event_writer: EventWriter<HealthChangedEvent>,
-) {
-    let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
-        query.single_mut();
-
-    if health.0 <= 0.0 {
-        if death_animation_timer.0.paused() {
-            death_animation_timer.0.unpause();
-            lives.0 -= 1;
-        } else if death_animation_timer.0.finished() {
-            if lives.0 > 0 {
-                health_changed_event_writer.send(HealthChangedEvent {
-                    from: 0.0,
-                    to: MAX_HEALTH,
-                });
-                health.0 = MAX_HEALTH;
-                transform.translation.x = SPAWN_X_POSITION;
-                damage_cooldown.0.tick(DAMAGE_COOLDOWN_TIME);
-                death_animation_timer.0.pause();
-                death_animation_timer.0.reset();
-            } else {
-                game_state.set(GameState::GameOver).unwrap();
-            }
-        }
-    }
-}
-
-fn animate_hp_bar_system(
-    mut health_changed_event_reader: EventReader<HealthChangedEvent>,
-    mut query: Query<&mut Animation, With<HealthBar>>,
-) {
-    let mut animation = query.single_mut();
-
-    for health_changed in health_changed_event_reader.iter() {
-        if animation.timer.finished() {
-            animation.timer.reset();
-            animation.initial_value = health_changed.from;
-        }
-        animation.final_value = health_changed.to;
     }
 }
 

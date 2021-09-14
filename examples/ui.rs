@@ -10,6 +10,9 @@ use lyon_tessellation::path::{path::Builder, Path};
 
 // TODO: Death animation
 
+// TODO: Dedicated system for timers?
+// TODO: Refactor keeping in mind character states?
+
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum GameState {
     Playing,
@@ -32,8 +35,10 @@ const DAMAGE_TRESHOLD_X_POSITION: f32 = -100.0;
 const DAMAGE_AMOUNT: f32 = 3.0;
 const DAMAGE_ANIMATION_SECS: f32 = 0.4;
 const CHARACTER_DAMAGE_ANGLE: f32 = -std::f32::consts::PI / 16.0;
+const CHARACTER_DEAD_ANGLE: f32 = -std::f32::consts::FRAC_PI_2;
 const HEALTH_CHANGE_ANIMATION_SECS: f32 = 0.25;
 const LIFE_LOST_ANIMATION_SECS: f32 = 0.1;
+const DEATH_ANIMATION_SECS: f32 = 0.7;
 const DAMAGE_COOLDOWN_SECS: f32 = 0.5;
 const HEALTH_BAR_WIDTH: f32 = 300.0;
 
@@ -51,6 +56,7 @@ struct Animation {
     initial_value: f32,
     final_value: f32,
 }
+struct DeathAnimationTimer(Timer);
 
 fn main() {
     App::new()
@@ -78,7 +84,8 @@ fn main() {
                         .label("update_health_bar"),
                 )
                 .with_system(update_hearts_system.after("update_health_bar"))
-                .with_system(damage_animation_system),
+                .with_system(damage_animation_system)
+                .with_system(character_death_animation_system),
         )
         .run();
 }
@@ -252,6 +259,9 @@ fn setup_gameplay_system(mut commands: Commands) {
     let mut damage_animation_timer = Timer::from_seconds(DAMAGE_ANIMATION_SECS, false);
     damage_animation_timer.tick(std::time::Duration::from_secs_f32(DAMAGE_ANIMATION_SECS));
 
+    let mut death_animation_timer = Timer::from_seconds(DEATH_ANIMATION_SECS, false);
+    death_animation_timer.pause();
+
     commands.spawn_bundle(lava_pool);
     commands
         .spawn_bundle(character)
@@ -266,7 +276,8 @@ fn setup_gameplay_system(mut commands: Commands) {
             timer: damage_animation_timer,
             initial_value: CHARACTER_DAMAGE_ANGLE,
             final_value: 0.0,
-        });
+        })
+        .insert(DeathAnimationTimer(death_animation_timer));
 }
 
 fn move_player_system(mut query: Query<&mut Transform, With<Character>>) {
@@ -380,29 +391,44 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Tim
 
 fn handle_player_death_system(
     mut query: Query<
-        (&mut Health, &mut Lives, &mut Transform, &mut DamageCooldown),
+        (
+            &mut Health,
+            &mut Lives,
+            &mut Transform,
+            &mut DamageCooldown,
+            &mut DeathAnimationTimer,
+        ),
         With<Character>,
     >,
     mut game_state: ResMut<State<GameState>>,
     mut health_change_event_writer: EventWriter<HealthChangeEvent>,
+    time: Res<Time>,
 ) {
-    let (mut health, mut lives, mut transform, mut damage_cooldown) = query.single_mut().unwrap();
+    let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
+        query.single_mut().unwrap();
 
     if health.0 <= 0.0 {
-        lives.0 -= 1;
-        if lives.0 > 0 {
-            health_change_event_writer.send(HealthChangeEvent {
-                from: 0.0,
-                to: MAX_HEALTH,
-            });
-            health.0 = MAX_HEALTH;
-            transform.translation.x = SPAWN_X_POSITION;
-            *damage_cooldown = DamageCooldown {
-                never_damaged: true,
-                timer: Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false),
-            };
-        } else {
-            game_state.set(GameState::GameOver).unwrap();
+        death_animation_timer.0.tick(time.delta());
+        if death_animation_timer.0.paused() {
+            death_animation_timer.0.unpause();
+            lives.0 -= 1;
+        } else if death_animation_timer.0.finished() {
+            if lives.0 > 0 {
+                health_change_event_writer.send(HealthChangeEvent {
+                    from: 0.0,
+                    to: MAX_HEALTH,
+                });
+                health.0 = MAX_HEALTH;
+                transform.translation.x = SPAWN_X_POSITION;
+                *damage_cooldown = DamageCooldown {
+                    never_damaged: true,
+                    timer: Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false),
+                };
+                death_animation_timer.0.pause();
+                death_animation_timer.0.reset();
+            } else {
+                game_state.set(GameState::GameOver).unwrap();
+            }
         }
     }
 }
@@ -446,4 +472,20 @@ fn damage_animation_system(
     let green_blue = animation.timer.percent();
 
     *shape_colors = ShapeColors::outlined(Color::rgb(red, green_blue, green_blue), Color::BLACK);
+}
+
+// TODO: Sometimes death animation doesn't work. Timers are working correctly. May it be
+// a change detection issue?
+fn character_death_animation_system(
+    mut query: Query<(&mut Transform, &mut ShapeColors, &DeathAnimationTimer), With<Character>>,
+) {
+    let (mut transform, mut shape_colors, death_animation_timer) = query.single_mut().unwrap();
+    let animation_progress = death_animation_timer.0.percent();
+
+    if !death_animation_timer.0.paused() {
+        transform.rotation =
+            Quat::from_axis_angle(Vec3::Z, CHARACTER_DEAD_ANGLE * animation_progress);
+        shape_colors.main.set_a(1.0 - animation_progress);
+        shape_colors.outline.set_a(1.0 - animation_progress);
+    }
 }

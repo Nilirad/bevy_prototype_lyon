@@ -1,5 +1,7 @@
 //! Shows how to use shapes for the UI camera.
 
+use std::time::Duration;
+
 use bevy::prelude::*;
 use bevy_prototype_lyon::{
     prelude::*,
@@ -8,7 +10,6 @@ use bevy_prototype_lyon::{
 
 use lyon_tessellation::path::{path::Builder, Path};
 
-// TODO: Dedicated system for timers?
 // TODO: Refactor keeping in mind character states?
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -43,10 +44,7 @@ const HEALTH_BAR_WIDTH: f32 = 300.0;
 struct Character;
 struct Health(f32);
 struct Lives(u32);
-struct DamageCooldown {
-    never_damaged: bool,
-    timer: Timer,
-}
+struct DamageCooldown(Timer);
 struct HealthBar;
 struct Heart(u32);
 struct Animation {
@@ -256,6 +254,9 @@ fn setup_gameplay_system(mut commands: Commands) {
         Transform::from_xyz(SPAWN_X_POSITION, 0.0, 0.0),
     );
 
+    let mut damage_cooldown_timer = Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false);
+    damage_cooldown_timer.tick(std::time::Duration::from_secs_f32(DAMAGE_COOLDOWN_SECS));
+
     let mut damage_animation_timer = Timer::from_seconds(DAMAGE_ANIMATION_SECS, false);
     damage_animation_timer.tick(std::time::Duration::from_secs_f32(DAMAGE_ANIMATION_SECS));
 
@@ -268,10 +269,7 @@ fn setup_gameplay_system(mut commands: Commands) {
         .insert(Character)
         .insert(Health(MAX_HEALTH))
         .insert(Lives(MAX_LIVES))
-        .insert(DamageCooldown {
-            never_damaged: true,
-            timer: Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false),
-        })
+        .insert(DamageCooldown(damage_cooldown_timer))
         .insert(Animation {
             timer: damage_animation_timer,
             initial_value: CHARACTER_DAMAGE_ANGLE,
@@ -287,36 +285,20 @@ fn move_character_system(mut query: Query<&mut Transform, With<Character>>) {
 
 fn damage_character_system(
     mut query: Query<(&mut Health, &mut DamageCooldown, &Transform), With<Character>>,
-    time: Res<Time>,
     mut health_change_event_writer: EventWriter<HealthChangeEvent>,
 ) {
     let (mut health, mut damage_cooldown, transform) = query.single_mut();
     let pos_x = transform.translation.x;
 
-    if !damage_cooldown.never_damaged {
-        damage_cooldown.timer.tick(time.delta());
-    }
-
-    // TODO: Refactor. See in particular if you can simply use timer without the bool.
     if pos_x > DAMAGE_TRESHOLD_X_POSITION {
-        if damage_cooldown.never_damaged {
-            damage_cooldown.never_damaged = false;
+        if damage_cooldown.0.finished() {
+            damage_cooldown.0.reset();
             let initial_health = health.0;
-            let damage = calculate_damage(health.0, DAMAGE_AMOUNT);
-            health.0 -= damage;
+            health.0 -= calculate_damage(health.0, DAMAGE_AMOUNT);
             health_change_event_writer.send(HealthChangeEvent {
                 from: initial_health,
                 to: health.0,
             });
-        } else if damage_cooldown.timer.finished() {
-            let initial_health = health.0;
-            let damage = calculate_damage(health.0, DAMAGE_AMOUNT);
-            health.0 -= damage;
-            health_change_event_writer.send(HealthChangeEvent {
-                from: initial_health,
-                to: health.0,
-            });
-            damage_cooldown.timer.reset();
         }
     }
 }
@@ -416,10 +398,9 @@ fn handle_character_death_system(
                 });
                 health.0 = MAX_HEALTH;
                 transform.translation.x = SPAWN_X_POSITION;
-                *damage_cooldown = DamageCooldown {
-                    never_damaged: true,
-                    timer: Timer::from_seconds(DAMAGE_COOLDOWN_SECS, false),
-                };
+                damage_cooldown
+                    .0
+                    .tick(Duration::from_secs_f32(DAMAGE_COOLDOWN_SECS));
                 death_animation_timer.0.pause();
                 death_animation_timer.0.reset();
             } else {
@@ -483,7 +464,7 @@ fn character_death_animation_system(
 
 fn tick_timers_system(
     mut timer_query: Query<&mut Timer>,
-    // mut damage_cooldown_query: Query<&mut DamageCooldown>,
+    mut damage_cooldown_query: Query<&mut DamageCooldown>,
     mut animation_query: Query<&mut Animation>,
     mut death_animation_timer_query: Query<&mut DeathAnimationTimer>,
     time: Res<Time>,
@@ -493,9 +474,9 @@ fn tick_timers_system(
     for mut timer in timer_query.iter_mut() {
         timer.tick(delta);
     }
-    /* for mut damage_cooldown in damage_cooldown_query.iter_mut() {
-        damage_cooldown.timer.tick(delta);
-    } */
+    for mut damage_cooldown in damage_cooldown_query.iter_mut() {
+        damage_cooldown.0.tick(delta);
+    }
     for mut animation in animation_query.iter_mut() {
         animation.timer.tick(delta);
     }

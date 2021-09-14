@@ -11,7 +11,7 @@ use bevy_prototype_lyon::{
 
 use lyon_tessellation::path::{path::Builder, Path};
 
-// TODO: Refactor keeping in mind character states?
+// TODO: Use states to reset player data in initialization or after death?
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum CharacterState {
@@ -79,7 +79,8 @@ fn main() {
         )
         .add_system_set(
             SystemSet::on_update(CharacterState::Dying)
-                .with_system(character_death_animation_system),
+                .with_system(manage_character_death_system.label("manage_character_death"))
+                .with_system(character_death_animation_system.after("manage_character_death")),
         )
         .add_system_set(
             SystemSet::new()
@@ -242,21 +243,13 @@ fn move_character_system(mut query: Query<&mut Transform, With<Character>>) {
 }
 
 fn damage_character_system(
-    mut query: Query<
-        (
-            &mut Health,
-            &mut Lives,
-            &mut Transform,
-            &mut DamageCooldown,
-            &mut DeathAnimationTimer,
-        ),
-        With<Character>,
-    >,
-    mut game_state: ResMut<State<CharacterState>>,
+    mut query: Query<(&mut Health, &Transform, &mut DamageCooldown), With<Character>>,
+    mut character_state: ResMut<State<CharacterState>>,
     mut health_changed_event_writer: EventWriter<HealthChangedEvent>,
 ) {
-    let (mut health, mut lives, mut transform, mut damage_cooldown, mut death_animation_timer) =
-        query.single_mut();
+    let (mut health, transform, mut damage_cooldown) = query.single_mut();
+
+    let mut damage_applied = false;
 
     if transform.translation.x > DAMAGE_TRESHOLD_X_POSITION {
         if damage_cooldown.0.finished() {
@@ -267,28 +260,18 @@ fn damage_character_system(
                 from: initial_health,
                 to: health.0,
             });
+            damage_applied = true;
         }
     }
 
-    if health.0 <= 0.0 {
-        if death_animation_timer.0.paused() {
-            death_animation_timer.0.unpause();
-            lives.0 -= 1;
-        } else if death_animation_timer.0.finished() {
-            if lives.0 > 0 {
-                health_changed_event_writer.send(HealthChangedEvent {
-                    from: 0.0,
-                    to: MAX_HEALTH,
-                });
-                health.0 = MAX_HEALTH;
-                transform.translation.x = SPAWN_X_POSITION;
-                damage_cooldown.0.tick(DAMAGE_COOLDOWN_TIME);
-                death_animation_timer.0.pause();
-                death_animation_timer.0.reset();
+    if damage_applied {
+        character_state
+            .set(if health.0 > 0.0 {
+                CharacterState::Hurt
             } else {
-                game_state.set(CharacterState::GameOver).unwrap();
-            }
-        }
+                CharacterState::Dying
+            })
+            .unwrap();
     }
 }
 
@@ -372,6 +355,7 @@ fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Tim
 fn damage_animation_system(
     mut health_changed_event_reader: EventReader<HealthChangedEvent>,
     mut query: Query<(&mut Animation, &mut Transform, &mut ShapeColors), With<Character>>,
+    mut character_state: ResMut<State<CharacterState>>,
 ) {
     let (mut animation, mut transform, mut shape_colors) = query.single_mut();
 
@@ -390,6 +374,49 @@ fn damage_animation_system(
     let green_blue = animation.timer.percent();
 
     *shape_colors = ShapeColors::outlined(Color::rgb(red, green_blue, green_blue), Color::BLACK);
+
+    if animation.timer.finished() {
+        character_state.set(CharacterState::Normal).unwrap();
+    }
+}
+
+fn manage_character_death_system(
+    mut query: Query<
+        (
+            &mut DeathAnimationTimer,
+            &mut Lives,
+            &mut Transform,
+            &mut Health,
+            &mut DamageCooldown,
+        ),
+        With<Character>,
+    >,
+    mut character_state: ResMut<State<CharacterState>>,
+    mut health_changed_event_writer: EventWriter<HealthChangedEvent>,
+) {
+    let (mut death_animation_timer, mut lives, mut transform, mut health, mut damage_cooldown) =
+        query.single_mut();
+
+    if death_animation_timer.0.paused() {
+        death_animation_timer.0.unpause();
+    } else if death_animation_timer.0.finished() {
+        lives.0 -= 1;
+        if lives.0 > 0 {
+            transform.translation.x = SPAWN_X_POSITION;
+            health_changed_event_writer.send(HealthChangedEvent {
+                from: 0.0,
+                to: MAX_HEALTH,
+            });
+            health.0 = MAX_HEALTH;
+            transform.translation.x = SPAWN_X_POSITION;
+            damage_cooldown.0.tick(DAMAGE_COOLDOWN_TIME);
+            death_animation_timer.0.pause();
+            death_animation_timer.0.reset();
+            character_state.set(CharacterState::Normal).unwrap();
+        } else {
+            character_state.set(CharacterState::GameOver).unwrap();
+        }
+    }
 }
 
 fn character_death_animation_system(
@@ -398,12 +425,9 @@ fn character_death_animation_system(
     let (mut transform, mut shape_colors, death_animation_timer) = query.single_mut();
     let animation_progress = death_animation_timer.0.percent();
 
-    if !death_animation_timer.0.paused() {
-        transform.rotation =
-            Quat::from_axis_angle(Vec3::Z, CHARACTER_DEAD_ANGLE * animation_progress);
-        shape_colors.main.set_a(1.0 - animation_progress);
-        shape_colors.outline.set_a(1.0 - animation_progress);
-    }
+    transform.rotation = Quat::from_axis_angle(Vec3::Z, CHARACTER_DEAD_ANGLE * animation_progress);
+    shape_colors.main.set_a(1.0 - animation_progress);
+    shape_colors.outline.set_a(1.0 - animation_progress);
 }
 
 fn tick_timers_system(

@@ -99,8 +99,7 @@ fn setup_ui_system(mut commands: Commands) {
             extents: Vec2::new(310.0, 50.0),
             origin: shapes::RectangleOrigin::TopLeft,
         },
-        ShapeColors::new(Color::BLACK),
-        DrawMode::Fill(FillOptions::default()),
+        DrawMode::Fill(FillMode::color(Color::BLACK)),
         Style {
             position_type: PositionType::Absolute,
             position: Rect {
@@ -118,8 +117,7 @@ fn setup_ui_system(mut commands: Commands) {
             extents: Vec2::new(HEALTH_BAR_WIDTH, 40.0),
             origin: shapes::RectangleOrigin::TopLeft,
         },
-        ShapeColors::new(Color::GREEN),
-        DrawMode::Fill(FillOptions::default()),
+        DrawMode::Fill(FillMode::color(Color::GREEN)),
         Style {
             position_type: PositionType::Absolute,
             position: Rect {
@@ -157,10 +155,9 @@ fn setup_ui_system(mut commands: Commands) {
         let offset = 50.0 * (i - 1) as f32;
         let heart = GeometryBuilder::build_ui_as(
             &heart_shape,
-            ShapeColors::outlined(Color::RED, Color::BLACK),
             DrawMode::Outlined {
-                fill_options: FillOptions::default(),
-                outline_options: StrokeOptions::default().with_line_width(5.0),
+                fill_mode: FillMode::color(Color::RED),
+                outline_mode: StrokeMode::new(Color::BLACK, 5.0),
             },
             Style {
                 position_type: PositionType::Absolute,
@@ -189,10 +186,9 @@ fn setup_gameplay_system(mut commands: Commands) {
             extents: Vec2::splat(200.0),
             ..shapes::Rectangle::default()
         },
-        ShapeColors::outlined(Color::ORANGE, Color::BLACK),
         DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(5.0),
+            fill_mode: FillMode::color(Color::ORANGE),
+            outline_mode: StrokeMode::new(Color::BLACK, 5.0),
         },
         Transform::default(),
     );
@@ -203,10 +199,9 @@ fn setup_gameplay_system(mut commands: Commands) {
             feature: RegularPolygonFeature::Radius(30.0),
             ..RegularPolygon::default()
         },
-        ShapeColors::outlined(Color::CYAN, Color::BLACK),
         DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(3.0),
+            fill_mode: FillMode::color(Color::CYAN),
+            outline_mode: StrokeMode::new(Color::BLACK, 3.0),
         },
         Transform::from_xyz(SPAWN_X_POSITION, 0.0, 0.0),
     );
@@ -305,47 +300,43 @@ fn update_health_bar_system(
 }
 
 fn update_hearts_system(
-    mut hearts_query: Query<(&mut ShapeColors, &mut DrawMode, &Heart, &mut Timer)>,
+    mut hearts_query: Query<(&mut DrawMode, &Heart, &mut Timer)>,
     character_query: Query<&Lives, With<Character>>,
 ) {
     let character_lives = character_query.single().0;
-    for (mut colors, mut draw_mode, heart, mut timer) in hearts_query.iter_mut() {
-        set_heart(
-            &mut colors,
-            &mut draw_mode,
-            &mut timer,
-            character_lives >= heart.0,
-        );
+    for (mut draw_mode, heart, mut timer) in hearts_query.iter_mut() {
+        set_heart(&mut draw_mode, &mut timer, character_lives >= heart.0);
     }
 }
 
-fn set_heart(colors: &mut ShapeColors, draw_mode: &mut DrawMode, timer: &mut Timer, filled: bool) {
-    if filled {
-        *colors = ShapeColors::outlined(Color::RED, Color::BLACK);
-    } else {
-        if timer.paused() {
-            timer.unpause();
-        }
-
-        if timer.finished() {
-            *colors = ShapeColors::new(Color::BLACK);
+fn set_heart(draw_mode: &mut DrawMode, timer: &mut Timer, filled: bool) {
+    if let DrawMode::Outlined {
+        ref mut fill_mode,
+        outline_mode: _,
+    } = *draw_mode
+    {
+        if filled {
+            fill_mode.color = Color::RED;
         } else {
-            *colors = ShapeColors::outlined(Color::WHITE, Color::BLACK);
-        }
-    }
+            if timer.paused() {
+                timer.unpause();
+            }
 
-    *draw_mode = DrawMode::Outlined {
-        fill_options: FillOptions::default(),
-        outline_options: StrokeOptions::default().with_line_width(5.0),
+            if timer.finished() {
+                fill_mode.color = Color::BLACK;
+            } else {
+                fill_mode.color = Color::WHITE;
+            }
+        }
     }
 }
 
 fn damage_animation_system(
     mut health_changed_event_reader: EventReader<HealthChangedEvent>,
-    mut query: Query<(&mut Animation, &mut Transform, &mut ShapeColors), With<Character>>,
+    mut query: Query<(&mut Animation, &mut Transform, &mut DrawMode), With<Character>>,
     mut character_state: ResMut<State<CharacterState>>,
 ) {
-    let (mut animation, mut transform, mut shape_colors) = query.single_mut();
+    let (mut animation, mut transform, mut draw_mode) = query.single_mut();
 
     for health_changed in health_changed_event_reader.iter() {
         if health_changed.to < health_changed.from && health_changed.to != 0.0 {
@@ -361,7 +352,13 @@ fn damage_animation_system(
     let red = animation.timer.percent_left();
     let green_blue = animation.timer.percent();
 
-    *shape_colors = ShapeColors::outlined(Color::rgb(red, green_blue, green_blue), Color::BLACK);
+    if let DrawMode::Outlined {
+        ref mut fill_mode,
+        outline_mode: _,
+    } = *draw_mode
+    {
+        fill_mode.color = Color::rgb(red, green_blue, green_blue);
+    }
 
     if animation.timer.finished() {
         character_state.set(CharacterState::Normal).unwrap();
@@ -408,14 +405,22 @@ fn manage_character_death_system(
 }
 
 fn character_death_animation_system(
-    mut query: Query<(&mut Transform, &mut ShapeColors, &DeathAnimationTimer), With<Character>>,
+    mut query: Query<(&mut Transform, &mut DrawMode, &DeathAnimationTimer), With<Character>>,
 ) {
-    let (mut transform, mut shape_colors, death_animation_timer) = query.single_mut();
+    let (mut transform, mut draw_mode, death_animation_timer) = query.single_mut();
     let animation_progress = death_animation_timer.0.percent();
 
     transform.rotation = Quat::from_axis_angle(Vec3::Z, CHARACTER_DEAD_ANGLE * animation_progress);
-    shape_colors.main.set_a(1.0 - animation_progress);
-    shape_colors.outline.set_a(1.0 - animation_progress);
+
+    if let DrawMode::Outlined {
+        ref mut fill_mode,
+        ref mut outline_mode,
+    } = *draw_mode
+    {
+        let alpha = 1.0 - animation_progress;
+        fill_mode.color.set_a(alpha);
+        outline_mode.color.set_a(alpha);
+    }
 }
 
 fn tick_timers_system(

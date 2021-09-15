@@ -43,11 +43,10 @@ pub mod prelude {
     };
 
     pub use crate::{
-        entity::ShapeColors,
         geometry::{Geometry, GeometryBuilder},
         path::PathBuilder,
         plugin::ShapePlugin,
-        shapes,
-        utils::DrawMode,
+        shapes::{self, RectangleOrigin, RegularPolygon, RegularPolygonFeature},
+        utils::{DrawMode, FillMode, StrokeMode},
     };
 }

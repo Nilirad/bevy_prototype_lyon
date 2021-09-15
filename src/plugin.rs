@@ -30,9 +30,8 @@ use lyon_tessellation::{
     self as tess, path::Path, BuffersBuilder, FillTessellator, FillVertex, FillVertexConstructor,
     StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
 };
-use tess::{FillOptions, StrokeOptions};
 
-use crate::{entity::ShapeColors, utils::DrawMode};
+use crate::utils::{DrawMode, FillMode, StrokeMode};
 
 /// Stages for this plugin.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, StageLabel)]
@@ -110,41 +109,26 @@ fn complete_shape_bundle_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<
-        (&DrawMode, &Path, &mut Handle<Mesh>, &ShapeColors),
-        Or<(Changed<Path>, Changed<ShapeColors>, Changed<DrawMode>)>,
-    >,
+    mut query: Query<(&DrawMode, &Path, &mut Handle<Mesh>), Or<(Changed<Path>, Changed<DrawMode>)>>,
 ) {
     // TODO: Handle `Shape` component changed.
 
-    for (tess_mode, path, mut mesh, colors) in query.iter_mut() {
+    for (tess_mode, path, mut mesh) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 
         match tess_mode {
-            DrawMode::Fill(options) => {
-                fill(&mut fill_tess, path, options, &mut buffers, colors.main);
+            DrawMode::Fill(mode) => {
+                fill(&mut fill_tess, path, mode, &mut buffers);
             }
-            DrawMode::Stroke(options) => {
-                stroke(&mut stroke_tess, path, options, &mut buffers, colors.main);
+            DrawMode::Stroke(mode) => {
+                stroke(&mut stroke_tess, path, mode, &mut buffers);
             }
             DrawMode::Outlined {
-                fill_options,
-                outline_options,
+                fill_mode,
+                outline_mode,
             } => {
-                fill(
-                    &mut fill_tess,
-                    path,
-                    fill_options,
-                    &mut buffers,
-                    colors.main,
-                );
-                stroke(
-                    &mut stroke_tess,
-                    path,
-                    outline_options,
-                    &mut buffers,
-                    colors.outline,
-                );
+                fill(&mut fill_tess, path, fill_mode, &mut buffers);
+                stroke(&mut stroke_tess, path, outline_mode, &mut buffers);
             }
         }
 
@@ -156,19 +140,13 @@ fn complete_shape_bundle_system(
 fn fill(
     tess: &mut ResMut<FillTessellator>,
     path: &Path,
-    options: &FillOptions,
+    mode: &FillMode,
     buffers: &mut VertexBuffers,
-    vertex_color: Color,
 ) {
     if let Err(e) = tess.tessellate_path(
         path,
-        options,
-        &mut BuffersBuilder::new(
-            buffers,
-            VertexConstructor {
-                color: vertex_color,
-            },
-        ),
+        &mode.options,
+        &mut BuffersBuilder::new(buffers, VertexConstructor { color: mode.color }),
     ) {
         error!("FillTessellator error: {:?}", e);
     }
@@ -178,19 +156,13 @@ fn fill(
 fn stroke(
     tess: &mut ResMut<StrokeTessellator>,
     path: &Path,
-    options: &StrokeOptions,
+    mode: &StrokeMode,
     buffers: &mut VertexBuffers,
-    vertex_color: Color,
 ) {
     if let Err(e) = tess.tessellate_path(
         path,
-        options,
-        &mut BuffersBuilder::new(
-            buffers,
-            VertexConstructor {
-                color: vertex_color,
-            },
-        ),
+        &mode.options,
+        &mut BuffersBuilder::new(buffers, VertexConstructor { color: mode.color }),
     ) {
         error!("StrokeTessellator error: {:?}", e);
     }

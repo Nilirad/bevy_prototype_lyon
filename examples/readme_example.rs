@@ -23,10 +23,9 @@ fn setup(mut commands: Commands) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands.spawn_bundle(GeometryBuilder::build_as(
         &shape,
-        ShapeColors::outlined(Color::TEAL, Color::BLACK),
         DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(10.0),
+            fill_mode: FillMode::color(Color::CYAN),
+            outline_mode: StrokeMode::new(Color::BLACK, 10.0),
         },
         Transform::default(),
     ));

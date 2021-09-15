@@ -4,7 +4,7 @@ use bevy::{transform::components::Transform, ui::Style};
 use lyon_tessellation::path::{path::Builder, Path};
 
 use crate::{
-    entity::{ShapeBundle, ShapeColors, UiShapeBundle},
+    entity::{ShapeBundle, UiShapeBundle},
     utils::DrawMode,
 };
 
@@ -104,10 +104,9 @@ impl GeometryBuilder {
     /// Returns a [`ShapeBundle`] using the data contained in the path
     /// builder.
     #[must_use]
-    pub fn build(self, colors: ShapeColors, mode: DrawMode, transform: Transform) -> ShapeBundle {
+    pub fn build(self, mode: DrawMode, transform: Transform) -> ShapeBundle {
         ShapeBundle {
             path: self.0.build(),
-            colors,
             mode,
             transform,
             ..ShapeBundle::default()
@@ -117,10 +116,9 @@ impl GeometryBuilder {
     /// Returns a [`UiShapeBundle`] using the data contained in the path
     /// builder.
     #[must_use]
-    pub fn build_ui(self, colors: ShapeColors, mode: DrawMode, style: Style) -> UiShapeBundle {
+    pub fn build_ui(self, mode: DrawMode, style: Style) -> UiShapeBundle {
         UiShapeBundle {
             path: self.0.build(),
-            colors,
             mode,
             style,
             ..UiShapeBundle::default()
@@ -147,29 +145,19 @@ impl GeometryBuilder {
     ///     ));
     /// }
     /// ```
-    pub fn build_as(
-        shape: &impl Geometry,
-        colors: ShapeColors,
-        mode: DrawMode,
-        transform: Transform,
-    ) -> ShapeBundle {
+    pub fn build_as(shape: &impl Geometry, mode: DrawMode, transform: Transform) -> ShapeBundle {
         let mut multishape = Self::new();
         multishape.add(shape);
-        multishape.build(colors, mode, transform)
+        multishape.build(mode, transform)
     }
 
     /// Generates a [`UiShapeBundle`] with only one geometry.
     ///
     /// Adds a geometry to the path builder.
-    pub fn build_ui_as(
-        shape: &impl Geometry,
-        colors: ShapeColors,
-        mode: DrawMode,
-        style: Style,
-    ) -> UiShapeBundle {
+    pub fn build_ui_as(shape: &impl Geometry, mode: DrawMode, style: Style) -> UiShapeBundle {
         let mut multishape = Self::new();
         multishape.add(shape);
-        multishape.build_ui(colors, mode, style)
+        multishape.build_ui(mode, style)
     }
 }
 

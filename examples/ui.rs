@@ -96,8 +96,7 @@ fn setup_ui_system(mut commands: Commands) {
 
     let hp_bar_background = GeometryBuilder::build_ui_as(
         &shapes::Rectangle {
-            width: 310.0,
-            height: 50.0,
+            extents: Vec2::new(310.0, 50.0),
             origin: shapes::RectangleOrigin::TopLeft,
         },
         ShapeColors::new(Color::BLACK),
@@ -116,8 +115,7 @@ fn setup_ui_system(mut commands: Commands) {
 
     let hp_bar_foreground = GeometryBuilder::build_ui_as(
         &shapes::Rectangle {
-            width: HEALTH_BAR_WIDTH,
-            height: 40.0,
+            extents: Vec2::new(HEALTH_BAR_WIDTH, 40.0),
             origin: shapes::RectangleOrigin::TopLeft,
         },
         ShapeColors::new(Color::GREEN),
@@ -188,8 +186,7 @@ fn setup_gameplay_system(mut commands: Commands) {
 
     let lava_pool = GeometryBuilder::build_as(
         &shapes::Rectangle {
-            width: 200.0,
-            height: 200.0,
+            extents: Vec2::splat(200.0),
             ..shapes::Rectangle::default()
         },
         ShapeColors::outlined(Color::ORANGE, Color::BLACK),
@@ -299,8 +296,7 @@ fn update_health_bar_system(
 
     let mut b = Builder::new();
     let newrect = shapes::Rectangle {
-        width: HEALTH_BAR_WIDTH * animated_health_value / MAX_HEALTH,
-        height: 40.0,
+        extents: Vec2::new(HEALTH_BAR_WIDTH * animated_health_value / MAX_HEALTH, 40.0),
         origin: shapes::RectangleOrigin::TopLeft,
     };
     newrect.add_geometry(&mut b);

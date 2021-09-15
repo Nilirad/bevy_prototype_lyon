@@ -7,7 +7,7 @@ fn main() {
         .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_startup_system(startup_system)
+        .add_startup_system(setup_system)
         .run();
 }
 struct Name(String);
@@ -19,7 +19,7 @@ struct BuildingBundle {
     transform: Transform,
     global_transform: GlobalTransform,
 }
-fn startup_system(mut commands: Commands) {
+fn setup_system(mut commands: Commands) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 
     commands.spawn_bundle(BuildingBundle {

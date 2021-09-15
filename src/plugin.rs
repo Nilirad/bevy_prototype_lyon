@@ -95,7 +95,7 @@ impl Plugin for ShapePlugin {
                 Stage::Shape,
                 SystemStage::parallel(),
             )
-            .add_system_to_stage(Stage::Shape, complete_shape_bundle_system);
+            .add_system_to_stage(Stage::Shape, mesh_shapes_system);
 
         crate::render::add_shape_pipeline(&mut app.world);
         crate::render::add_ui_shape_pipeline(&mut app.world);
@@ -105,7 +105,7 @@ impl Plugin for ShapePlugin {
 /// Queries all the [`ShapeBundle`]s to mesh them when they are added
 /// or re-mesh them when they are changed.
 #[allow(clippy::type_complexity)]
-fn complete_shape_bundle_system(
+fn mesh_shapes_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,

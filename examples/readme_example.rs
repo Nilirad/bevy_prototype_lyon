@@ -9,11 +9,11 @@ fn main() {
         .insert_resource(Msaa { samples: 8 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_startup_system(setup)
+        .add_startup_system(setup_system)
         .run();
 }
 
-fn setup(mut commands: Commands) {
+fn setup_system(mut commands: Commands) {
     let shape = shapes::RegularPolygon {
         sides: 6,
         feature: shapes::RegularPolygonFeature::Radius(200.0),

@@ -6,15 +6,15 @@ fn main() {
         .insert_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_startup_system(setup)
-        .add_system(change_draw_mode)
-        .add_system(rotate)
+        .add_startup_system(setup_system)
+        .add_system(change_draw_mode_system)
+        .add_system(rotate_shape_system)
         .run();
 }
 
 struct ExampleShape;
 
-fn rotate(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {
+fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {
     for mut transform in query.iter_mut() {
         let delta = time.delta_seconds();
 
@@ -22,7 +22,7 @@ fn rotate(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>)
     }
 }
 
-fn change_draw_mode(mut query: Query<&mut DrawMode>, time: Res<Time>) {
+fn change_draw_mode_system(mut query: Query<&mut DrawMode>, time: Res<Time>) {
     for mut draw_mode in query.iter_mut() {
         let hue = (time.seconds_since_startup() * 50.0) % 360.0;
         let outline_width = 2.0 + time.seconds_since_startup().sin().abs() * 10.0;
@@ -38,7 +38,7 @@ fn change_draw_mode(mut query: Query<&mut DrawMode>, time: Res<Time>) {
     }
 }
 
-fn setup(mut commands: Commands) {
+fn setup_system(mut commands: Commands) {
     let shape = shapes::RegularPolygon {
         sides: 6,
         feature: shapes::RegularPolygonFeature::Radius(200.0),

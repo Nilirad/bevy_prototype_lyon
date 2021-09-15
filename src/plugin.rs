@@ -102,6 +102,9 @@ impl Plugin for ShapePlugin {
     }
 }
 
+// TODO: Allow the following system (or something else) to be able to remesh a shape given
+// a new impl Shape.
+
 /// Queries all the [`ShapeBundle`]s to mesh them when they are added
 /// or re-mesh them when they are changed.
 #[allow(clippy::type_complexity)]
@@ -111,8 +114,6 @@ fn mesh_shapes_system(
     mut stroke_tess: ResMut<StrokeTessellator>,
     mut query: Query<(&DrawMode, &Path, &mut Handle<Mesh>), Or<(Changed<Path>, Changed<DrawMode>)>>,
 ) {
-    // TODO: Handle `Shape` component changed.
-
     for (tess_mode, path, mut mesh) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 

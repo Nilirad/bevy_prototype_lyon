@@ -305,27 +305,23 @@ fn update_hearts_system(
 ) {
     let character_lives = character_query.single().0;
     for (mut draw_mode, heart, mut timer) in hearts_query.iter_mut() {
-        set_heart(&mut draw_mode, &mut timer, character_lives >= heart.0);
-    }
-}
-
-fn set_heart(draw_mode: &mut DrawMode, timer: &mut Timer, filled: bool) {
-    if let DrawMode::Outlined {
-        ref mut fill_mode,
-        outline_mode: _,
-    } = *draw_mode
-    {
-        if filled {
-            fill_mode.color = Color::RED;
-        } else {
-            if timer.paused() {
-                timer.unpause();
-            }
-
-            if timer.finished() {
-                fill_mode.color = Color::BLACK;
+        if let DrawMode::Outlined {
+            ref mut fill_mode,
+            outline_mode: _,
+        } = *draw_mode
+        {
+            if character_lives >= heart.0 {
+                fill_mode.color = Color::RED;
             } else {
-                fill_mode.color = Color::WHITE;
+                if timer.paused() {
+                    timer.unpause();
+                }
+
+                if timer.finished() {
+                    fill_mode.color = Color::BLACK;
+                } else {
+                    fill_mode.color = Color::WHITE;
+                }
             }
         }
     }

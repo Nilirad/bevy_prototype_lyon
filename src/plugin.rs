@@ -102,9 +102,6 @@ impl Plugin for ShapePlugin {
     }
 }
 
-// TODO: Allow the following system (or something else) to be able to remesh a shape given
-// a new impl Shape.
-
 /// Queries all the [`ShapeBundle`]s to mesh them when they are added
 /// or re-mesh them when they are changed.
 #[allow(clippy::type_complexity)]

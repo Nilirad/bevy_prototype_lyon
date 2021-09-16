@@ -166,3 +166,39 @@ impl Default for GeometryBuilder {
         Self::new()
     }
 }
+
+/// A builder for `Path`s based on shapes implementing [`Geometry`].
+pub struct ShapePath(Builder);
+
+impl ShapePath {
+    /// Returns a new builder.
+    #[must_use]
+    pub fn new() -> Self {
+        Self(Builder::new())
+    }
+
+    /// Adds a shape to the builder.
+    pub fn add(&mut self, shape: &impl Geometry) -> &mut Self {
+        shape.add_geometry(&mut self.0);
+        self
+    }
+
+    /// Builds the `Path`.
+    #[must_use]
+    pub fn build(self) -> Path {
+        self.0.build()
+    }
+
+    /// Directly builds a `Path` from a `shape`.
+    pub fn build_as(shape: &impl Geometry) -> Path {
+        let mut path = Self::new();
+        path.add(shape);
+        path.build()
+    }
+}
+
+impl Default for ShapePath {
+    fn default() -> Self {
+        Self::new()
+    }
+}

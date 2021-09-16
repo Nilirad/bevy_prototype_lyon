@@ -39,11 +39,11 @@ pub mod utils;
 /// convenient imports.
 pub mod prelude {
     pub use lyon_tessellation::{
-        FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
+        path::Path, FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
     };
 
     pub use crate::{
-        geometry::{Geometry, GeometryBuilder},
+        geometry::{Geometry, GeometryBuilder, ShapePath},
         path::PathBuilder,
         plugin::ShapePlugin,
         shapes::{self, RectangleOrigin, RegularPolygon, RegularPolygonFeature},

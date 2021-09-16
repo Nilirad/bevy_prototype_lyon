@@ -10,7 +10,6 @@ use bevy_prototype_lyon::{
     prelude::*,
     shapes::{RegularPolygon, RegularPolygonFeature},
 };
-use lyon_tessellation::path::{path::Builder, Path};
 
 // TODO: Use states to reset player data in initialization or after death?
 
@@ -289,14 +288,10 @@ fn update_health_bar_system(
     let animated_health_value = animation.initial_value
         + animation_progress * (animation.final_value - animation.initial_value);
 
-    let mut b = Builder::new();
-    let newrect = shapes::Rectangle {
+    *path = ShapePath::build_as(&shapes::Rectangle {
         extents: Vec2::new(HEALTH_BAR_WIDTH * animated_health_value / MAX_HEALTH, 40.0),
         origin: shapes::RectangleOrigin::TopLeft,
-    };
-    newrect.add_geometry(&mut b);
-
-    *path = b.build();
+    });
 }
 
 fn update_hearts_system(

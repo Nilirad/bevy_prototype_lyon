@@ -1,7 +1,6 @@
 //! Utility types and conversion traits.
 
-use bevy::math::Vec2;
-use bevy::render::color::Color;
+use bevy::{math::Vec2, render::color::Color};
 use lyon_tessellation::{
     math::{Point, Vector},
     FillOptions, StrokeOptions,
@@ -23,7 +22,8 @@ pub enum DrawMode {
     },
 }
 
-/// Defines the fill options for the lyon tessellator and color of the generated vertices.
+/// Defines the fill options for the lyon tessellator and color of the generated
+/// vertices.
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct FillMode {
@@ -42,7 +42,8 @@ impl FillMode {
     }
 }
 
-/// Defines the stroke options for the lyon tessellator and color of the generated vertices.
+/// Defines the stroke options for the lyon tessellator and color of the
+/// generated vertices.
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct StrokeMode {

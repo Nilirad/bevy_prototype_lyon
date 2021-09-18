@@ -96,7 +96,7 @@ impl GeometryBuilder {
     /// }
     /// # my_system.system();
     /// ```
-    #[allow(clippy::clippy::should_implement_trait)]
+    #[allow(clippy::should_implement_trait)]
     pub fn add(mut self, shape: &impl Geometry) -> Self {
         shape.add_geometry(&mut self.0);
         self
@@ -159,7 +159,7 @@ impl GeometryBuilder {
     /// fn my_system(mut commands: Commands) {
     ///     let button = shapes::Rectangle {
     ///         extents: Vec2::new(150.0, 50.0),
-    ///         origin: RectangleOrigin::TopLeft,    
+    ///         origin: RectangleOrigin::TopLeft,
     ///     };
     ///     commands.spawn_bundle(GeometryBuilder::build_ui_as(
     ///         &button,
@@ -217,7 +217,7 @@ impl ShapePath {
     /// }
     /// # my_system.system();
     /// ```
-    #[allow(clippy::clippy::should_implement_trait)]
+    #[allow(clippy::should_implement_trait)]
     pub fn add(mut self, shape: &impl Geometry) -> Self {
         shape.add_geometry(&mut self.0);
         self

@@ -96,6 +96,7 @@ impl GeometryBuilder {
     /// }
     /// # my_system.system();
     /// ```
+    #[allow(clippy::clippy::should_implement_trait)]
     pub fn add(mut self, shape: &impl Geometry) -> Self {
         shape.add_geometry(&mut self.0);
         self
@@ -216,6 +217,7 @@ impl ShapePath {
     /// }
     /// # my_system.system();
     /// ```
+    #[allow(clippy::clippy::should_implement_trait)]
     pub fn add(mut self, shape: &impl Geometry) -> Self {
         shape.add_geometry(&mut self.0);
         self

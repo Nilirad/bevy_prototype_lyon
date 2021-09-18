@@ -36,22 +36,17 @@ impl Default for RectangleOrigin {
     }
 }
 
-// TODO: Implement Rectangle::square(f32). Also use extents: Vec2 instead of
-// width/height
-
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rectangle {
-    pub width: f32,
-    pub height: f32,
+    pub extents: Vec2,
     pub origin: RectangleOrigin,
 }
 
 impl Default for Rectangle {
     fn default() -> Self {
         Self {
-            width: 1.0,
-            height: 1.0,
+            extents: Vec2::ONE,
             origin: RectangleOrigin::default(),
         }
     }
@@ -60,18 +55,18 @@ impl Default for Rectangle {
 impl Geometry for Rectangle {
     fn add_geometry(&self, b: &mut Builder) {
         let origin = match self.origin {
-            RectangleOrigin::Center => Point::new(-self.width / 2.0, -self.height / 2.0),
+            RectangleOrigin::Center => Point::new(-self.extents.x / 2.0, -self.extents.y / 2.0),
             RectangleOrigin::BottomLeft => Point::new(0.0, 0.0),
-            RectangleOrigin::BottomRight => Point::new(-self.width, 0.0),
-            RectangleOrigin::TopRight => Point::new(-self.width, -self.height),
-            RectangleOrigin::TopLeft => Point::new(0.0, -self.height),
+            RectangleOrigin::BottomRight => Point::new(-self.extents.x, 0.0),
+            RectangleOrigin::TopRight => Point::new(-self.extents.x, -self.extents.y),
+            RectangleOrigin::TopLeft => Point::new(0.0, -self.extents.y),
             RectangleOrigin::CustomCenter(v) => {
-                Point::new(v.x - self.width / 2.0, v.y - self.height / 2.0)
+                Point::new(v.x - self.extents.x / 2.0, v.y - self.extents.y / 2.0)
             }
         };
 
         b.add_rectangle(
-            &Rect::new(origin, Size::new(self.width, self.height)),
+            &Rect::new(origin, Size::new(self.extents.x, self.extents.y)),
             Winding::Positive,
         );
     }

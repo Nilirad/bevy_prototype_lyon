@@ -6,46 +6,54 @@ fn main() {
         .insert_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_startup_system(setup)
-        .add_system(change_color)
-        .add_system(change_stroke)
-        .add_system(rotate)
+        .add_startup_system(setup_system)
+        .add_system(change_draw_mode_system)
+        .add_system(change_number_of_sides)
+        .add_system(rotate_shape_system)
         .run();
 }
 
 struct ExampleShape;
 
-fn rotate(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {
-    for mut transform in query.iter_mut() {
-        let delta = time.delta_seconds();
+fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {
+    let delta = time.delta_seconds();
 
+    for mut transform in query.iter_mut() {
         transform.rotate(Quat::from_rotation_z(0.2 * delta));
     }
 }
 
-fn change_color(mut query: Query<&mut ShapeColors>, time: Res<Time>) {
-    for mut colors in query.iter_mut() {
-        let h = (time.seconds_since_startup() * 50.0) % 360.0;
+fn change_draw_mode_system(mut query: Query<&mut DrawMode>, time: Res<Time>) {
+    let hue = (time.seconds_since_startup() * 50.0) % 360.0;
+    let outline_width = 2.0 + time.seconds_since_startup().sin().abs() * 10.0;
 
-        *colors = ShapeColors {
-            main: Color::hsl(h as f32, 1.0, 0.5),
-            outline: Color::BLACK,
-        };
-    }
-}
-
-fn change_stroke(mut query: Query<&mut DrawMode>, time: Res<Time>) {
     for mut draw_mode in query.iter_mut() {
-        let w = 2.0 + time.seconds_since_startup().sin().abs() * 10.0;
-
-        *draw_mode = DrawMode::Outlined {
-            fill_options: FillOptions::default(),
-            outline_options: StrokeOptions::default().with_line_width(w as f32),
+        if let DrawMode::Outlined {
+            ref mut fill_mode,
+            ref mut outline_mode,
+        } = *draw_mode
+        {
+            fill_mode.color = Color::hsl(hue as f32, 1.0, 0.5);
+            outline_mode.options.line_width = outline_width as f32;
         }
     }
 }
 
-fn setup(mut commands: Commands) {
+fn change_number_of_sides(mut query: Query<&mut Path>, time: Res<Time>) {
+    let sides = (time.seconds_since_startup().sin() * 2.5 + 5.5).round() as usize;
+
+    for mut path in query.iter_mut() {
+        let polygon = shapes::RegularPolygon {
+            sides,
+            feature: shapes::RegularPolygonFeature::Radius(200.0),
+            ..shapes::RegularPolygon::default()
+        };
+
+        *path = ShapePath::build_as(&polygon);
+    }
+}
+
+fn setup_system(mut commands: Commands) {
     let shape = shapes::RegularPolygon {
         sides: 6,
         feature: shapes::RegularPolygonFeature::Radius(200.0),
@@ -56,10 +64,9 @@ fn setup(mut commands: Commands) {
     commands
         .spawn_bundle(GeometryBuilder::build_as(
             &shape,
-            ShapeColors::outlined(Color::TEAL, Color::BLACK),
             DrawMode::Outlined {
-                fill_options: FillOptions::default(),
-                outline_options: StrokeOptions::default().with_line_width(10.0),
+                fill_mode: FillMode::color(Color::CYAN),
+                outline_mode: StrokeMode::new(Color::BLACK, 10.0),
             },
             Transform::default(),
         ))

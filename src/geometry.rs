@@ -4,7 +4,7 @@ use bevy::{transform::components::Transform, ui::Style};
 use lyon_tessellation::path::{path::Builder, Path};
 
 use crate::{
-    entity::{ShapeBundle, ShapeColors, UiShapeBundle},
+    entity::{ShapeBundle, UiShapeBundle},
     utils::DrawMode,
 };
 
@@ -49,7 +49,7 @@ use crate::{
 /// }
 /// ```
 pub trait Geometry {
-    /// Adds the geometry of the shape to the given Lyon path [`Builder`].
+    /// Adds the geometry of the shape to the given Lyon path `Builder`.
     fn add_geometry(&self, b: &mut Builder);
 }
 
@@ -75,39 +75,39 @@ impl GeometryBuilder {
     /// # Example
     ///
     /// ```
-    /// use bevy::prelude::*;
-    /// use bevy_prototype_lyon::prelude::*;
-    ///
-    /// fn some_system(commands: &mut Commands) {
+    /// # use bevy::prelude::*;
+    /// # use bevy_prototype_lyon::prelude::*;
+    /// #
+    /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
-    ///     let rectangle = shapes::Rectangle {
-    ///         width: 100.0,
-    ///         height: 50.0,
+    ///     let square = shapes::Rectangle {
+    ///         extents: Vec2::splat(100.0),
     ///         ..shapes::Rectangle::default()
     ///     };
-    ///     let mut builder = GeometryBuilder::new();
-    ///     builder.add(&line).add(&rectangle);
+    ///     let mut builder = GeometryBuilder::new().add(&line).add(&square);
     ///
     ///     commands.spawn_bundle(builder.build(
-    ///         ShapeColors::new(Color::ORANGE_RED),
-    ///         DrawMode::Fill(FillOptions::default()),
+    ///         DrawMode::Outlined {
+    ///             fill_mode: FillMode::color(Color::ORANGE_RED),
+    ///             outline_mode: StrokeMode::new(Color::ORANGE_RED, 10.0),
+    ///         },
     ///         Transform::default(),
     ///     ));
     /// }
+    /// # my_system.system();
     /// ```
-    pub fn add(&mut self, shape: &impl Geometry) -> &mut Self {
+    #[allow(clippy::should_implement_trait)]
+    pub fn add(mut self, shape: &impl Geometry) -> Self {
         shape.add_geometry(&mut self.0);
-
         self
     }
 
     /// Returns a [`ShapeBundle`] using the data contained in the path
     /// builder.
     #[must_use]
-    pub fn build(self, colors: ShapeColors, mode: DrawMode, transform: Transform) -> ShapeBundle {
+    pub fn build(self, mode: DrawMode, transform: Transform) -> ShapeBundle {
         ShapeBundle {
             path: self.0.build(),
-            colors,
             mode,
             transform,
             ..ShapeBundle::default()
@@ -117,63 +117,147 @@ impl GeometryBuilder {
     /// Returns a [`UiShapeBundle`] using the data contained in the path
     /// builder.
     #[must_use]
-    pub fn build_ui(self, colors: ShapeColors, mode: DrawMode, style: Style) -> UiShapeBundle {
+    pub fn build_ui(self, mode: DrawMode, style: Style) -> UiShapeBundle {
         UiShapeBundle {
             path: self.0.build(),
-            colors,
             mode,
             style,
             ..UiShapeBundle::default()
         }
     }
 
-    /// Generates a [`ShapeBundle`] with only one geometry.
-    ///
-    /// Adds a geometry to the path builder.
+    /// Returns a [`ShapeBundle`] with only one geometry.
     ///
     /// # Example
     ///
     /// ```
-    /// use bevy::prelude::*;
-    /// use bevy_prototype_lyon::prelude::*;
-    ///
-    /// fn some_system(commands: &mut Commands) {
+    /// # use bevy::prelude::*;
+    /// # use bevy_prototype_lyon::prelude::*;
+    /// #
+    /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
     ///     commands.spawn_bundle(GeometryBuilder::build_as(
     ///         &line,
-    ///         ShapeColors::new(Color::ORANGE_RED),
-    ///         DrawMode::Fill(FillOptions::default()),
+    ///         DrawMode::Fill(FillMode::color(Color::ORANGE_RED)),
     ///         Transform::default(),
     ///     ));
     /// }
+    /// # my_system.system();
     /// ```
-    pub fn build_as(
-        shape: &impl Geometry,
-        colors: ShapeColors,
-        mode: DrawMode,
-        transform: Transform,
-    ) -> ShapeBundle {
-        let mut multishape = Self::new();
-        multishape.add(shape);
-        multishape.build(colors, mode, transform)
+    pub fn build_as(shape: &impl Geometry, mode: DrawMode, transform: Transform) -> ShapeBundle {
+        Self::new().add(shape).build(mode, transform)
     }
 
-    /// Generates a [`UiShapeBundle`] with only one geometry.
+    /// Returns a [`UiShapeBundle`] with only one geometry.
     ///
-    /// Adds a geometry to the path builder.
-    pub fn build_ui_as(
-        shape: &impl Geometry,
-        colors: ShapeColors,
-        mode: DrawMode,
-        style: Style,
-    ) -> UiShapeBundle {
-        let mut multishape = Self::new();
-        multishape.add(shape);
-        multishape.build_ui(colors, mode, style)
+    /// # Example
+    ///
+    /// ```
+    /// # use bevy::prelude::*;
+    /// # use bevy_prototype_lyon::prelude::*;
+    /// #
+    /// fn my_system(mut commands: Commands) {
+    ///     let button = shapes::Rectangle {
+    ///         extents: Vec2::new(150.0, 50.0),
+    ///         origin: RectangleOrigin::TopLeft,
+    ///     };
+    ///     commands.spawn_bundle(GeometryBuilder::build_ui_as(
+    ///         &button,
+    ///         DrawMode::Fill(FillMode::color(Color::ORANGE_RED)),
+    ///         Style::default(),
+    ///     ));
+    /// }
+    /// # my_system.system();
+    /// ```
+    pub fn build_ui_as(shape: &impl Geometry, mode: DrawMode, style: Style) -> UiShapeBundle {
+        Self::new().add(shape).build_ui(mode, style)
     }
 }
 
 impl Default for GeometryBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// A builder for `Path`s based on shapes implementing [`Geometry`].
+pub struct ShapePath(Builder);
+
+impl ShapePath {
+    /// Returns a new builder.
+    #[must_use]
+    pub fn new() -> Self {
+        Self(Builder::new())
+    }
+
+    /// Adds a shape to the builder.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use bevy::prelude::*;
+    /// # use bevy_prototype_lyon::prelude::*;
+    /// #
+    /// # struct Player;
+    /// #
+    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
+    ///     let mut path = query.single_mut();
+    ///
+    ///     let square = shapes::Rectangle {
+    ///         extents: Vec2::splat(50.0),
+    ///         ..shapes::Rectangle::default()
+    ///     };
+    ///     let triangle = RegularPolygon {
+    ///         sides: 3,
+    ///         center: Vec2::new(100.0, 0.0),
+    ///         ..RegularPolygon::default()
+    ///     };
+    ///
+    ///     *path = ShapePath::new().add(&square).add(&triangle).build();
+    /// }
+    /// # my_system.system();
+    /// ```
+    #[allow(clippy::should_implement_trait)]
+    pub fn add(mut self, shape: &impl Geometry) -> Self {
+        shape.add_geometry(&mut self.0);
+        self
+    }
+
+    /// Builds the `Path` and returns it.
+    #[must_use]
+    pub fn build(self) -> Path {
+        self.0.build()
+    }
+
+    /// Directly builds a `Path` from a `shape`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use bevy::prelude::*;
+    /// # use bevy_prototype_lyon::prelude::*;
+    /// #
+    /// # struct Player;
+    /// #
+    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
+    ///     let mut path = query.single_mut();
+    ///
+    ///     let triangle = RegularPolygon {
+    ///         sides: 3,
+    ///         center: Vec2::new(100.0, 0.0),
+    ///         ..RegularPolygon::default()
+    ///     };
+    ///
+    ///     *path = ShapePath::build_as(&triangle);
+    /// }
+    /// # my_system.system();
+    /// ```
+    pub fn build_as(shape: &impl Geometry) -> Path {
+        Self::new().add(shape).build()
+    }
+}
+
+impl Default for ShapePath {
     fn default() -> Self {
         Self::new()
     }

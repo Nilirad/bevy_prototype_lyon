@@ -34,6 +34,7 @@ pub mod plugin;
 pub mod render;
 pub mod shapes;
 pub mod utils;
+mod vertex;
 
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
 /// convenient imports.

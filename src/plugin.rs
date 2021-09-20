@@ -11,7 +11,6 @@
 //! that creates a mesh for each entity that has been spawned as a
 //! `ShapeBundle`.
 
-use crate::vertex::{VertexBuffers, VertexConstructor};
 use bevy::{
     app::{App, Plugin},
     asset::{Assets, Handle},
@@ -28,7 +27,10 @@ use bevy::{
 };
 use lyon_tessellation::{path::Path, BuffersBuilder, FillTessellator, StrokeTessellator};
 
-use crate::draw::{DrawMode, FillMode, StrokeMode};
+use crate::{
+    draw::{DrawMode, FillMode, StrokeMode},
+    vertex::{VertexBuffers, VertexConstructor},
+};
 
 /// Stages for this plugin.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, StageLabel)]

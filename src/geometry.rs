@@ -4,8 +4,8 @@ use bevy::{transform::components::Transform, ui::Style};
 use lyon_tessellation::path::{path::Builder, Path};
 
 use crate::{
+    draw::DrawMode,
     entity::{ShapeBundle, UiShapeBundle},
-    utils::DrawMode,
 };
 
 /// Structs that implement this trait can be drawn as a shape. See the
@@ -175,89 +175,6 @@ impl GeometryBuilder {
 }
 
 impl Default for GeometryBuilder {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-/// A builder for `Path`s based on shapes implementing [`Geometry`].
-pub struct ShapePath(Builder);
-
-impl ShapePath {
-    /// Returns a new builder.
-    #[must_use]
-    pub fn new() -> Self {
-        Self(Builder::new())
-    }
-
-    /// Adds a shape to the builder.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # use bevy::prelude::*;
-    /// # use bevy_prototype_lyon::prelude::*;
-    /// #
-    /// # struct Player;
-    /// #
-    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
-    ///     let mut path = query.single_mut();
-    ///
-    ///     let square = shapes::Rectangle {
-    ///         extents: Vec2::splat(50.0),
-    ///         ..shapes::Rectangle::default()
-    ///     };
-    ///     let triangle = RegularPolygon {
-    ///         sides: 3,
-    ///         center: Vec2::new(100.0, 0.0),
-    ///         ..RegularPolygon::default()
-    ///     };
-    ///
-    ///     *path = ShapePath::new().add(&square).add(&triangle).build();
-    /// }
-    /// # my_system.system();
-    /// ```
-    #[allow(clippy::should_implement_trait)]
-    pub fn add(mut self, shape: &impl Geometry) -> Self {
-        shape.add_geometry(&mut self.0);
-        self
-    }
-
-    /// Builds the `Path` and returns it.
-    #[must_use]
-    pub fn build(self) -> Path {
-        self.0.build()
-    }
-
-    /// Directly builds a `Path` from a `shape`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # use bevy::prelude::*;
-    /// # use bevy_prototype_lyon::prelude::*;
-    /// #
-    /// # struct Player;
-    /// #
-    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
-    ///     let mut path = query.single_mut();
-    ///
-    ///     let triangle = RegularPolygon {
-    ///         sides: 3,
-    ///         center: Vec2::new(100.0, 0.0),
-    ///         ..RegularPolygon::default()
-    ///     };
-    ///
-    ///     *path = ShapePath::build_as(&triangle);
-    /// }
-    /// # my_system.system();
-    /// ```
-    pub fn build_as(shape: &impl Geometry) -> Path {
-        Self::new().add(shape).build()
-    }
-}
-
-impl Default for ShapePath {
     fn default() -> Self {
         Self::new()
     }

@@ -21,17 +21,16 @@ use bevy::{
     },
     log::error,
     render::{
-        color::Color,
         mesh::{Indices, Mesh},
         pipeline::PrimitiveTopology,
     },
 };
-use lyon_tessellation::{
-    self as tess, path::Path, BuffersBuilder, FillTessellator, FillVertex, FillVertexConstructor,
-    StrokeTessellator, StrokeVertex, StrokeVertexConstructor,
-};
+use lyon_tessellation::{path::Path, BuffersBuilder, FillTessellator, StrokeTessellator};
 
-use crate::utils::{DrawMode, FillMode, StrokeMode};
+use crate::{
+    draw::{DrawMode, FillMode, StrokeMode},
+    vertex::{VertexBuffers, VertexConstructor},
+};
 
 /// Stages for this plugin.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, StageLabel)]
@@ -39,45 +38,6 @@ pub enum Stage {
     /// The stage where the [`ShapeBundle`](crate::entity::ShapeBundle) gets
     /// completed.
     Shape,
-}
-
-/// The index type of a Bevy [`Mesh`](bevy::render::mesh::Mesh).
-type IndexType = u32;
-/// Lyon's [`VertexBuffers`] generic data type defined for [`Vertex`].
-type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
-
-/// A vertex with all the necessary attributes to be inserted into a Bevy
-/// [`Mesh`](bevy::render::mesh::Mesh).
-#[derive(Debug, Clone, Copy, PartialEq)]
-struct Vertex {
-    position: [f32; 2],
-    color: [f32; 4],
-}
-
-/// Zero-sized type used to implement various vertex construction traits from
-/// Lyon.
-struct VertexConstructor {
-    color: Color,
-}
-
-/// Enables the construction of a [`Vertex`] when using a `FillTessellator`.
-impl FillVertexConstructor<Vertex> for VertexConstructor {
-    fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
-        Vertex {
-            position: [vertex.position().x, vertex.position().y],
-            color: self.color.as_linear_rgba_f32(),
-        }
-    }
-}
-
-/// Enables the construction of a [`Vertex`] when using a `StrokeTessellator`.
-impl StrokeVertexConstructor<Vertex> for VertexConstructor {
-    fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
-        Vertex {
-            position: [vertex.position().x, vertex.position().y],
-            color: self.color.as_linear_rgba_f32(),
-        }
-    }
 }
 
 /// A plugin that provides resources and a system to draw shapes in Bevy with

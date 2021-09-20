@@ -18,22 +18,17 @@
 #![allow(clippy::cast_precision_loss)]
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::multiple_crate_versions)] // this is a dependency problem
-
-// lints that need revisiting
-
-// TODO: Add lint and fix names
 #![allow(clippy::module_name_repetitions)]
 
-// Could have many false positives. Uncomment if needed.
-//#![allow(clippy::must_use_candidate)]
-
+pub mod draw;
 pub mod entity;
 pub mod geometry;
 pub mod path;
 pub mod plugin;
 pub mod render;
 pub mod shapes;
-pub mod utils;
+
+mod utils;
 mod vertex;
 
 /// Import this module as `use bevy_prototype_lyon::prelude::*` to get
@@ -44,10 +39,10 @@ pub mod prelude {
     };
 
     pub use crate::{
+        draw::{DrawMode, FillMode, StrokeMode},
         geometry::{Geometry, GeometryBuilder},
         path::{PathBuilder, ShapePath},
         plugin::ShapePlugin,
         shapes::{self, RectangleOrigin, RegularPolygon, RegularPolygonFeature},
-        utils::{DrawMode, FillMode, StrokeMode},
     };
 }

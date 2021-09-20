@@ -17,8 +17,8 @@ use bevy::{
 use lyon_tessellation::{path::Path, FillOptions};
 
 use crate::{
+    draw::{DrawMode, FillMode},
     render::{SHAPE_PIPELINE_HANDLE, UI_SHAPE_PIPELINE_HANDLE},
-    utils::{DrawMode, FillMode},
 };
 
 /// A Bevy `Bundle` to represent a shape.

@@ -16,7 +16,10 @@ use lyon_tessellation::{
 };
 use svgtypes::{Path, PathSegment};
 
-use crate::{geometry::Geometry, utils::Convert};
+use crate::{
+    geometry::Geometry,
+    utils::{ToPoint, ToVector},
+};
 
 /// Defines where the origin, or pivot of the `Rectangle` should be positioned.
 #[allow(missing_docs)]
@@ -90,7 +93,7 @@ impl Default for Circle {
 
 impl Geometry for Circle {
     fn add_geometry(&self, b: &mut Builder) {
-        b.add_circle(self.center.convert(), self.radius, Winding::Positive);
+        b.add_circle(self.center.to_point(), self.radius, Winding::Positive);
     }
 }
 
@@ -113,8 +116,8 @@ impl Default for Ellipse {
 impl Geometry for Ellipse {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_ellipse(
-            self.center.convert(),
-            self.radii.convert(),
+            self.center.to_point(),
+            self.radii.to_vector(),
             Angle::zero(),
             Winding::Positive,
         );
@@ -142,7 +145,7 @@ impl Geometry for Polygon {
         let points = self
             .points
             .iter()
-            .map(|p| p.convert())
+            .map(|p| p.to_point())
             .collect::<Vec<Point>>();
         let polygon: LyonPolygon<Point> = LyonPolygon {
             points: points.as_slice(),
@@ -236,7 +239,7 @@ pub struct Line(pub Vec2, pub Vec2);
 impl Geometry for Line {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_polygon(LyonPolygon {
-            points: &[self.0.convert(), self.1.convert()],
+            points: &[self.0.to_point(), self.1.to_point()],
             closed: false,
         });
     }

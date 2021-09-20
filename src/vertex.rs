@@ -6,20 +6,20 @@ use lyon_tessellation::{
 /// The index type of a Bevy [`Mesh`](bevy::render::mesh::Mesh).
 type IndexType = u32;
 /// Lyon's [`VertexBuffers`] generic data type defined for [`Vertex`].
-pub(crate) type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
+pub type VertexBuffers = tess::VertexBuffers<Vertex, IndexType>;
 
 /// A vertex with all the necessary attributes to be inserted into a Bevy
 /// [`Mesh`](bevy::render::mesh::Mesh).
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub(crate) struct Vertex {
-    pub(crate) position: [f32; 2],
-    pub(crate) color: [f32; 4],
+pub struct Vertex {
+    pub position: [f32; 2],
+    pub color: [f32; 4],
 }
 
 /// Zero-sized type used to implement various vertex construction traits from
 /// Lyon.
-pub(crate) struct VertexConstructor {
-    pub(crate) color: Color,
+pub struct VertexConstructor {
+    pub color: Color,
 }
 
 /// Enables the construction of a [`Vertex`] when using a `FillTessellator`.

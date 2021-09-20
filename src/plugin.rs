@@ -28,7 +28,7 @@ use bevy::{
 };
 use lyon_tessellation::{path::Path, BuffersBuilder, FillTessellator, StrokeTessellator};
 
-use crate::utils::{DrawMode, FillMode, StrokeMode};
+use crate::draw::{DrawMode, FillMode, StrokeMode};
 
 /// Stages for this plugin.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, StageLabel)]

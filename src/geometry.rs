@@ -4,8 +4,8 @@ use bevy::{transform::components::Transform, ui::Style};
 use lyon_tessellation::path::{path::Builder, Path};
 
 use crate::{
+    draw::DrawMode,
     entity::{ShapeBundle, UiShapeBundle},
-    utils::DrawMode,
 };
 
 /// Structs that implement this trait can be drawn as a shape. See the

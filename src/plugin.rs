@@ -25,10 +25,11 @@ use bevy::{
         pipeline::PrimitiveTopology,
     },
 };
-use lyon_tessellation::{path::Path, BuffersBuilder, FillTessellator, StrokeTessellator};
+use lyon_tessellation::{self as tess, BuffersBuilder, FillTessellator, StrokeTessellator};
 
 use crate::{
     draw::{DrawMode, FillMode, StrokeMode},
+    entity::Path,
     vertex::{VertexBuffers, VertexConstructor},
 };
 
@@ -76,17 +77,17 @@ fn mesh_shapes_system(
 
         match tess_mode {
             DrawMode::Fill(mode) => {
-                fill(&mut fill_tess, path, mode, &mut buffers);
+                fill(&mut fill_tess, &path.0, mode, &mut buffers);
             }
             DrawMode::Stroke(mode) => {
-                stroke(&mut stroke_tess, path, mode, &mut buffers);
+                stroke(&mut stroke_tess, &path.0, mode, &mut buffers);
             }
             DrawMode::Outlined {
                 fill_mode,
                 outline_mode,
             } => {
-                fill(&mut fill_tess, path, fill_mode, &mut buffers);
-                stroke(&mut stroke_tess, path, outline_mode, &mut buffers);
+                fill(&mut fill_tess, &path.0, fill_mode, &mut buffers);
+                stroke(&mut stroke_tess, &path.0, outline_mode, &mut buffers);
             }
         }
 
@@ -97,7 +98,7 @@ fn mesh_shapes_system(
 #[allow(clippy::trivially_copy_pass_by_ref)] // lyon takes &FillOptions
 fn fill(
     tess: &mut ResMut<FillTessellator>,
-    path: &Path,
+    path: &tess::path::Path,
     mode: &FillMode,
     buffers: &mut VertexBuffers,
 ) {
@@ -113,7 +114,7 @@ fn fill(
 #[allow(clippy::trivially_copy_pass_by_ref)] // lyon takes &StrokeOptions
 fn stroke(
     tess: &mut ResMut<StrokeTessellator>,
-    path: &Path,
+    path: &tess::path::Path,
     mode: &StrokeMode,
     buffers: &mut VertexBuffers,
 ) {

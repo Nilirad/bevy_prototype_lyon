@@ -1,11 +1,11 @@
 //! Types for defining and using geometries.
 
 use bevy::{transform::components::Transform, ui::Style};
-use lyon_tessellation::path::{path::Builder, Path};
+use lyon_tessellation::{self as tess, path::path::Builder};
 
 use crate::{
     draw::DrawMode,
-    entity::{ShapeBundle, UiShapeBundle},
+    entity::{Path, ShapeBundle, UiShapeBundle},
 };
 
 /// Structs that implement this trait can be drawn as a shape. See the
@@ -54,7 +54,7 @@ pub trait Geometry {
 }
 
 /// This implementation permits to use a Lyon [`Path`] as a [`Geometry`].
-impl Geometry for Path {
+impl Geometry for tess::path::Path {
     fn add_geometry(&self, b: &mut Builder) {
         b.concatenate(&[self.as_slice()]);
     }
@@ -107,7 +107,7 @@ impl GeometryBuilder {
     #[must_use]
     pub fn build(self, mode: DrawMode, transform: Transform) -> ShapeBundle {
         ShapeBundle {
-            path: self.0.build(),
+            path: Path(self.0.build()),
             mode,
             transform,
             ..ShapeBundle::default()
@@ -119,7 +119,7 @@ impl GeometryBuilder {
     #[must_use]
     pub fn build_ui(self, mode: DrawMode, style: Style) -> UiShapeBundle {
         UiShapeBundle {
-            path: self.0.build(),
+            path: Path(self.0.build()),
             mode,
             style,
             ..UiShapeBundle::default()

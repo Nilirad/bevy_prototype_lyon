@@ -2,7 +2,7 @@
 
 use bevy::{
     asset::Handle,
-    ecs::bundle::Bundle,
+    ecs::{bundle::Bundle, component::Component},
     render::{
         color::Color,
         draw::{Draw, Visible},
@@ -14,7 +14,7 @@ use bevy::{
     transform::components::{GlobalTransform, Transform},
     ui::{Node, Style},
 };
-use lyon_tessellation::{path::Path, FillOptions};
+use lyon_tessellation::{self as tess, FillOptions};
 
 use crate::{
     draw::{DrawMode, FillMode},
@@ -39,7 +39,7 @@ pub struct ShapeBundle {
 impl Default for ShapeBundle {
     fn default() -> Self {
         Self {
-            path: Path::new(),
+            path: Path(tess::path::Path::new()),
             mode: DrawMode::Fill(FillMode {
                 options: FillOptions::default(),
                 color: Color::WHITE,
@@ -81,7 +81,7 @@ impl Default for UiShapeBundle {
         Self {
             node: Node::default(),
             style: Style::default(),
-            path: Path::new(),
+            path: Path(tess::path::Path::new()),
             mode: DrawMode::Fill(FillMode {
                 options: FillOptions::default(),
                 color: Color::WHITE,
@@ -100,3 +100,7 @@ impl Default for UiShapeBundle {
         }
     }
 }
+
+#[allow(missing_docs)]
+#[derive(Component)]
+pub struct Path(pub tess::path::Path);

@@ -13,6 +13,7 @@ fn main() {
         .run();
 }
 
+#[derive(Component)]
 struct ExampleShape;
 
 fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, time: Res<Time>) {

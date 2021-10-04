@@ -3,10 +3,11 @@
 use bevy::math::Vec2;
 use lyon_tessellation::{
     geom::Angle,
-    path::{builder::WithSvg, path::Builder, EndpointId, Path},
+    path::{builder::WithSvg, path::Builder, EndpointId},
 };
 
 use crate::{
+    entity::Path,
     prelude::Geometry,
     utils::{ToPoint, ToVector},
 };
@@ -57,7 +58,7 @@ impl ShapePath {
     /// Builds the `Path` and returns it.
     #[must_use]
     pub fn build(self) -> Path {
-        self.0.build()
+        Path(self.0.build())
     }
 
     /// Directly builds a `Path` from a `shape`.
@@ -107,7 +108,7 @@ impl PathBuilder {
     /// Returns a finalized [`Path`].
     #[must_use]
     pub fn build(self) -> Path {
-        self.0.build()
+        Path(self.0.build())
     }
 
     /// Moves the current point to the given position.

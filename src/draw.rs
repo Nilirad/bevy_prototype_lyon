@@ -1,10 +1,10 @@
 //! Types for defining shape color and options.
 
-use bevy::render::color::Color;
+use bevy::{ecs::component::Component, render::color::Color};
 use lyon_tessellation::{FillOptions, StrokeOptions};
 
 /// Determines how a shape will be drawn.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Component)]
 pub enum DrawMode {
     /// The shape will be filled using the provided [`FillMode`].
     Fill(FillMode),

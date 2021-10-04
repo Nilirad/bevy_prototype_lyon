@@ -44,17 +44,32 @@ const DEATH_ANIMATION_TIME: Duration = Duration::from_millis(700);
 const DAMAGE_COOLDOWN_TIME: Duration = Duration::from_millis(500);
 const HEALTH_BAR_WIDTH: f32 = 300.0;
 
+#[derive(Component)]
 struct Character;
+
+#[derive(Component)]
 struct Health(f32);
+
+#[derive(Component)]
 struct Lives(u32);
+
+#[derive(Component)]
 struct DamageCooldown(Timer);
+
+#[derive(Component)]
 struct HealthBar;
+
+#[derive(Component)]
 struct Heart(u32);
+
+#[derive(Component)]
 struct Animation {
     timer: Timer,
     initial_value: f32,
     final_value: f32,
 }
+
+#[derive(Component)]
 struct DeathAnimationTimer(Timer);
 
 fn main() {

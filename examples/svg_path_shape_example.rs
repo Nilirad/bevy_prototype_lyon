@@ -10,9 +10,16 @@ fn main() {
         .add_startup_system(setup_system)
         .run();
 }
+
+#[derive(Component)]
 struct Name(String);
+
+#[derive(Component)]
 struct BlacksmithMarker;
+
+#[derive(Component)]
 struct ToolShackMarker;
+
 #[derive(Bundle)]
 struct BuildingBundle {
     name: Name,

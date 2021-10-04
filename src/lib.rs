@@ -35,11 +35,12 @@ mod vertex;
 /// convenient imports.
 pub mod prelude {
     pub use lyon_tessellation::{
-        path::Path, FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
+        self as tess, FillOptions, FillRule, LineCap, LineJoin, Orientation, StrokeOptions,
     };
 
     pub use crate::{
         draw::{DrawMode, FillMode, StrokeMode},
+        entity::Path,
         geometry::{Geometry, GeometryBuilder},
         path::{PathBuilder, ShapePath},
         plugin::ShapePlugin,

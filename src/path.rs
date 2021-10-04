@@ -30,6 +30,7 @@ impl ShapePath {
     /// # use bevy::prelude::*;
     /// # use bevy_prototype_lyon::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct Player;
     /// #
     /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
@@ -69,6 +70,7 @@ impl ShapePath {
     /// # use bevy::prelude::*;
     /// # use bevy_prototype_lyon::prelude::*;
     /// #
+    /// # #[derive(Component)]
     /// # struct Player;
     /// #
     /// fn my_system(mut query: Query<&mut Path, With<Player>>) {

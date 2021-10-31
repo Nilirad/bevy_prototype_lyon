@@ -7,6 +7,9 @@ ignore = [
   "RUSTSEC-2020-0056", # stdweb unmaintained - https://github.com/koute/stdweb/issues/403
   "RUSTSEC-2021-0047", # security issue - https://github.com/gnzlbg/slice_deque/issues/90
   "RUSTSEC-2021-0096", # spirv_headers unmaintained
+  "RUSTSEC-2020-0159", # security issue - https://github.com/chronotope/chrono/issues/499
+  "RUSTSEC-2021-0119", # security issue - https://github.com/nix-rust/nix/issues/1541
+  "RUSTSEC-2020-0158", # slice_deque unmaintained - https://github.com/gnzlbg/slice_deque/issues/94
 ]
 notice = "deny"
 unmaintained = "deny"

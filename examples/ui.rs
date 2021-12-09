@@ -74,7 +74,7 @@ struct DeathAnimationTimer(Timer);
 
 fn main() {
     App::new()
-        .insert_resource(Msaa { samples: 8 })
+        .insert_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_state(CharacterState::Normal)

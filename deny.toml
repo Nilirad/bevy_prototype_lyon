@@ -7,7 +7,6 @@ ignore = [
   "RUSTSEC-2020-0056", # stdweb unmaintained - https://github.com/koute/stdweb/issues/403
   "RUSTSEC-2021-0047", # security issue - https://github.com/gnzlbg/slice_deque/issues/90
   "RUSTSEC-2021-0096", # spirv_headers unmaintained
-  "RUSTSEC-2020-0159", # security issue - https://github.com/chronotope/chrono/issues/499
   "RUSTSEC-2021-0119", # security issue - https://github.com/nix-rust/nix/issues/1541
   "RUSTSEC-2020-0158", # slice_deque unmaintained - https://github.com/gnzlbg/slice_deque/issues/94
 ]
@@ -37,27 +36,8 @@ license-files = []
 name = "stretch"
 
 [bans]
-highlight = "all" 
-multiple-versions = "deny" 
-wildcards = "allow" # It sees git as wildcard :(
-# Certain crates/versions that will be skipped when doing duplicate detection.
-skip = [
-  {name = "ahash", version = "0.4"},
-  {name = "cfg-if", version = "0.1"}, # https://github.com/rustwasm/console_error_panic_hook/pull/18
-  {name = "core-foundation", version = "0.6"},
-  {name = "core-foundation", version = "0.7"},
-  {name = "core-foundation-sys", version = "0.6"},
-  {name = "core-foundation-sys", version = "0.7"},
-  {name = "core-graphics", version = "0.19"},
-  {name = "fixedbitset", version = "0.2"},
-  {name = "hashbrown", version = "0.9"},
-  {name = "libm", version = "0.1"},
-  {name = "mach", version = "0.2"},
-  {name = "ndk", version = "0.3"},
-  {name = "ndk-glue", version = "0.3"},
-  {name = "proc-macro-crate", version = "0.1"},
-  {name = "stdweb", version = "0.1"},
-]
+multiple-versions = "allow" 
+wildcards = "allow"
 
 [sources]
 allow-git = ["https://github.com/bevyengine/bevy"]

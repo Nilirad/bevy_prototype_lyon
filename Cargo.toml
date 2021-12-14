@@ -13,8 +13,8 @@ version = "0.3.1"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = {git = "https://github.com/bevyengine/bevy", default-features = false, features = ["render"]}
+bevy = {git = "https://github.com/bevyengine/bevy", rev = "de8edd3", default-features = false, features = ["render"]}
 lyon_tessellation = "0.17"
 svgtypes = "0.5"
 [dev-dependencies]
-bevy = {git = "https://github.com/bevyengine/bevy"}
+bevy = {git = "https://github.com/bevyengine/bevy", rev = "de8edd3"}

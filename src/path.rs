@@ -51,6 +51,7 @@ impl ShapePath {
     /// # my_system.system();
     /// ```
     #[allow(clippy::should_implement_trait)]
+    #[must_use]
     pub fn add(mut self, shape: &impl Geometry) -> Self {
         shape.add_geometry(&mut self.0);
         self

@@ -5,7 +5,7 @@ use lyon_tessellation::{self as tess, path::path::Builder};
 
 use crate::{
     draw::DrawMode,
-    entity::{Path, ShapeBundle, UiShapeBundle},
+    entity::{Path, ShapeBundle},
 };
 
 /// Structs that implement this trait can be drawn as a shape. See the
@@ -110,20 +110,11 @@ impl GeometryBuilder {
         ShapeBundle {
             path: Path(self.0.build()),
             mode,
-            transform,
+            mesh2d: bevy::sprite::MaterialMesh2dBundle {
+                transform,
+                ..Default::default()
+            },
             ..ShapeBundle::default()
-        }
-    }
-
-    /// Returns a [`UiShapeBundle`] using the data contained in the path
-    /// builder.
-    #[must_use]
-    pub fn build_ui(self, mode: DrawMode, style: Style) -> UiShapeBundle {
-        UiShapeBundle {
-            path: Path(self.0.build()),
-            mode,
-            style,
-            ..UiShapeBundle::default()
         }
     }
 
@@ -147,31 +138,6 @@ impl GeometryBuilder {
     /// ```
     pub fn build_as(shape: &impl Geometry, mode: DrawMode, transform: Transform) -> ShapeBundle {
         Self::new().add(shape).build(mode, transform)
-    }
-
-    /// Returns a [`UiShapeBundle`] with only one geometry.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # use bevy::prelude::*;
-    /// # use bevy_prototype_lyon::prelude::*;
-    /// #
-    /// fn my_system(mut commands: Commands) {
-    ///     let button = shapes::Rectangle {
-    ///         extents: Vec2::new(150.0, 50.0),
-    ///         origin: RectangleOrigin::TopLeft,
-    ///     };
-    ///     commands.spawn_bundle(GeometryBuilder::build_ui_as(
-    ///         &button,
-    ///         DrawMode::Fill(FillMode::color(Color::ORANGE_RED)),
-    ///         Style::default(),
-    ///     ));
-    /// }
-    /// # my_system.system();
-    /// ```
-    pub fn build_ui_as(shape: &impl Geometry, mode: DrawMode, style: Style) -> UiShapeBundle {
-        Self::new().add(shape).build_ui(mode, style)
     }
 }
 

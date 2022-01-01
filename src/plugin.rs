@@ -22,8 +22,9 @@ use bevy::{
     log::error,
     render::{
         mesh::{Indices, Mesh},
-        pipeline::PrimitiveTopology,
+        render_resource::PrimitiveTopology,
     },
+    sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess, BuffersBuilder, FillTessellator, StrokeTessellator};
 
@@ -56,10 +57,8 @@ impl Plugin for ShapePlugin {
                 Stage::Shape,
                 SystemStage::parallel(),
             )
-            .add_system_to_stage(Stage::Shape, mesh_shapes_system);
-
-        crate::render::add_shape_pipeline(&mut app.world);
-        crate::render::add_ui_shape_pipeline(&mut app.world);
+            .add_system_to_stage(Stage::Shape, mesh_shapes_system)
+            .add_plugin(crate::render::ColoredMesh2dPlugin);
     }
 }
 
@@ -70,7 +69,7 @@ fn mesh_shapes_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<(&DrawMode, &Path, &mut Handle<Mesh>), Or<(Changed<Path>, Changed<DrawMode>)>>,
+    mut query: Query<(&DrawMode, &Path, &mut Mesh2dHandle), Or<(Changed<Path>, Changed<DrawMode>)>>,
 ) {
     for (tess_mode, path, mut mesh) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
@@ -91,7 +90,7 @@ fn mesh_shapes_system(
             }
         }
 
-        *mesh = meshes.add(build_mesh(&buffers));
+        mesh.0 = meshes.add(build_mesh(&buffers));
     }
 }
 
@@ -128,17 +127,15 @@ fn stroke(
 }
 
 fn build_mesh(buffers: &VertexBuffers) -> Mesh {
-    pub const ATTRIBUTE_POSITION_2D: &str = "Vertex_Position_2D";
-
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
     mesh.set_attribute(
-        ATTRIBUTE_POSITION_2D,
+        Mesh::ATTRIBUTE_POSITION,
         buffers
             .vertices
             .iter()
-            .map(|v| v.position)
-            .collect::<Vec<[f32; 2]>>(),
+            .map(|v| [v.position[0], v.position[1], 0.0])
+            .collect::<Vec<[f32; 3]>>(),
     );
     mesh.set_attribute(
         Mesh::ATTRIBUTE_COLOR,

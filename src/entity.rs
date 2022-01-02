@@ -4,7 +4,7 @@ use bevy::{
     ecs::{bundle::Bundle, component::Component},
     prelude::{ComputedVisibility, GlobalTransform, Transform, Visibility},
     render::color::Color,
-    sprite::{ColorMaterial, MaterialMesh2dBundle, Mesh2dHandle},
+    sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess, FillOptions};
 

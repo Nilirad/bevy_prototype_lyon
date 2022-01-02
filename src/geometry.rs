@@ -110,10 +110,7 @@ impl GeometryBuilder {
         ShapeBundle {
             path: Path(self.0.build()),
             mode,
-            mesh2d: bevy::sprite::MaterialMesh2dBundle {
-                transform,
-                ..Default::default()
-            },
+            transform,
             ..ShapeBundle::default()
         }
     }

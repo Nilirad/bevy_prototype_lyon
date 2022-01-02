@@ -13,7 +13,7 @@
 
 use bevy::{
     app::{App, Plugin},
-    asset::{Assets, Handle},
+    asset::Assets,
     ecs::{
         query::{Changed, Or},
         schedule::{StageLabel, SystemStage},

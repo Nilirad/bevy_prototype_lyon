@@ -1,13 +1,9 @@
 //! Custom Bevy ECS bundle for shapes.
 
 use bevy::{
-    asset::Handle,
     ecs::{bundle::Bundle, component::Component},
-    prelude::Visibility,
-    render::{color::Color, mesh::Mesh},
+    render::color::Color,
     sprite::{ColorMaterial, MaterialMesh2dBundle},
-    transform::components::{GlobalTransform, Transform},
-    ui::{Node, Style},
 };
 use lyon_tessellation::{self as tess, FillOptions};
 

@@ -4,14 +4,13 @@ use bevy::{
     prelude::*,
     reflect::TypeUuid,
     render::{
-        mesh::Indices,
         render_asset::RenderAssets,
         render_phase::{AddRenderCommand, DrawFunctions, RenderPhase, SetItemPipeline},
         render_resource::{
-            BlendState, ColorTargetState, ColorWrites, Face, FragmentState, FrontFace,
-            MultisampleState, PolygonMode, PrimitiveState, PrimitiveTopology, RenderPipelineCache,
-            RenderPipelineDescriptor, SpecializedPipeline, SpecializedPipelines, TextureFormat,
-            VertexAttribute, VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
+            BlendState, ColorTargetState, ColorWrites, FragmentState, FrontFace, MultisampleState,
+            PolygonMode, PrimitiveState, RenderPipelineCache, RenderPipelineDescriptor,
+            SpecializedPipeline, SpecializedPipelines, TextureFormat, VertexAttribute,
+            VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
         },
         texture::BevyDefault,
         view::VisibleEntities,

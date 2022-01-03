@@ -10,7 +10,7 @@ use lyon_tessellation::{self as tess, FillOptions};
 
 use crate::{
     draw::{DrawMode, FillMode},
-    render::ColoredMesh2d,
+    render::Shape,
 };
 
 /// A Bevy `Bundle` to represent a shape.
@@ -19,10 +19,8 @@ use crate::{
 pub struct ShapeBundle {
     pub path: Path,
     pub mode: DrawMode,
-    pub colored_mesh2d: ColoredMesh2d,
-    // The `Handle<Mesh>` needs to be wrapped in a `Mesh2dHandle` to use 2d rendering instead of 3d
+    pub shape: Shape,
     pub mesh2d: Mesh2dHandle,
-    // These other components are needed for 2d meshes to be rendered
     pub transform: Transform,
     pub global_transform: GlobalTransform,
     pub visibility: Visibility,
@@ -37,7 +35,7 @@ impl Default for ShapeBundle {
                 options: FillOptions::default(),
                 color: Color::WHITE,
             }),
-            colored_mesh2d: ColoredMesh2d::default(),
+            shape: Shape::default(),
             mesh2d: Mesh2dHandle::default(),
             transform: Transform::default(),
             global_transform: GlobalTransform::default(),

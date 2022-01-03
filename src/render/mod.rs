@@ -1,3 +1,5 @@
+//! Render pipeline
+
 use bevy::{
     core::FloatOrd,
     core_pipeline::Transparent2d,
@@ -24,15 +26,15 @@ use bevy::{
 
 /// A marker component for colored 2d meshes
 #[derive(Component, Default)]
-pub struct ColoredMesh2d;
+pub struct Shape;
 
 /// Custom pipeline for 2d meshes with vertex colors
-pub struct ColoredMesh2dPipeline {
+pub struct ShapePipeline {
     /// this pipeline wraps the standard [`Mesh2dPipeline`]
     mesh2d_pipeline: Mesh2dPipeline,
 }
 
-impl FromWorld for ColoredMesh2dPipeline {
+impl FromWorld for ShapePipeline {
     fn from_world(world: &mut World) -> Self {
         Self {
             mesh2d_pipeline: Mesh2dPipeline::from_world(world),
@@ -41,7 +43,7 @@ impl FromWorld for ColoredMesh2dPipeline {
 }
 
 // We implement `SpecializedPipeline` tp customize the default rendering from `Mesh2dPipeline`
-impl SpecializedPipeline for ColoredMesh2dPipeline {
+impl SpecializedPipeline for ShapePipeline {
     type Key = Mesh2dPipelineKey;
 
     fn specialize(&self, key: Self::Key) -> RenderPipelineDescriptor {
@@ -69,7 +71,7 @@ impl SpecializedPipeline for ColoredMesh2dPipeline {
         RenderPipelineDescriptor {
             vertex: VertexState {
                 // Use our custom shader
-                shader: COLORED_MESH2D_SHADER_HANDLE.typed::<Shader>(),
+                shader: SHAPE_SHADER_HANDLE.typed::<Shader>(),
                 entry_point: "vertex".into(),
                 shader_defs: Vec::new(),
                 // Use our custom vertex buffer
@@ -81,7 +83,7 @@ impl SpecializedPipeline for ColoredMesh2dPipeline {
             },
             fragment: Some(FragmentState {
                 // Use our custom shader
-                shader: COLORED_MESH2D_SHADER_HANDLE.typed::<Shader>(),
+                shader: SHAPE_SHADER_HANDLE.typed::<Shader>(),
                 shader_defs: Vec::new(),
                 entry_point: "fragment".into(),
                 targets: vec![ColorTargetState {
@@ -112,13 +114,13 @@ impl SpecializedPipeline for ColoredMesh2dPipeline {
                 mask: !0,
                 alpha_to_coverage_enabled: false,
             },
-            label: Some("colored_mesh2d_pipeline".into()),
+            label: Some("shape_pipeline".into()),
         }
     }
 }
 
 // This specifies how to render a colored 2d mesh
-type DrawColoredMesh2d = (
+type DrawShape = (
     // Set the pipeline
     SetItemPipeline,
     // Set the view uniform as bind group 0
@@ -129,77 +131,77 @@ type DrawColoredMesh2d = (
     DrawMesh2d,
 );
 
-/// Plugin that renders [`ColoredMesh2d`]s
-pub struct ColoredMesh2dPlugin;
+/// Plugin that renders [`Shape`]s
+pub struct RenderShapePlugin;
 
 /// Handle to the custom shader with a unique random ID
-pub const COLORED_MESH2D_SHADER_HANDLE: HandleUntyped =
+pub const SHAPE_SHADER_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 13828845428412094821);
 
-impl Plugin for ColoredMesh2dPlugin {
+impl Plugin for RenderShapePlugin {
     fn build(&self, app: &mut App) {
         // Load our custom shader
         let mut shaders = app.world.get_resource_mut::<Assets<Shader>>().unwrap();
         shaders.set_untracked(
-            COLORED_MESH2D_SHADER_HANDLE,
-            Shader::from_wgsl(include_str!("colored_mesh2d.wgsl")),
+            SHAPE_SHADER_HANDLE,
+            Shader::from_wgsl(include_str!("shape.wgsl")),
         );
 
         // Register our custom draw function and pipeline, and add our render systems
         let render_app = app.get_sub_app_mut(RenderApp).unwrap();
         render_app
-            .add_render_command::<Transparent2d, DrawColoredMesh2d>()
-            .init_resource::<ColoredMesh2dPipeline>()
-            .init_resource::<SpecializedPipelines<ColoredMesh2dPipeline>>()
-            .add_system_to_stage(RenderStage::Extract, extract_colored_mesh2d)
-            .add_system_to_stage(RenderStage::Queue, queue_colored_mesh2d);
+            .add_render_command::<Transparent2d, DrawShape>()
+            .init_resource::<ShapePipeline>()
+            .init_resource::<SpecializedPipelines<ShapePipeline>>()
+            .add_system_to_stage(RenderStage::Extract, extract_shape)
+            .add_system_to_stage(RenderStage::Queue, queue_shape);
     }
 }
 
-/// Extract the [`ColoredMesh2d`] marker component into the render app
-pub fn extract_colored_mesh2d(
+/// Extract the [`Shape`] marker component into the render app
+pub fn extract_shape(
     mut commands: Commands,
     mut previous_len: Local<usize>,
-    query: Query<(Entity, &ComputedVisibility), With<ColoredMesh2d>>,
+    query: Query<(Entity, &ComputedVisibility), With<Shape>>,
 ) {
     let mut values = Vec::with_capacity(*previous_len);
     for (entity, computed_visibility) in query.iter() {
         if !computed_visibility.is_visible {
             continue;
         }
-        values.push((entity, (ColoredMesh2d,)));
+        values.push((entity, (Shape,)));
     }
     *previous_len = values.len();
     commands.insert_or_spawn_batch(values);
 }
 
-/// Queue the 2d meshes marked with [`ColoredMesh2d`] using our custom pipeline and draw function
+/// Queue the 2d meshes marked with [`Shape`] using our custom pipeline and draw function
 #[allow(clippy::too_many_arguments)]
-pub fn queue_colored_mesh2d(
+pub fn queue_shape(
     transparent_draw_functions: Res<DrawFunctions<Transparent2d>>,
-    colored_mesh2d_pipeline: Res<ColoredMesh2dPipeline>,
-    mut pipelines: ResMut<SpecializedPipelines<ColoredMesh2dPipeline>>,
+    shape_pipeline: Res<ShapePipeline>,
+    mut pipelines: ResMut<SpecializedPipelines<ShapePipeline>>,
     mut pipeline_cache: ResMut<RenderPipelineCache>,
     msaa: Res<Msaa>,
     render_meshes: Res<RenderAssets<Mesh>>,
-    colored_mesh2d: Query<(&Mesh2dHandle, &Mesh2dUniform), With<ColoredMesh2d>>,
+    shape: Query<(&Mesh2dHandle, &Mesh2dUniform), With<Shape>>,
     mut views: Query<(&VisibleEntities, &mut RenderPhase<Transparent2d>)>,
 ) {
-    if colored_mesh2d.is_empty() {
+    if shape.is_empty() {
         return;
     }
     // Iterate each view (a camera is a view)
     for (visible_entities, mut transparent_phase) in views.iter_mut() {
-        let draw_colored_mesh2d = transparent_draw_functions
+        let draw_shape = transparent_draw_functions
             .read()
-            .get_id::<DrawColoredMesh2d>()
+            .get_id::<DrawShape>()
             .unwrap();
 
         let mesh_key = Mesh2dPipelineKey::from_msaa_samples(msaa.samples);
 
         // Queue all entities visible to that view
         for visible_entity in &visible_entities.entities {
-            if let Ok((mesh2d_handle, mesh2d_uniform)) = colored_mesh2d.get(*visible_entity) {
+            if let Ok((mesh2d_handle, mesh2d_uniform)) = shape.get(*visible_entity) {
                 // Get our specialized pipeline
                 let mut mesh2d_key = mesh_key;
                 if let Some(mesh) = render_meshes.get(&mesh2d_handle.0) {
@@ -208,12 +210,12 @@ pub fn queue_colored_mesh2d(
                 }
 
                 let pipeline_id =
-                    pipelines.specialize(&mut pipeline_cache, &colored_mesh2d_pipeline, mesh2d_key);
+                    pipelines.specialize(&mut pipeline_cache, &shape_pipeline, mesh2d_key);
 
                 let mesh_z = mesh2d_uniform.transform.w_axis.z;
                 transparent_phase.add(Transparent2d {
                     entity: *visible_entity,
-                    draw_function: draw_colored_mesh2d,
+                    draw_function: draw_shape,
                     pipeline: pipeline_id,
                     // The 2d render items are sorted according to their z value before rendering,
                     // in order to get correct transparency

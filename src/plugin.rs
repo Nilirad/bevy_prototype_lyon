@@ -31,6 +31,7 @@ use lyon_tessellation::{self as tess, BuffersBuilder, FillTessellator, StrokeTes
 use crate::{
     draw::{DrawMode, FillMode, StrokeMode},
     entity::Path,
+    render::RenderShapePlugin,
     vertex::{VertexBuffers, VertexConstructor},
 };
 
@@ -58,7 +59,7 @@ impl Plugin for ShapePlugin {
                 SystemStage::parallel(),
             )
             .add_system_to_stage(Stage::Shape, mesh_shapes_system)
-            .add_plugin(crate::render::ColoredMesh2dPlugin);
+            .add_plugin(RenderShapePlugin);
     }
 }
 

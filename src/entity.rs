@@ -2,9 +2,12 @@
 
 use bevy::{
     ecs::{bundle::Bundle, component::Component},
-    prelude::{ComputedVisibility, GlobalTransform, Transform, Visibility},
-    render::color::Color,
+    render::{
+        color::Color,
+        view::{ComputedVisibility, Visibility},
+    },
     sprite::Mesh2dHandle,
+    transform::components::{GlobalTransform, Transform},
 };
 use lyon_tessellation::{self as tess, FillOptions};
 

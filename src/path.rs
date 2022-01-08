@@ -8,7 +8,7 @@ use lyon_tessellation::{
 
 use crate::{
     entity::Path,
-    prelude::Geometry,
+    geometry::Geometry,
     utils::{ToPoint, ToVector},
 };
 

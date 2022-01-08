@@ -18,6 +18,10 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ## Changelog
 
+### 0.4.0
+- Support for Bevy 0.6
+- Shape properties can be dynamically changed
+
 ### 0.3.1
 - Restored support for bevy_webgl2 (lost on v0.3.0).
 
@@ -87,6 +91,7 @@ The following table shows the latest version of `bevy_prototype_lyon` that suppo
 
 |bevy|bevy_prototype_lyon|license|
 |---|---|---|
+|0.6|0.4|MIT/Apache 2.0|
 |0.5|0.3|MIT|
 |0.4|0.2|MIT|
 

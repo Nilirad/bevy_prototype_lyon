@@ -42,7 +42,8 @@ impl FromWorld for ShapePipeline {
     }
 }
 
-// We implement `SpecializedPipeline` tp customize the default rendering from `Mesh2dPipeline`
+// We implement `SpecializedPipeline` tp customize the default rendering from
+// `Mesh2dPipeline`
 impl SpecializedPipeline for ShapePipeline {
     type Key = Mesh2dPipelineKey;
 
@@ -50,7 +51,8 @@ impl SpecializedPipeline for ShapePipeline {
         // Customize how to store the meshes' vertex attributes in the vertex buffer
         // Our meshes only have position and color
         let vertex_attributes = vec![
-            // Position (GOTCHA! Vertex_Position isn't first in the buffer due to how Mesh sorts attributes (alphabetically))
+            // Position (GOTCHA! Vertex_Position isn't first in the buffer due to how Mesh sorts
+            // attributes (alphabetically))
             VertexAttribute {
                 format: VertexFormat::Float32x3,
                 // this offset is the size of the color attribute, which is stored first
@@ -175,7 +177,8 @@ pub fn extract_shape(
     commands.insert_or_spawn_batch(values);
 }
 
-/// Queue the 2d meshes marked with [`Shape`] using our custom pipeline and draw function
+/// Queue the 2d meshes marked with [`Shape`] using our custom pipeline and draw
+/// function
 #[allow(clippy::too_many_arguments)]
 pub fn queue_shape(
     transparent_draw_functions: Res<DrawFunctions<Transparent2d>>,

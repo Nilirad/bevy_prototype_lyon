@@ -29,7 +29,7 @@ use bevy::{
 pub struct Shape;
 
 /// Custom pipeline for 2d meshes with vertex colors
-pub struct ShapePipeline {
+struct ShapePipeline {
     /// this pipeline wraps the standard [`Mesh2dPipeline`]
     mesh2d_pipeline: Mesh2dPipeline,
 }
@@ -44,6 +44,7 @@ impl FromWorld for ShapePipeline {
 
 // We implement `SpecializedPipeline` tp customize the default rendering from
 // `Mesh2dPipeline`
+#[allow(clippy::too_many_lines)]
 impl SpecializedPipeline for ShapePipeline {
     type Key = Mesh2dPipelineKey;
 
@@ -161,7 +162,7 @@ impl Plugin for RenderShapePlugin {
 }
 
 /// Extract the [`Shape`] marker component into the render app
-pub fn extract_shape(
+fn extract_shape(
     mut commands: Commands,
     mut previous_len: Local<usize>,
     query: Query<(Entity, &ComputedVisibility), With<Shape>>,
@@ -180,7 +181,7 @@ pub fn extract_shape(
 /// Queue the 2d meshes marked with [`Shape`] using our custom pipeline and draw
 /// function
 #[allow(clippy::too_many_arguments)]
-pub fn queue_shape(
+fn queue_shape(
     transparent_draw_functions: Res<DrawFunctions<Transparent2d>>,
     shape_pipeline: Res<ShapePipeline>,
     mut pipelines: ResMut<SpecializedPipelines<ShapePipeline>>,

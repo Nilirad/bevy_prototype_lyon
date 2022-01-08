@@ -19,6 +19,7 @@
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::multiple_crate_versions)] // this is a dependency problem
 #![allow(clippy::module_name_repetitions)]
+#![allow(clippy::needless_pass_by_value)] // False positives with `SystemParam`s.
 
 pub mod draw;
 pub mod entity;

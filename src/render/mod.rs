@@ -1,21 +1,30 @@
 //! Render pipeline
 
 use bevy::{
+    app::{App, Plugin},
+    asset::{Assets, HandleUntyped},
     core::FloatOrd,
     core_pipeline::Transparent2d,
-    prelude::*,
+    ecs::{
+        component::Component,
+        entity::Entity,
+        query::With,
+        system::{Commands, Local, Query, Res, ResMut},
+        world::{FromWorld, World},
+    },
     reflect::TypeUuid,
     render::{
+        mesh::Mesh,
         render_asset::RenderAssets,
         render_phase::{AddRenderCommand, DrawFunctions, RenderPhase, SetItemPipeline},
         render_resource::{
             BlendState, ColorTargetState, ColorWrites, FragmentState, FrontFace, MultisampleState,
-            PolygonMode, PrimitiveState, RenderPipelineCache, RenderPipelineDescriptor,
+            PolygonMode, PrimitiveState, RenderPipelineCache, RenderPipelineDescriptor, Shader,
             SpecializedPipeline, SpecializedPipelines, TextureFormat, VertexAttribute,
             VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
         },
         texture::BevyDefault,
-        view::VisibleEntities,
+        view::{ComputedVisibility, Msaa, VisibleEntities},
         RenderApp, RenderStage,
     },
     sprite::{

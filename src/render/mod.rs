@@ -138,7 +138,7 @@ pub struct RenderShapePlugin;
 
 /// Handle to the custom shader with a unique random ID
 pub const SHAPE_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 13828845428412094821);
+    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 868_242_739_331_722_714);
 
 impl Plugin for RenderShapePlugin {
     fn build(&self, app: &mut App) {

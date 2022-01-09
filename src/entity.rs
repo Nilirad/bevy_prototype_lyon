@@ -13,6 +13,7 @@ use lyon_tessellation::{self as tess, FillOptions};
 
 use crate::{
     draw::{DrawMode, FillMode},
+    prelude::Geometry,
     render::Shape,
 };
 
@@ -51,3 +52,9 @@ impl Default for ShapeBundle {
 #[allow(missing_docs)]
 #[derive(Component)]
 pub struct Path(pub tess::path::Path);
+
+impl Geometry for Path {
+    fn add_geometry(&self, b: &mut tess::path::path::Builder) {
+        b.concatenate(&[self.0.as_slice()]);
+    }
+}

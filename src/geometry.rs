@@ -1,7 +1,7 @@
 //! Types for defining and using geometries.
 
 use bevy::transform::components::Transform;
-use lyon_tessellation::{self as tess, path::path::Builder};
+use lyon_tessellation::path::path::Builder;
 
 use crate::{
     draw::DrawMode,
@@ -51,13 +51,6 @@ use crate::{
 pub trait Geometry {
     /// Adds the geometry of the shape to the given Lyon path `Builder`.
     fn add_geometry(&self, b: &mut Builder);
-}
-
-/// This implementation permits to use a Lyon [`Path`] as a [`Geometry`].
-impl Geometry for tess::path::Path {
-    fn add_geometry(&self, b: &mut Builder) {
-        b.concatenate(&[self.as_slice()]);
-    }
 }
 
 /// Allows the creation of shapes using geometries added to a path builder.

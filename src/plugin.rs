@@ -73,31 +73,40 @@ fn mesh_shapes_system(
     mut query: Query<(&DrawMode, &Path, &mut Mesh2dHandle), Or<(Changed<Path>, Changed<DrawMode>)>>,
 ) {
     for (tess_mode, path, mut mesh) in query.iter_mut() {
-        let mut buffers = VertexBuffers::new();
-
-        match tess_mode {
-            DrawMode::Fill(mode) => {
-                fill(&mut fill_tess, &path.0, mode, &mut buffers);
-            }
-            DrawMode::Stroke(mode) => {
-                stroke(&mut stroke_tess, &path.0, mode, &mut buffers);
-            }
-            DrawMode::Outlined {
-                fill_mode,
-                outline_mode,
-            } => {
-                fill(&mut fill_tess, &path.0, fill_mode, &mut buffers);
-                stroke(&mut stroke_tess, &path.0, outline_mode, &mut buffers);
-            }
-        }
-
-        mesh.0 = meshes.add(build_mesh(&buffers));
+        mesh.0 = meshes.add(path_to_mesh(&mut fill_tess, &mut stroke_tess, tess_mode, path));
     }
+}
+
+pub(crate) fn path_to_mesh(
+    fill_tess: &mut FillTessellator,
+    stroke_tess: &mut StrokeTessellator,
+    tess_mode: &DrawMode,
+    path: &Path,
+) -> Mesh {
+    let mut buffers = VertexBuffers::new();
+
+    match tess_mode {
+        DrawMode::Fill(mode) => {
+            fill(fill_tess, &path.0, mode, &mut buffers);
+        }
+        DrawMode::Stroke(mode) => {
+            stroke(stroke_tess, &path.0, mode, &mut buffers);
+        }
+        DrawMode::Outlined {
+            fill_mode,
+            outline_mode,
+        } => {
+            fill(fill_tess, &path.0, fill_mode, &mut buffers);
+            stroke(stroke_tess, &path.0, outline_mode, &mut buffers);
+        }
+    }
+
+    build_mesh(&buffers)
 }
 
 #[allow(clippy::trivially_copy_pass_by_ref)] // lyon takes &FillOptions
 fn fill(
-    tess: &mut ResMut<FillTessellator>,
+    tess: &mut FillTessellator,
     path: &tess::path::Path,
     mode: &FillMode,
     buffers: &mut VertexBuffers,
@@ -113,7 +122,7 @@ fn fill(
 
 #[allow(clippy::trivially_copy_pass_by_ref)] // lyon takes &StrokeOptions
 fn stroke(
-    tess: &mut ResMut<StrokeTessellator>,
+    tess: &mut StrokeTessellator,
     path: &tess::path::Path,
     mode: &StrokeMode,
     buffers: &mut VertexBuffers,

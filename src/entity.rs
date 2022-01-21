@@ -53,6 +53,18 @@ impl Default for ShapeBundle {
 #[derive(Component)]
 pub struct Path(pub tess::path::Path);
 
+impl Path {
+    /// Directly build a `Mesh` from this `Path`.
+    pub fn build_mesh(
+        &self,
+        fill_tess: &mut tess::FillTessellator,
+        stroke_tess: &mut tess::StrokeTessellator,
+        tess_mode: &DrawMode,
+    ) -> bevy::render::mesh::Mesh {
+        crate::plugin::path_to_mesh(fill_tess, stroke_tess, tess_mode, self)
+    }
+}
+
 impl Geometry for Path {
     fn add_geometry(&self, b: &mut tess::path::path::Builder) {
         b.concatenate(&[self.0.as_slice()]);

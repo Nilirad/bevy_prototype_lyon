@@ -130,7 +130,7 @@ fn stroke(
 fn build_mesh(buffers: &VertexBuffers) -> Mesh {
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
-    mesh.set_attribute(
+    mesh.insert_attribute(
         Mesh::ATTRIBUTE_POSITION,
         buffers
             .vertices
@@ -138,13 +138,13 @@ fn build_mesh(buffers: &VertexBuffers) -> Mesh {
             .map(|v| [v.position[0], v.position[1], 0.0])
             .collect::<Vec<[f32; 3]>>(),
     );
-    mesh.set_attribute(
+    mesh.insert_attribute(
         Mesh::ATTRIBUTE_COLOR,
         buffers
             .vertices
             .iter()
             .map(|v| v.color)
-            .collect::<Vec<[f32; 4]>>(),
+            .collect::<Vec<u32>>(),
     );
 
     mesh

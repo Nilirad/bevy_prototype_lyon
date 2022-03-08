@@ -20,8 +20,8 @@ use bevy::{
         render_resource::{
             BlendState, ColorTargetState, ColorWrites, FragmentState, FrontFace, MultisampleState,
             PolygonMode, PrimitiveState, RenderPipelineCache, RenderPipelineDescriptor, Shader,
-            SpecializedPipeline, SpecializedPipelines, TextureFormat, VertexAttribute,
-            VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
+            SpecializedPipeline, SpecializedPipelines, TextureFormat, VertexBufferLayout,
+            VertexFormat, VertexState, VertexStepMode,
         },
         texture::BevyDefault,
         view::{ComputedVisibility, Msaa, VisibleEntities},
@@ -60,25 +60,15 @@ impl SpecializedPipeline for ShapePipeline {
     fn specialize(&self, key: Self::Key) -> RenderPipelineDescriptor {
         // Customize how to store the meshes' vertex attributes in the vertex buffer
         // Our meshes only have position and color
-        let vertex_attributes = vec![
-            // Position (GOTCHA! Vertex_Position isn't first in the buffer due to how Mesh sorts
-            // attributes (alphabetically))
-            VertexAttribute {
-                format: VertexFormat::Float32x3,
-                // this offset is the size of the color attribute, which is stored first
-                offset: 16,
-                // position is available at location 0 in the shader
-                shader_location: 0,
-            },
+        let formats = vec![
+            // Position
+            VertexFormat::Float32x3,
             // Color
-            VertexAttribute {
-                format: VertexFormat::Float32x4,
-                offset: 0,
-                shader_location: 1,
-            },
+            VertexFormat::Uint32,
         ];
-        // This is the sum of the size of position and color attributes (12 + 16 = 28)
-        let vertex_array_stride = 28;
+
+        let vertex_layout =
+            VertexBufferLayout::from_vertex_formats(VertexStepMode::Vertex, formats);
 
         RenderPipelineDescriptor {
             vertex: VertexState {
@@ -87,11 +77,7 @@ impl SpecializedPipeline for ShapePipeline {
                 entry_point: "vertex".into(),
                 shader_defs: Vec::new(),
                 // Use our custom vertex buffer
-                buffers: vec![VertexBufferLayout {
-                    array_stride: vertex_array_stride,
-                    step_mode: VertexStepMode::Vertex,
-                    attributes: vertex_attributes,
-                }],
+                buffers: vec![vertex_layout],
             },
             fragment: Some(FragmentState {
                 // Use our custom shader

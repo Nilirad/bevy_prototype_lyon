@@ -19,9 +19,8 @@ use bevy::{
         render_phase::{AddRenderCommand, DrawFunctions, RenderPhase, SetItemPipeline},
         render_resource::{
             BlendState, ColorTargetState, ColorWrites, FragmentState, FrontFace, MultisampleState,
-            PolygonMode, PrimitiveState, RenderPipelineCache, RenderPipelineDescriptor, Shader,
-            SpecializedPipeline, SpecializedPipelines, TextureFormat, VertexBufferLayout,
-            VertexFormat, VertexState, VertexStepMode,
+            PolygonMode, PrimitiveState, RenderPipelineDescriptor, Shader, TextureFormat,
+            VertexBufferLayout, VertexFormat, VertexState, VertexStepMode, SpecializedRenderPipeline, SpecializedRenderPipelines, PipelineCache,
         },
         texture::BevyDefault,
         view::{ComputedVisibility, Msaa, VisibleEntities},
@@ -54,7 +53,7 @@ impl FromWorld for ShapePipeline {
 // We implement `SpecializedPipeline` tp customize the default rendering from
 // `Mesh2dPipeline`
 #[allow(clippy::too_many_lines)]
-impl SpecializedPipeline for ShapePipeline {
+impl SpecializedRenderPipeline for ShapePipeline {
     type Key = Mesh2dPipelineKey;
 
     fn specialize(&self, key: Self::Key) -> RenderPipelineDescriptor {
@@ -150,7 +149,7 @@ impl Plugin for RenderShapePlugin {
         render_app
             .add_render_command::<Transparent2d, DrawShape>()
             .init_resource::<ShapePipeline>()
-            .init_resource::<SpecializedPipelines<ShapePipeline>>()
+            .init_resource::<SpecializedRenderPipelines<ShapePipeline>>()
             .add_system_to_stage(RenderStage::Extract, extract_shape)
             .add_system_to_stage(RenderStage::Queue, queue_shape);
     }
@@ -179,8 +178,8 @@ fn extract_shape(
 fn queue_shape(
     transparent_draw_functions: Res<DrawFunctions<Transparent2d>>,
     shape_pipeline: Res<ShapePipeline>,
-    mut pipelines: ResMut<SpecializedPipelines<ShapePipeline>>,
-    mut pipeline_cache: ResMut<RenderPipelineCache>,
+    mut pipelines: ResMut<SpecializedRenderPipelines<ShapePipeline>>,
+    mut pipeline_cache: ResMut<PipelineCache>,
     msaa: Res<Msaa>,
     render_meshes: Res<RenderAssets<Mesh>>,
     shape: Query<(&Mesh2dHandle, &Mesh2dUniform), With<Shape>>,

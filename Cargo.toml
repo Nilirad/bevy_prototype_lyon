@@ -13,9 +13,9 @@ version = "0.5.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = {version = "0.7", default-features = false, features = ["bevy_sprite", "bevy_render", "bevy_core_pipeline"]}
+bevy = {git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = ["bevy_sprite", "bevy_render", "bevy_core_pipeline"]}
 lyon_tessellation = "0.17"
 svgtypes = "0.5"
 
 [dev-dependencies]
-bevy = {version = "0.7", default-features = false, features = ["x11"]}
+bevy = {git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = ["x11"]}

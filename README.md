@@ -18,6 +18,9 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ## Changelog
 
+### 0.5.0
+- Support for Bevy 0.7
+
 ### 0.4.0
 - Support for Bevy 0.6
 - Shape properties can be dynamically changed
@@ -44,7 +47,7 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.4.0"
+bevy_prototype_lyon = "0.5.0"
 ```
 
 Then, you can start by drawing simple shapes:
@@ -91,6 +94,7 @@ The following table shows the latest version of `bevy_prototype_lyon` that suppo
 
 |bevy|bevy_prototype_lyon|license|
 |---|---|---|
+|0.7|0.5|MIT/Apache 2.0|
 |0.6|0.4|MIT/Apache 2.0|
 |0.5|0.3|MIT|
 |0.4|0.2|MIT|

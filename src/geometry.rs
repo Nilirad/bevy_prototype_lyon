@@ -87,7 +87,7 @@ impl GeometryBuilder {
     ///         Transform::default(),
     ///     ));
     /// }
-    /// # my_system.system();
+    /// # IntoSystem::into_system(my_system);
     /// ```
     #[allow(clippy::should_implement_trait)]
     #[must_use]
@@ -124,7 +124,7 @@ impl GeometryBuilder {
     ///         Transform::default(),
     ///     ));
     /// }
-    /// # my_system.system();
+    /// # IntoSystem::into_system(my_system);
     /// ```
     pub fn build_as(shape: &impl Geometry, mode: DrawMode, transform: Transform) -> ShapeBundle {
         Self::new().add(shape).build(mode, transform)

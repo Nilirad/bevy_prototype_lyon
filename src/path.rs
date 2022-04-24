@@ -48,7 +48,7 @@ impl ShapePath {
     ///
     ///     *path = ShapePath::new().add(&square).add(&triangle).build();
     /// }
-    /// # IntoSystem::into_system(my_system);
+    /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
     #[allow(clippy::should_implement_trait)]
     #[must_use]
@@ -85,7 +85,7 @@ impl ShapePath {
     ///
     ///     *path = ShapePath::build_as(&triangle);
     /// }
-    /// # IntoSystem::into_system(my_system);
+    /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
     pub fn build_as(shape: &impl Geometry) -> Path {
         Self::new().add(shape).build()

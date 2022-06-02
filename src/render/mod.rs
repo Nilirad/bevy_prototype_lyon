@@ -3,7 +3,7 @@
 use bevy::{
     app::{App, Plugin},
     asset::{Assets, HandleUntyped},
-    core_pipeline::Transparent2d,
+    core_pipeline::core_2d::Transparent2d,
     ecs::{
         component::Component,
         entity::Entity,
@@ -64,7 +64,7 @@ impl SpecializedRenderPipeline for ShapePipeline {
             // Position
             VertexFormat::Float32x3,
             // Color
-            VertexFormat::Uint32,
+            VertexFormat::Float32x4,
         ];
 
         let vertex_layout =

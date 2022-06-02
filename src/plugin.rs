@@ -144,7 +144,7 @@ fn build_mesh(buffers: &VertexBuffers) -> Mesh {
             .vertices
             .iter()
             .map(|v| v.color)
-            .collect::<Vec<u32>>(),
+            .collect::<Vec<[f32; 4]>>(),
     );
 
     mesh

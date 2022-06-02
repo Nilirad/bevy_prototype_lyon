@@ -63,7 +63,7 @@ fn setup_system(mut commands: Commands) {
         ..shapes::RegularPolygon::default()
     };
 
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands.spawn_bundle(Camera2dBundle::default());
     commands
         .spawn_bundle(GeometryBuilder::build_as(
             &shape,

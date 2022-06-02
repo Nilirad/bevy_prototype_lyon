@@ -1,8 +1,8 @@
 // Import the standard 2d mesh uniforms and set their bind groups
-#import bevy_sprite::mesh2d_view_bind_group
-[[group(0), binding(0)]]
-var<uniform> view: View;
-#import bevy_sprite::mesh2d_struct
+#import bevy_sprite::mesh2d_view_bindings
+//[[group(0), binding(0)]]
+//var<uniform> view: View;
+#import bevy_sprite::mesh2d_types
 [[group(1), binding(0)]]
 var<uniform> mesh: Mesh2d;
 // The structure of the vertex buffer is as specified in `specialize()`

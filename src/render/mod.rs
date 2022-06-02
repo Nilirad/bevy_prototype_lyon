@@ -3,7 +3,7 @@
 use bevy::{
     app::{App, Plugin},
     asset::{Assets, HandleUntyped},
-    core_pipeline::Transparent2d,
+    core_pipeline::core_2d::Transparent2d,
     ecs::{
         component::Component,
         entity::Entity,

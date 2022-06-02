@@ -64,7 +64,7 @@ impl SpecializedRenderPipeline for ShapePipeline {
             // Position
             VertexFormat::Float32x3,
             // Color
-            VertexFormat::Uint32,
+            VertexFormat::Float32x4,
         ];
 
         let vertex_layout =

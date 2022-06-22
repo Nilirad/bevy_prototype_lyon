@@ -54,7 +54,7 @@ impl Plugin for ShapePlugin {
         app.insert_resource(fill_tess)
             .insert_resource(stroke_tess)
             .add_stage_after(
-                bevy::app::CoreStage::Update,
+                bevy::app::CoreStage::PostUpdate,
                 Stage::Shape,
                 SystemStage::parallel(),
             )

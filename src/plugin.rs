@@ -51,7 +51,7 @@ impl Plugin for ShapePlugin {
 }
 
 /// [`SystemLabel`] for the system that builds the meshes for newly-added
-/// or changed shapes. Resides in [`PosUpdate`](CoreStage::PostUpdate).
+/// or changed shapes. Resides in [`PostUpdate`](CoreStage::PostUpdate).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemLabel)]
 pub struct BuildShapes;
 

@@ -45,7 +45,12 @@ impl Plugin for ShapePlugin {
         let stroke_tess = StrokeTessellator::new();
         app.insert_resource(fill_tess)
             .insert_resource(stroke_tess)
-            .add_system_to_stage(CoreStage::PostUpdate, mesh_shapes_system.label(BuildShapes))
+            .add_system_to_stage(
+                CoreStage::PostUpdate,
+                mesh_shapes_system
+                    .label(BuildShapes)
+                    .after(bevy::transform::transform_propagate_system),
+            )
             .add_plugin(RenderShapePlugin);
     }
 }

@@ -16,10 +16,10 @@ use bevy::{
     asset::Assets,
     ecs::{
         query::{Changed, Or},
-        schedule::{StageLabel, SystemStage},
         system::{Query, ResMut},
     },
     log::error,
+    prelude::{CoreStage, ParallelSystemDescriptorCoercion as _, SystemLabel},
     render::{
         mesh::{Indices, Mesh},
         render_resource::PrimitiveTopology,
@@ -35,14 +35,6 @@ use crate::{
     vertex::{VertexBuffers, VertexConstructor},
 };
 
-/// Stages for this plugin.
-#[derive(Debug, Clone, Eq, Hash, PartialEq, StageLabel)]
-pub enum Stage {
-    /// The stage where the [`ShapeBundle`](crate::entity::ShapeBundle) gets
-    /// completed.
-    Shape,
-}
-
 /// A plugin that provides resources and a system to draw shapes in Bevy with
 /// less boilerplate.
 pub struct ShapePlugin;
@@ -53,15 +45,20 @@ impl Plugin for ShapePlugin {
         let stroke_tess = StrokeTessellator::new();
         app.insert_resource(fill_tess)
             .insert_resource(stroke_tess)
-            .add_stage_after(
-                bevy::app::CoreStage::Update,
-                Stage::Shape,
-                SystemStage::parallel(),
+            .add_system_to_stage(
+                CoreStage::PostUpdate,
+                mesh_shapes_system
+                    .label(BuildShapes)
+                    .after(bevy::transform::transform_propagate_system),
             )
-            .add_system_to_stage(Stage::Shape, mesh_shapes_system)
             .add_plugin(RenderShapePlugin);
     }
 }
+
+/// [`SystemLabel`] for the system that builds the meshes for newly-added
+/// or changed shapes. Resides in [`PostUpdate`](CoreStage::PostUpdate).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemLabel)]
+pub struct BuildShapes;
 
 /// Queries all the [`ShapeBundle`]s to mesh them when they are added
 /// or re-mesh them when they are changed.

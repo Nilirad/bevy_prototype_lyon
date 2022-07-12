@@ -24,7 +24,7 @@ use bevy::{
         },
         texture::BevyDefault,
         view::{ComputedVisibility, Msaa, VisibleEntities},
-        RenderApp, RenderStage,
+        Extract, RenderApp, RenderStage,
     },
     sprite::{
         DrawMesh2d, Mesh2dHandle, Mesh2dPipeline, Mesh2dPipelineKey, Mesh2dUniform,
@@ -160,7 +160,7 @@ impl Plugin for RenderShapePlugin {
 fn extract_shape(
     mut commands: Commands,
     mut previous_len: Local<usize>,
-    query: Query<(Entity, &ComputedVisibility), With<Shape>>,
+    query: Extract<Query<(Entity, &ComputedVisibility), With<Shape>>>,
 ) {
     let mut values = Vec::with_capacity(*previous_len);
     for (entity, computed_visibility) in query.iter() {

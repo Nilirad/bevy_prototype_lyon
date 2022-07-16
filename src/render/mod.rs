@@ -164,7 +164,7 @@ fn extract_shape(
 ) {
     let mut values = Vec::with_capacity(*previous_len);
     for (entity, computed_visibility) in query.iter() {
-        if !computed_visibility.is_visible {
+        if !computed_visibility.is_visible() {
             continue;
         }
         values.push((entity, (Shape,)));

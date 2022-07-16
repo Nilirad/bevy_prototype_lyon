@@ -32,8 +32,9 @@ fn setup_system(mut commands: Commands) {
     commands.spawn_bundle(BuildingBundle {
         name: Name("Blacksmith".to_owned()),
         transform:Transform::from_translation(Vec3::new(-50.,0.,0.)),
-        global_transform:GlobalTransform::default()
+        global_transform:GlobalTransform::default(),
     })
+    .insert_bundle(VisibilityBundle::default())
     .insert(BlacksmithMarker)
     //we split our art in this example to two children because our art is made out of 2 paths, 
     //one path who's width is 4, 

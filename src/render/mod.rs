@@ -24,7 +24,7 @@ use bevy::{
         },
         texture::BevyDefault,
         view::{ComputedVisibility, Msaa, VisibleEntities},
-        RenderApp, RenderStage,
+        Extract, RenderApp, RenderStage,
     },
     sprite::{
         DrawMesh2d, Mesh2dHandle, Mesh2dPipeline, Mesh2dPipelineKey, Mesh2dUniform,
@@ -84,11 +84,11 @@ impl SpecializedRenderPipeline for ShapePipeline {
                 shader: SHAPE_SHADER_HANDLE.typed::<Shader>(),
                 shader_defs: Vec::new(),
                 entry_point: "fragment".into(),
-                targets: vec![ColorTargetState {
+                targets: vec![Some(ColorTargetState {
                     format: TextureFormat::bevy_default(),
                     blend: Some(BlendState::ALPHA_BLENDING),
                     write_mask: ColorWrites::ALL,
-                }],
+                })],
             }),
             // Use the two standard uniforms for 2d meshes
             layout: Some(vec![
@@ -160,11 +160,11 @@ impl Plugin for RenderShapePlugin {
 fn extract_shape(
     mut commands: Commands,
     mut previous_len: Local<usize>,
-    query: Query<(Entity, &ComputedVisibility), With<Shape>>,
+    query: Extract<Query<(Entity, &ComputedVisibility), With<Shape>>>,
 ) {
     let mut values = Vec::with_capacity(*previous_len);
     for (entity, computed_visibility) in query.iter() {
-        if !computed_visibility.is_visible {
+        if !computed_visibility.is_visible() {
             continue;
         }
         values.push((entity, (Shape,)));

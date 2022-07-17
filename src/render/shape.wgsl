@@ -3,21 +3,21 @@
 //[[group(0), binding(0)]]
 //var<uniform> view: View;
 #import bevy_sprite::mesh2d_types
-[[group(1), binding(0)]]
+@group(1) @binding(0)
 var<uniform> mesh: Mesh2d;
 // The structure of the vertex buffer is as specified in `specialize()`
 struct Vertex {
-    [[location(0)]] position: vec3<f32>;
-    [[location(1)]] color: vec4<f32>;
+    @location(0) position: vec3<f32>,
+    @location(1) color: vec4<f32>,
 };
 struct VertexOutput {
     // The vertex shader must set the on-screen position of the vertex
-    [[builtin(position)]] clip_position: vec4<f32>;
+    @builtin(position) clip_position: vec4<f32>,
     // We pass the vertex color to the framgent shader in location 0
-    [[location(0)]] color: vec4<f32>;
+    @location(0) color: vec4<f32>,
 };
 /// Entry point for the vertex shader
-[[stage(vertex)]]
+@vertex
 fn vertex(vertex: Vertex) -> VertexOutput {
     var out: VertexOutput;
     // Project the world position of the mesh into screen position
@@ -28,10 +28,10 @@ fn vertex(vertex: Vertex) -> VertexOutput {
 // The input of the fragment shader must correspond to the output of the vertex shader for all `location`s
 struct FragmentInput {
     // The color is interpolated between vertices by default
-    [[location(0)]] color: vec4<f32>;
+    @location(0) color: vec4<f32>,
 };
 /// Entry point for the fragment shader
-[[stage(fragment)]]
-fn fragment(in: FragmentInput) -> [[location(0)]] vec4<f32> {
+@fragment
+fn fragment(in: FragmentInput) -> @location(0) vec4<f32> {
     return in.color;
 }

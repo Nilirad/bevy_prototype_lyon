@@ -27,6 +27,9 @@ allow = [
   "BSD-2-Clause",
   "CC0-1.0",
 ]
+exceptions = [
+    { name = "unicode-ident", allow = ["Unicode-DFS-2016"] },
+]
 copyleft = "deny"
 default = "deny"
 unlicensed = "deny"

@@ -16,17 +16,17 @@ use bevy::{
     asset::Assets,
     ecs::{
         query::{Changed, Or},
-        system::{Query, ResMut},
+        system::{Query, ResMut, Resource},
     },
     log::error,
-    prelude::{CoreStage, ParallelSystemDescriptorCoercion as _, SystemLabel},
+    prelude::{CoreStage, Deref, DerefMut, ParallelSystemDescriptorCoercion as _, SystemLabel},
     render::{
         mesh::{Indices, Mesh},
         render_resource::PrimitiveTopology,
     },
     sprite::Mesh2dHandle,
 };
-use lyon_tessellation::{self as tess, BuffersBuilder, FillTessellator, StrokeTessellator};
+use lyon_tessellation::{self as tess, BuffersBuilder};
 
 use crate::{
     draw::{DrawMode, FillMode, StrokeMode},
@@ -41,10 +41,10 @@ pub struct ShapePlugin;
 
 impl Plugin for ShapePlugin {
     fn build(&self, app: &mut App) {
-        let fill_tess = FillTessellator::new();
-        let stroke_tess = StrokeTessellator::new();
-        app.insert_resource(fill_tess)
-            .insert_resource(stroke_tess)
+        let fill_tess = lyon_tessellation::FillTessellator::new();
+        let stroke_tess = lyon_tessellation::StrokeTessellator::new();
+        app.insert_resource(FillTessellator(fill_tess))
+            .insert_resource(StrokeTessellator(stroke_tess))
             .add_system_to_stage(
                 CoreStage::PostUpdate,
                 mesh_shapes_system
@@ -146,3 +146,9 @@ fn build_mesh(buffers: &VertexBuffers) -> Mesh {
 
     mesh
 }
+
+#[derive(Resource, Deref, DerefMut)]
+struct FillTessellator(lyon_tessellation::FillTessellator);
+
+#[derive(Resource, Deref, DerefMut)]
+struct StrokeTessellator(lyon_tessellation::StrokeTessellator);

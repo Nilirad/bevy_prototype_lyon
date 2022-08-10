@@ -8,7 +8,7 @@ use bevy::{
         component::Component,
         entity::Entity,
         query::With,
-        system::{Commands, Local, Query, Res, ResMut},
+        system::{Commands, Local, Query, Res, ResMut, Resource},
         world::{FromWorld, World},
     },
     reflect::TypeUuid,
@@ -38,6 +38,7 @@ use bevy::{
 pub struct Shape;
 
 /// Custom pipeline for 2d meshes with vertex colors
+#[derive(Resource)]
 struct ShapePipeline {
     /// this pipeline wraps the standard [`Mesh2dPipeline`]
     mesh2d_pipeline: Mesh2dPipeline,

@@ -25,12 +25,14 @@ fn setup_system(mut commands: Commands) {
 
     commands
         .spawn()
-        .insert(Name("Blacksmith".to_owned()))
-        .insert(BlacksmithMarker)
-        .insert_bundle(SpatialBundle {
-            transform: Transform::from_translation(Vec3::new(-50., 0., 0.)),
-            ..default()
-        })
+        .insert((
+            Name("Blacksmith".to_owned()),
+            BlacksmithMarker,
+            SpatialBundle {
+                transform: Transform::from_translation(Vec3::new(-50., 0., 0.)),
+                ..default()
+            },
+        ))
         //we split our art in this example to two children because our art is made out of 2 paths,
         //one path who's width is 4,
         //and another whose width is 2.5
@@ -57,16 +59,18 @@ fn setup_system(mut commands: Commands) {
 
     commands
         .spawn()
-        .insert(Name("Shack".to_owned()))
-        .insert(ToolShackMarker)
-        .insert_bundle(SpatialBundle {
-            transform: Transform {
-                translation: Vec3::new(375., 0., 0.),
-                scale: Vec3::new(0.1, 0.1, 1.),
-                ..Default::default()
+        .insert((
+            Name("Shack".to_owned()),
+            ToolShackMarker,
+            SpatialBundle {
+                transform: Transform {
+                    translation: Vec3::new(375., 0., 0.),
+                    scale: Vec3::new(0.1, 0.1, 1.),
+                    ..Default::default()
+                },
+                ..default()
             },
-            ..default()
-        })
+        ))
         //we split our art in this example to two children because our art is made out of 2 paths,
         //one path who's width is 4,
         //and another whose width is 2.5

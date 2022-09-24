@@ -20,8 +20,8 @@ fn setup_system(mut commands: Commands) {
         ..shapes::RegularPolygon::default()
     };
 
-    commands.spawn_bundle(Camera2dBundle::default());
-    commands.spawn_bundle(GeometryBuilder::build_as(
+    commands.spawn(Camera2dBundle::default());
+    commands.spawn(GeometryBuilder::build_as(
         &shape,
         DrawMode::Outlined {
             fill_mode: FillMode::color(Color::CYAN),

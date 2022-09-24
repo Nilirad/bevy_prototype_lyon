@@ -21,23 +21,24 @@ struct BlacksmithMarker;
 struct ToolShackMarker;
 
 fn setup_system(mut commands: Commands) {
-    commands.spawn_bundle(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
     commands
-        .spawn()
-        .insert(Name("Blacksmith".to_owned()))
-        .insert(BlacksmithMarker)
-        .insert_bundle(SpatialBundle {
-            transform: Transform::from_translation(Vec3::new(-50., 0., 0.)),
-            ..default()
-        })
+        .spawn((
+            Name("Blacksmith".to_owned()),
+            BlacksmithMarker,
+            SpatialBundle {
+                transform: Transform::from_translation(Vec3::new(-50., 0., 0.)),
+                ..default()
+            },
+        ))
         //we split our art in this example to two children because our art is made out of 2 paths,
         //one path who's width is 4,
         //and another whose width is 2.5
         //the art style was approximated from https://www.kenney.nl/assets/cartography-pack
         .with_children(|parent| {
             let svg_doc_size = Vec2::new(512., 512.);
-            parent.spawn_bundle(GeometryBuilder::build_as(
+            parent.spawn(GeometryBuilder::build_as(
                 &shapes::SvgPathShape {
                     svg_path_string: BLACKSMITH_OUTLINE.to_owned(),
                     svg_doc_size_in_px: svg_doc_size.to_owned(),
@@ -45,7 +46,7 @@ fn setup_system(mut commands: Commands) {
                 DrawMode::Stroke(StrokeMode::new(Color::BLACK, 4.0)),
                 Transform::default(),
             ));
-            parent.spawn_bundle(GeometryBuilder::build_as(
+            parent.spawn(GeometryBuilder::build_as(
                 &shapes::SvgPathShape {
                     svg_path_string: BLACKSMITH_DETAIL.to_owned(),
                     svg_doc_size_in_px: svg_doc_size.to_owned(),
@@ -56,24 +57,25 @@ fn setup_system(mut commands: Commands) {
         });
 
     commands
-        .spawn()
-        .insert(Name("Shack".to_owned()))
-        .insert(ToolShackMarker)
-        .insert_bundle(SpatialBundle {
-            transform: Transform {
-                translation: Vec3::new(375., 0., 0.),
-                scale: Vec3::new(0.1, 0.1, 1.),
-                ..Default::default()
+        .spawn((
+            Name("Shack".to_owned()),
+            ToolShackMarker,
+            SpatialBundle {
+                transform: Transform {
+                    translation: Vec3::new(375., 0., 0.),
+                    scale: Vec3::new(0.1, 0.1, 1.),
+                    ..Default::default()
+                },
+                ..default()
             },
-            ..default()
-        })
+        ))
         //we split our art in this example to two children because our art is made out of 2 paths,
         //one path who's width is 4,
         //and another whose width is 2.5
         //the art style was approximated from https://www.kenney.nl/assets/cartography-pack
         .with_children(|parent| {
             let svg_doc_size = Vec2::new(1000., 1000.);
-            parent.spawn_bundle(GeometryBuilder::build_as(
+            parent.spawn(GeometryBuilder::build_as(
                 &shapes::SvgPathShape {
                     svg_path_string: SHACK.to_owned(),
                     svg_doc_size_in_px: svg_doc_size.to_owned(),
@@ -83,7 +85,7 @@ fn setup_system(mut commands: Commands) {
             ));
 
             // shack walls
-            parent.spawn_bundle(GeometryBuilder::build_as(
+            parent.spawn(GeometryBuilder::build_as(
                 &shapes::SvgPathShape {
                     svg_path_string: SHACK_WALLS.to_owned(),
                     svg_doc_size_in_px: svg_doc_size.to_owned(),

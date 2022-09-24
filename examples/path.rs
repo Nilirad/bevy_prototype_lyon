@@ -16,8 +16,8 @@ fn setup_system(mut commands: Commands) {
     path_builder.line_to(100.0 * Vec2::ONE);
     let line = path_builder.build();
 
-    commands.spawn_bundle(Camera2dBundle::default());
-    commands.spawn_bundle(GeometryBuilder::build_as(
+    commands.spawn(Camera2dBundle::default());
+    commands.spawn(GeometryBuilder::build_as(
         &line,
         DrawMode::Stroke(StrokeMode::new(Color::BLACK, 10.0)),
         Transform::default(),

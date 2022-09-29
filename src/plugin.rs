@@ -19,7 +19,7 @@ use bevy::{
         system::{Query, ResMut, Resource},
     },
     log::error,
-    prelude::{CoreStage, Deref, DerefMut, ParallelSystemDescriptorCoercion as _, SystemLabel},
+    prelude::{CoreStage, Deref, DerefMut, IntoSystemDescriptor, SystemLabel},
     render::{
         mesh::{Indices, Mesh},
         render_resource::PrimitiveTopology,

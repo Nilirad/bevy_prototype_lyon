@@ -21,6 +21,7 @@
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::needless_pass_by_value)] // False positives with `SystemParam`s.
 #![allow(clippy::forget_non_drop)]
+#![allow(clippy::missing_const_for_fn)]
 
 pub mod draw;
 pub mod entity;

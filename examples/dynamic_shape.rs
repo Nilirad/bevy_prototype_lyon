@@ -27,8 +27,8 @@ fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, tim
 }
 
 fn change_draw_mode_system(mut query: Query<&mut DrawMode>, time: Res<Time>) {
-    let hue = (time.seconds_since_startup() * 50.0) % 360.0;
-    let outline_width = 2.0 + time.seconds_since_startup().sin().abs() * 10.0;
+    let hue = (time.elapsed_seconds_f64() * 50.0) % 360.0;
+    let outline_width = 2.0 + time.elapsed_seconds_f64().sin().abs() * 10.0;
 
     for mut draw_mode in query.iter_mut() {
         if let DrawMode::Outlined {
@@ -43,7 +43,7 @@ fn change_draw_mode_system(mut query: Query<&mut DrawMode>, time: Res<Time>) {
 }
 
 fn change_number_of_sides(mut query: Query<&mut Path>, time: Res<Time>) {
-    let sides = ((time.seconds_since_startup() - PI * 2.5).sin() * 2.5 + 5.5).round() as usize;
+    let sides = ((time.elapsed_seconds_f64() - PI * 2.5).sin() * 2.5 + 5.5).round() as usize;
 
     for mut path in query.iter_mut() {
         let polygon = shapes::RegularPolygon {

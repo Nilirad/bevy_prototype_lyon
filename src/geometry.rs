@@ -16,7 +16,7 @@ use crate::{
 /// ```
 /// use bevy_prototype_lyon::geometry::Geometry;
 /// use lyon_tessellation::{
-///     math::{Point, Rect, Size},
+///     math::{Box2D, Point, Size},
 ///     path::{path::Builder, traits::PathBuilder, Path, Winding},
 /// };
 ///
@@ -42,7 +42,7 @@ use crate::{
 /// impl Geometry for Rectangle {
 ///     fn add_geometry(&self, b: &mut Builder) {
 ///         b.add_rectangle(
-///             &Rect::new(Point::zero(), Size::new(self.width, self.height)),
+///             &Box2D::new(Point::zero(), Point::new(self.width, self.height)),
 ///             Winding::Positive,
 ///         );
 ///     }

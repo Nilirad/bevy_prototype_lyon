@@ -55,6 +55,6 @@ pub struct Path(pub tess::path::Path);
 
 impl Geometry for Path {
     fn add_geometry(&self, b: &mut tess::path::path::Builder) {
-        b.concatenate(&[self.0.as_slice()]);
+        b.extend_from_paths(&[self.0.as_slice()]);
     }
 }

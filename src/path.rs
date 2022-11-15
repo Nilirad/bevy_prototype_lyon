@@ -3,7 +3,11 @@
 use bevy::math::Vec2;
 use lyon_tessellation::{
     geom::Angle,
-    path::{builder::WithSvg, path::Builder, EndpointId},
+    path::{
+        builder::WithSvg,
+        path::{Builder, BuilderImpl},
+        EndpointId,
+    },
 };
 
 use crate::{
@@ -99,7 +103,7 @@ impl Default for ShapePath {
 }
 
 /// A SVG-like path builder.
-pub struct PathBuilder(WithSvg<Builder>);
+pub struct PathBuilder(WithSvg<BuilderImpl>);
 
 impl PathBuilder {
     /// Returns a new, empty `PathBuilder`.

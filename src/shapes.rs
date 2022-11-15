@@ -6,15 +6,14 @@
 
 use bevy::math::Vec2;
 use lyon_tessellation::{
-    math::{point, Angle, Point, Rect, Size, Vector},
+    geom::euclid::default::Point2D,
+    math::{point, Angle, Box2D, Point, Vector},
     path::{
-        builder::WithSvg,
-        path::Builder,
-        traits::{PathBuilder, SvgPathBuilder},
-        ArcFlags, Polygon as LyonPolygon, Winding,
+        builder::WithSvg, path::Builder, traits::SvgPathBuilder, ArcFlags, Polygon as LyonPolygon,
+        Winding,
     },
 };
-use svgtypes::{Path, PathSegment};
+use svgtypes::{PathParser, PathSegment};
 
 use crate::{
     geometry::Geometry,
@@ -69,7 +68,7 @@ impl Geometry for Rectangle {
         };
 
         b.add_rectangle(
-            &Rect::new(origin, Size::new(self.extents.x, self.extents.y)),
+            &Box2D::new(origin, Point2D::new(self.extents.x, self.extents.y)),
             Winding::Positive,
         );
     }
@@ -295,13 +294,12 @@ impl Geometry for SvgPathShape {
     fn add_geometry(&self, b: &mut Builder) {
         let builder = Builder::new();
         let mut svg_builder = WithSvg::new(builder);
-        let p: Path = self.svg_path_string.parse().unwrap();
         let offset_x = self.svg_doc_size_in_px.x / 2.;
         let offset_y = self.svg_doc_size_in_px.y / 2.;
         let mut used_move_command = false;
 
-        for path_segment in p.0 {
-            match path_segment {
+        for path_segment in PathParser::from(self.svg_path_string.as_str()) {
+            match path_segment.unwrap() {
                 PathSegment::MoveTo { abs, x, y } => {
                     if abs || !used_move_command {
                         svg_builder.move_to(get_point_after_offset(x, y, offset_x, offset_y));
@@ -374,16 +372,9 @@ impl Geometry for SvgPathShape {
                             get_point_after_offset(x, y, offset_x, offset_y),
                         );
                     } else {
-                        /*
                         svg_builder.relative_quadratic_bezier_to(
                             get_corrected_relative_vector(x1, y1),
                             get_corrected_relative_vector(x, y),
-                        );
-                        */
-                        //temporary fix until Lyon 0.17.6(?) comes out
-                        svg_builder.quadratic_bezier_to(
-                            svg_builder.current_position() + get_corrected_relative_vector(x1, y1),
-                            svg_builder.current_position() + get_corrected_relative_vector(x, y),
                         );
                     }
                 }
@@ -434,6 +425,6 @@ impl Geometry for SvgPathShape {
             }
         }
         let path = svg_builder.build();
-        b.concatenate(&[path.as_slice()]);
+        b.extend_from_paths(&[path.as_slice()]);
     }
 }

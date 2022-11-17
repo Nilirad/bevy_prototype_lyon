@@ -6,7 +6,7 @@
 
 use bevy::math::Vec2;
 use lyon_tessellation::{
-    geom::euclid::default::Point2D,
+    geom::euclid::default::Size2D,
     math::{point, Angle, Box2D, Point, Vector},
     path::{
         builder::WithSvg, path::Builder, traits::SvgPathBuilder, ArcFlags, Polygon as LyonPolygon,
@@ -68,7 +68,7 @@ impl Geometry for Rectangle {
         };
 
         b.add_rectangle(
-            &Box2D::new(origin, Point2D::new(self.extents.x, self.extents.y)),
+            &Box2D::from_origin_and_size(origin, Size2D::new(self.extents.x, self.extents.y)),
             Winding::Positive,
         );
     }

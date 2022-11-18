@@ -57,18 +57,25 @@ impl Default for Rectangle {
 impl Geometry for Rectangle {
     fn add_geometry(&self, b: &mut Builder) {
         let origin = match self.origin {
-            RectangleOrigin::Center => Point::new(-self.extents.x / 2.0, -self.extents.y / 2.0),
-            RectangleOrigin::BottomLeft => Point::new(0.0, 0.0),
-            RectangleOrigin::BottomRight => Point::new(-self.extents.x, 0.0),
-            RectangleOrigin::TopRight => Point::new(-self.extents.x, -self.extents.y),
-            RectangleOrigin::TopLeft => Point::new(0.0, -self.extents.y),
-            RectangleOrigin::CustomCenter(v) => {
-                Point::new(v.x - self.extents.x / 2.0, v.y - self.extents.y / 2.0)
-            }
+            RectangleOrigin::Center => Point::new(0.0, 0.0),
+            RectangleOrigin::BottomLeft => Point::new(self.extents.x / 2., self.extents.y / 2.),
+            RectangleOrigin::BottomRight => Point::new(-self.extents.x / 2., self.extents.y / 2.),
+            RectangleOrigin::TopLeft => Point::new(self.extents.x / 2., -self.extents.y / 2.),
+            RectangleOrigin::TopRight => Point::new(-self.extents.x / 2., -self.extents.y / 2.),
+            RectangleOrigin::CustomCenter(v) => Point::new(v.x, v.y),
         };
 
         b.add_rectangle(
-            &Box2D::new(origin, Point2D::new(self.extents.x, self.extents.y)),
+            &Box2D::new(
+                Point2D::new(
+                    origin.x - self.extents.x / 2.,
+                    origin.y - self.extents.y / 2.,
+                ),
+                Point2D::new(
+                    origin.x + self.extents.x / 2.,
+                    origin.y + self.extents.y / 2.,
+                ),
+            ),
             Winding::Positive,
         );
     }

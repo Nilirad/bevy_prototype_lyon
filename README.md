@@ -18,6 +18,9 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ## Changelog
 
+### 0.7.1
+- Fixed wrong rectangle origin bug.
+
 ### 0.7.0
 - Support for Bevy 0.9
 - Update lyon_tesselation to 1.0
@@ -55,7 +58,7 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.7.0"
+bevy_prototype_lyon = "0.7.1"
 ```
 
 Then, you can start by drawing simple shapes:

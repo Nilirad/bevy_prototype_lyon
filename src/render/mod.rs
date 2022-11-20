@@ -11,6 +11,7 @@ use bevy::{
         system::{Commands, Local, Query, Res, ResMut, Resource},
         world::{FromWorld, World},
     },
+    prelude::info,
     reflect::TypeUuid,
     render::{
         mesh::Mesh,
@@ -23,7 +24,7 @@ use bevy::{
             VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
         },
         texture::BevyDefault,
-        view::{ComputedVisibility, Msaa, VisibleEntities},
+        view::{ComputedVisibility, ExtractedView, Msaa, ViewTarget, VisibleEntities},
         Extract, RenderApp, RenderStage,
     },
     sprite::{
@@ -59,6 +60,7 @@ impl SpecializedRenderPipeline for ShapePipeline {
     type Key = Mesh2dPipelineKey;
 
     fn specialize(&self, key: Self::Key) -> RenderPipelineDescriptor {
+        info!("wat{:?}", key);
         // Customize how to store the meshes' vertex attributes in the vertex buffer
         // Our meshes only have position and color
         let formats = vec![
@@ -70,6 +72,11 @@ impl SpecializedRenderPipeline for ShapePipeline {
 
         let vertex_layout =
             VertexBufferLayout::from_vertex_formats(VertexStepMode::Vertex, formats);
+
+        let format = match key.contains(Mesh2dPipelineKey::HDR) {
+            true => ViewTarget::TEXTURE_FORMAT_HDR,
+            false => TextureFormat::bevy_default(),
+        };
 
         RenderPipelineDescriptor {
             vertex: VertexState {
@@ -86,7 +93,7 @@ impl SpecializedRenderPipeline for ShapePipeline {
                 shader_defs: Vec::new(),
                 entry_point: "fragment".into(),
                 targets: vec![Some(ColorTargetState {
-                    format: TextureFormat::bevy_default(),
+                    format,
                     blend: Some(BlendState::ALPHA_BLENDING),
                     write_mask: ColorWrites::ALL,
                 })],
@@ -185,19 +192,24 @@ fn queue_shape(
     msaa: Res<Msaa>,
     render_meshes: Res<RenderAssets<Mesh>>,
     shape: Query<(&Mesh2dHandle, &Mesh2dUniform), With<Shape>>,
-    mut views: Query<(&VisibleEntities, &mut RenderPhase<Transparent2d>)>,
+    mut views: Query<(
+        &VisibleEntities,
+        &mut RenderPhase<Transparent2d>,
+        &ExtractedView,
+    )>,
 ) {
     if shape.is_empty() {
         return;
     }
     // Iterate each view (a camera is a view)
-    for (visible_entities, mut transparent_phase) in views.iter_mut() {
+    for (visible_entities, mut transparent_phase, view) in &mut views {
         let draw_shape = transparent_draw_functions
             .read()
             .get_id::<DrawShape>()
             .unwrap();
 
-        let mesh_key = Mesh2dPipelineKey::from_msaa_samples(msaa.samples);
+        let mesh_key = Mesh2dPipelineKey::from_msaa_samples(msaa.samples)
+            | Mesh2dPipelineKey::from_hdr(view.hdr);
 
         // Queue all entities visible to that view
         for visible_entity in &visible_entities.entities {

@@ -73,9 +73,10 @@ impl SpecializedRenderPipeline for ShapePipeline {
         let vertex_layout =
             VertexBufferLayout::from_vertex_formats(VertexStepMode::Vertex, formats);
 
-        let format = match key.contains(Mesh2dPipelineKey::HDR) {
-            true => ViewTarget::TEXTURE_FORMAT_HDR,
-            false => TextureFormat::bevy_default(),
+        let format = if key.contains(Mesh2dPipelineKey::HDR) {
+            ViewTarget::TEXTURE_FORMAT_HDR
+        } else {
+            TextureFormat::bevy_default()
         };
 
         RenderPipelineDescriptor {

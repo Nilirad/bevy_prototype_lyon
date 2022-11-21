@@ -23,7 +23,7 @@ use bevy::{
             VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
         },
         texture::BevyDefault,
-        view::{ComputedVisibility, Msaa, VisibleEntities},
+        view::{ComputedVisibility, ExtractedView, Msaa, ViewTarget, VisibleEntities},
         Extract, RenderApp, RenderStage,
     },
     sprite::{
@@ -86,7 +86,11 @@ impl SpecializedRenderPipeline for ShapePipeline {
                 shader_defs: Vec::new(),
                 entry_point: "fragment".into(),
                 targets: vec![Some(ColorTargetState {
-                    format: TextureFormat::bevy_default(),
+                    format: if key.contains(Mesh2dPipelineKey::HDR) {
+                        ViewTarget::TEXTURE_FORMAT_HDR
+                    } else {
+                        TextureFormat::bevy_default()
+                    },
                     blend: Some(BlendState::ALPHA_BLENDING),
                     write_mask: ColorWrites::ALL,
                 })],
@@ -185,19 +189,24 @@ fn queue_shape(
     msaa: Res<Msaa>,
     render_meshes: Res<RenderAssets<Mesh>>,
     shape: Query<(&Mesh2dHandle, &Mesh2dUniform), With<Shape>>,
-    mut views: Query<(&VisibleEntities, &mut RenderPhase<Transparent2d>)>,
+    mut views: Query<(
+        &ExtractedView,
+        &VisibleEntities,
+        &mut RenderPhase<Transparent2d>,
+    )>,
 ) {
     if shape.is_empty() {
         return;
     }
     // Iterate each view (a camera is a view)
-    for (visible_entities, mut transparent_phase) in views.iter_mut() {
+    for (view, visible_entities, mut transparent_phase) in views.iter_mut() {
         let draw_shape = transparent_draw_functions
             .read()
             .get_id::<DrawShape>()
             .unwrap();
 
-        let mesh_key = Mesh2dPipelineKey::from_msaa_samples(msaa.samples);
+        let mesh_key = Mesh2dPipelineKey::from_msaa_samples(msaa.samples)
+            | Mesh2dPipelineKey::from_hdr(view.hdr);
 
         // Queue all entities visible to that view
         for visible_entity in &visible_entities.entities {

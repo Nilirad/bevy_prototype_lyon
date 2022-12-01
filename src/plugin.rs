@@ -49,7 +49,7 @@ impl Plugin for ShapePlugin {
                 CoreStage::PostUpdate,
                 mesh_shapes_system
                     .label(BuildShapes)
-                    .after(bevy::transform::transform_propagate_system),
+                    .after(bevy::transform::TransformSystem::TransformPropagate),
             )
             .add_plugin(RenderShapePlugin);
     }

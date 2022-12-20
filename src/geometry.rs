@@ -79,7 +79,7 @@ impl GeometryBuilder {
     ///     };
     ///     let mut builder = GeometryBuilder::new().add(&line).add(&square);
     ///
-    ///     commands.spawn_bundle(builder.build(
+    ///     commands.spawn(builder.build(
     ///         DrawMode::Outlined {
     ///             fill_mode: FillMode::color(Color::ORANGE_RED),
     ///             outline_mode: StrokeMode::new(Color::ORANGE_RED, 10.0),
@@ -118,7 +118,7 @@ impl GeometryBuilder {
     /// #
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
-    ///     commands.spawn_bundle(GeometryBuilder::build_as(
+    ///     commands.spawn(GeometryBuilder::build_as(
     ///         &line,
     ///         DrawMode::Fill(FillMode::color(Color::ORANGE_RED)),
     ///         Transform::default(),

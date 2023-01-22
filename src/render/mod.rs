@@ -185,7 +185,7 @@ fn queue_shape(
     transparent_draw_functions: Res<DrawFunctions<Transparent2d>>,
     shape_pipeline: Res<ShapePipeline>,
     mut pipelines: ResMut<SpecializedRenderPipelines<ShapePipeline>>,
-    mut pipeline_cache: ResMut<PipelineCache>,
+    pipeline_cache: ResMut<PipelineCache>,
     msaa: Res<Msaa>,
     render_meshes: Res<RenderAssets<Mesh>>,
     shape: Query<(&Mesh2dHandle, &Mesh2dUniform), With<Shape>>,
@@ -205,7 +205,7 @@ fn queue_shape(
             .get_id::<DrawShape>()
             .unwrap();
 
-        let mesh_key = Mesh2dPipelineKey::from_msaa_samples(msaa.samples)
+        let mesh_key = Mesh2dPipelineKey::from_msaa_samples(msaa.samples())
             | Mesh2dPipelineKey::from_hdr(view.hdr);
 
         // Queue all entities visible to that view
@@ -219,7 +219,7 @@ fn queue_shape(
                 }
 
                 let pipeline_id =
-                    pipelines.specialize(&mut pipeline_cache, &shape_pipeline, mesh2d_key);
+                    pipelines.specialize(&pipeline_cache, &shape_pipeline, mesh2d_key);
 
                 let mesh_z = mesh2d_uniform.transform.w_axis.z;
                 transparent_phase.add(Transparent2d {

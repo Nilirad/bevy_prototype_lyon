@@ -31,7 +31,7 @@ use lyon_tessellation::{self as tess, BuffersBuilder};
 use crate::{
     draw::{DrawMode, FillMode, StrokeMode},
     entity::Path,
-    render::RenderShapePlugin,
+    render::ShapeMaterialPlugin,
     vertex::{VertexBuffers, VertexConstructor},
 };
 
@@ -51,7 +51,7 @@ impl Plugin for ShapePlugin {
                     .after(bevy::transform::TransformSystem::TransformPropagate),
             )
             .add_system(mesh_shapes_system.in_set(BuildShapes))
-            .add_plugin(RenderShapePlugin);
+            .add_plugin(ShapeMaterialPlugin);
     }
 }
 
@@ -74,17 +74,17 @@ fn mesh_shapes_system(
 
         match tess_mode {
             DrawMode::Fill(mode) => {
-                fill(&mut fill_tess, &path.0, mode, &mut buffers);
+                fill(&mut fill_tess, &path.0, &mode, &mut buffers);
             }
             DrawMode::Stroke(mode) => {
-                stroke(&mut stroke_tess, &path.0, mode, &mut buffers);
+                stroke(&mut stroke_tess, &path.0, &mode, &mut buffers);
             }
             DrawMode::Outlined {
                 fill_mode,
                 outline_mode,
             } => {
-                fill(&mut fill_tess, &path.0, fill_mode, &mut buffers);
-                stroke(&mut stroke_tess, &path.0, outline_mode, &mut buffers);
+                fill(&mut fill_tess, &path.0, &fill_mode, &mut buffers);
+                stroke(&mut stroke_tess, &path.0, &outline_mode, &mut buffers);
             }
         }
 

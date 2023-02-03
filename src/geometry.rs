@@ -1,12 +1,8 @@
 //! Types for defining and using geometries.
 
-use bevy::transform::components::Transform;
 use lyon_tessellation::path::path::Builder;
 
-use crate::{
-    draw::DrawMode,
-    entity::{Path, ShapeBundle},
-};
+use crate::entity::{Path, ShapeBundle};
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -79,12 +75,10 @@ impl GeometryBuilder {
     ///     };
     ///     let mut builder = GeometryBuilder::new().add(&line).add(&square);
     ///
-    ///     commands.spawn(builder.build(
-    ///         DrawMode::Outlined {
-    ///             fill_mode: FillMode::color(Color::ORANGE_RED),
-    ///             outline_mode: StrokeMode::new(Color::ORANGE_RED, 10.0),
-    ///         },
-    ///         Transform::default(),
+    ///     commands.spawn((
+    ///         builder.build(),
+    ///         FillMode::color(Color::ORANGE_RED),
+    ///         StrokeMode::new(Color::ORANGE_RED, 10.0),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
@@ -99,11 +93,9 @@ impl GeometryBuilder {
     /// Returns a [`ShapeBundle`] using the data contained in the path
     /// builder.
     #[must_use]
-    pub fn build(self, mode: DrawMode, transform: Transform) -> ShapeBundle {
+    pub fn build(self) -> ShapeBundle {
         ShapeBundle {
             path: Path(self.0.build()),
-            mode,
-            transform,
             ..Default::default()
         }
     }
@@ -118,16 +110,15 @@ impl GeometryBuilder {
     /// #
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
-    ///     commands.spawn(GeometryBuilder::build_as(
-    ///         &line,
-    ///         DrawMode::Fill(FillMode::color(Color::ORANGE_RED)),
-    ///         Transform::default(),
+    ///     commands.spawn((
+    ///         GeometryBuilder::build_as(&line),
+    ///         FillMode::color(Color::ORANGE_RED),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
-    pub fn build_as(shape: &impl Geometry, mode: DrawMode, transform: Transform) -> ShapeBundle {
-        Self::new().add(shape).build(mode, transform)
+    pub fn build_as(shape: &impl Geometry) -> ShapeBundle {
+        Self::new().add(shape).build()
     }
 }
 

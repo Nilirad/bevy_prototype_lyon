@@ -26,19 +26,13 @@ fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, tim
     }
 }
 
-fn change_draw_mode_system(mut query: Query<&mut DrawMode>, time: Res<Time>) {
+fn change_draw_mode_system(mut query: Query<(&mut FillMode, &mut StrokeMode)>, time: Res<Time>) {
     let hue = (time.elapsed_seconds_f64() * 50.0) % 360.0;
     let outline_width = 2.0 + time.elapsed_seconds_f64().sin().abs() * 10.0;
 
-    for mut draw_mode in query.iter_mut() {
-        if let DrawMode::Outlined {
-            ref mut fill_mode,
-            ref mut outline_mode,
-        } = *draw_mode
-        {
-            fill_mode.color = Color::hsl(hue as f32, 1.0, 0.5);
-            outline_mode.options.line_width = outline_width as f32;
-        }
+    for (mut fill_mode, mut stroke_mode) in query.iter_mut() {
+        fill_mode.color = Color::hsl(hue as f32, 1.0, 0.5);
+        stroke_mode.options.line_width = outline_width as f32;
     }
 }
 
@@ -65,14 +59,9 @@ fn setup_system(mut commands: Commands) {
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        GeometryBuilder::build_as(
-            &shape,
-            DrawMode::Outlined {
-                fill_mode: FillMode::color(Color::CYAN),
-                outline_mode: StrokeMode::new(Color::BLACK, 10.0),
-            },
-            Transform::default(),
-        ),
+        GeometryBuilder::build_as(&shape),
+        FillMode::color(Color::CYAN),
+        StrokeMode::new(Color::BLACK, 10.0),
         ExampleShape,
     ));
 }

@@ -3,26 +3,10 @@
 use bevy::{ecs::component::Component, render::color::Color};
 use lyon_tessellation::{FillOptions, StrokeOptions};
 
-/// Determines how a shape will be drawn.
-#[derive(Debug, Clone, Copy, PartialEq, Component)]
-pub enum DrawMode {
-    /// The shape will be filled using the provided [`FillMode`].
-    Fill(FillMode),
-    /// The shape will be stroked using the provided [`StrokeMode`].
-    Stroke(StrokeMode),
-    /// The shape will be filled with an outline.
-    Outlined {
-        /// Properties about the filling.
-        fill_mode: FillMode,
-        /// Properties about the outline.
-        outline_mode: StrokeMode,
-    },
-}
-
 /// Defines the fill options for the lyon tessellator and color of the generated
 /// vertices.
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub struct FillMode {
     pub options: FillOptions,
     pub color: Color,
@@ -42,7 +26,7 @@ impl FillMode {
 /// Defines the stroke options for the lyon tessellator and color of the
 /// generated vertices.
 #[allow(missing_docs)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub struct StrokeMode {
     pub options: StrokeOptions,
     pub color: Color,

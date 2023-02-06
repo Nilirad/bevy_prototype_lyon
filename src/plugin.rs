@@ -19,7 +19,7 @@ use bevy::{
         system::{Query, ResMut, Resource},
     },
     log::error,
-    prelude::{CoreStage, Deref, DerefMut, IntoSystemDescriptor, SystemLabel},
+    prelude::{Deref, DerefMut, IntoSystemConfig, SystemSet},
     render::{
         mesh::{Indices, Mesh},
         render_resource::PrimitiveTopology,
@@ -45,10 +45,9 @@ impl Plugin for ShapePlugin {
         let stroke_tess = lyon_tessellation::StrokeTessellator::new();
         app.insert_resource(FillTessellator(fill_tess))
             .insert_resource(StrokeTessellator(stroke_tess))
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
+            .add_system(
                 mesh_shapes_system
-                    .label(BuildShapes)
+                    .in_set(BuildShapes)
                     .after(bevy::transform::TransformSystem::TransformPropagate),
             )
             .add_plugin(RenderShapePlugin);
@@ -57,7 +56,7 @@ impl Plugin for ShapePlugin {
 
 /// [`SystemLabel`] for the system that builds the meshes for newly-added
 /// or changed shapes. Resides in [`PostUpdate`](CoreStage::PostUpdate).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemLabel)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemSet)]
 pub struct BuildShapes;
 
 /// Queries all the [`ShapeBundle`]s to mesh them when they are added

@@ -25,7 +25,7 @@ use bevy::{
         },
         texture::BevyDefault,
         view::{ComputedVisibility, ExtractedView, Msaa, ViewTarget, VisibleEntities},
-        Extract, RenderApp, RenderSet,
+        Extract, ExtractSchedule, RenderApp, RenderSet,
     },
     sprite::{
         DrawMesh2d, Mesh2dHandle, Mesh2dPipeline, Mesh2dPipelineKey, Mesh2dUniform,
@@ -157,7 +157,7 @@ impl Plugin for RenderShapePlugin {
             .add_render_command::<Transparent2d, DrawShape>()
             .init_resource::<ShapePipeline>()
             .init_resource::<SpecializedRenderPipelines<ShapePipeline>>()
-            .add_system(extract_shape.in_set(RenderSet::ExtractCommands))
+            .add_system_to_schedule(ExtractSchedule, extract_shape)
             .add_system(queue_shape.in_set(RenderSet::Queue));
     }
 }

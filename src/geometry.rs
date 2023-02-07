@@ -1,6 +1,6 @@
 //! Types for defining and using geometries.
 
-use bevy::transform::components::Transform;
+use bevy::{sprite::MaterialMesh2dBundle, transform::components::Transform};
 use lyon_tessellation::path::path::Builder;
 
 use crate::{
@@ -103,8 +103,10 @@ impl GeometryBuilder {
         ShapeBundle {
             path: Path(self.0.build()),
             mode,
-            transform,
-            ..ShapeBundle::default()
+            mesh2d_bundle: MaterialMesh2dBundle {
+                transform,
+                ..MaterialMesh2dBundle::default()
+            },
         }
     }
 

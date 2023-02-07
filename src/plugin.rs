@@ -31,7 +31,7 @@ use lyon_tessellation::{self as tess, BuffersBuilder};
 use crate::{
     draw::{DrawMode, FillMode, StrokeMode},
     entity::Path,
-    render::RenderShapePlugin,
+    render::ShapeMaterialPlugin,
     vertex::{VertexBuffers, VertexConstructor},
 };
 
@@ -51,7 +51,7 @@ impl Plugin for ShapePlugin {
                     .after(bevy::transform::TransformSystem::TransformPropagate),
             )
             .add_system(mesh_shapes_system.in_set(BuildShapes))
-            .add_plugin(RenderShapePlugin);
+            .add_plugin(ShapeMaterialPlugin);
     }
 }
 

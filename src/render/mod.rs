@@ -10,7 +10,7 @@ use bevy::{
 
 /// Handle to the custom shader with a unique random ID
 pub const SHAPE_MATERIAL_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 3191283017262752456);
+    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 3_191_283_017_262_752_456);
 
 /// Plugin that provides a custom material for rendering [`Shape`]s
 pub struct ShapeMaterialPlugin;

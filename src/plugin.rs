@@ -19,7 +19,7 @@ use bevy::{
         system::{Query, ResMut, Resource},
     },
     log::error,
-    prelude::{Deref, DerefMut, IntoSystemConfig, SystemSet},
+    prelude::{CoreSet, Deref, DerefMut, IntoSystemConfig, IntoSystemSetConfig, SystemSet},
     render::{
         mesh::{Indices, Mesh},
         render_resource::PrimitiveTopology,
@@ -45,11 +45,12 @@ impl Plugin for ShapePlugin {
         let stroke_tess = lyon_tessellation::StrokeTessellator::new();
         app.insert_resource(FillTessellator(fill_tess))
             .insert_resource(StrokeTessellator(stroke_tess))
-            .add_system(
-                mesh_shapes_system
-                    .in_set(BuildShapes)
+            .configure_set(
+                BuildShapes
+                    .in_base_set(CoreSet::PostUpdate)
                     .after(bevy::transform::TransformSystem::TransformPropagate),
             )
+            .add_system(mesh_shapes_system.in_set(BuildShapes))
             .add_plugin(RenderShapePlugin);
     }
 }

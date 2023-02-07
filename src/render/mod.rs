@@ -7,6 +7,7 @@ use bevy::{
     ecs::{
         component::Component,
         entity::Entity,
+        prelude::IntoSystemConfig,
         query::With,
         system::{Commands, Local, Query, Res, ResMut, Resource},
         world::{FromWorld, World},
@@ -24,7 +25,7 @@ use bevy::{
         },
         texture::BevyDefault,
         view::{ComputedVisibility, ExtractedView, Msaa, ViewTarget, VisibleEntities},
-        Extract, RenderApp, RenderStage,
+        Extract, ExtractSchedule, RenderApp, RenderSet,
     },
     sprite::{
         DrawMesh2d, Mesh2dHandle, Mesh2dPipeline, Mesh2dPipelineKey, Mesh2dUniform,
@@ -156,8 +157,8 @@ impl Plugin for RenderShapePlugin {
             .add_render_command::<Transparent2d, DrawShape>()
             .init_resource::<ShapePipeline>()
             .init_resource::<SpecializedRenderPipelines<ShapePipeline>>()
-            .add_system_to_stage(RenderStage::Extract, extract_shape)
-            .add_system_to_stage(RenderStage::Queue, queue_shape);
+            .add_system_to_schedule(ExtractSchedule, extract_shape)
+            .add_system(queue_shape.in_set(RenderSet::Queue));
     }
 }
 

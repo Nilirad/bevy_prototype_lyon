@@ -22,7 +22,10 @@ fn setup_system(mut commands: Commands) {
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        GeometryBuilder::build_as(&shape),
+        ShapeBundle {
+            path: GeometryBuilder::build_as(&shape),
+            ..default()
+        },
         FillMode::color(Color::CYAN),
         StrokeMode::new(Color::BLACK, 10.0),
     ));

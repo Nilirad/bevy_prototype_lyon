@@ -2,7 +2,7 @@
 
 use lyon_tessellation::path::path::Builder;
 
-use crate::entity::{Path, ShapeBundle};
+use crate::entity::Path;
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -76,7 +76,10 @@ impl GeometryBuilder {
     ///     let mut builder = GeometryBuilder::new().add(&line).add(&square);
     ///
     ///     commands.spawn((
-    ///         builder.build(),
+    ///         ShapeBundle {
+    ///             path: builder.build(),
+    ///             ..default()
+    ///         },
     ///         FillMode::color(Color::ORANGE_RED),
     ///         StrokeMode::new(Color::ORANGE_RED, 10.0),
     ///     ));
@@ -90,17 +93,14 @@ impl GeometryBuilder {
         self
     }
 
-    /// Returns a [`ShapeBundle`] using the data contained in the path
+    /// Returns a [`Path`] using the data contained in the geometry
     /// builder.
     #[must_use]
-    pub fn build(self) -> ShapeBundle {
-        ShapeBundle {
-            path: Path(self.0.build()),
-            ..Default::default()
-        }
+    pub fn build(self) -> Path {
+        Path(self.0.build())
     }
 
-    /// Returns a [`ShapeBundle`] with only one geometry.
+    /// Returns a [`Path`] component with only one geometry.
     ///
     /// # Example
     ///
@@ -111,13 +111,16 @@ impl GeometryBuilder {
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
     ///     commands.spawn((
-    ///         GeometryBuilder::build_as(&line),
+    ///         ShapeBundle {
+    ///             path: GeometryBuilder::build_as(&line),
+    ///             ..default()
+    ///         },
     ///         FillMode::color(Color::ORANGE_RED),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
-    pub fn build_as(shape: &impl Geometry) -> ShapeBundle {
+    pub fn build_as(shape: &impl Geometry) -> Path {
         Self::new().add(shape).build()
     }
 }

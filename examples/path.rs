@@ -18,7 +18,10 @@ fn setup_system(mut commands: Commands) {
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        GeometryBuilder::build_as(&line),
+        ShapeBundle {
+            path: GeometryBuilder::build_as(&line),
+            ..default()
+        },
         StrokeMode::new(Color::BLACK, 10.0),
     ));
 }

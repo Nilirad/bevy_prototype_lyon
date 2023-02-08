@@ -1,7 +1,7 @@
 use std::f64::consts::PI;
 
 use bevy::prelude::*;
-use bevy_prototype_lyon::prelude::*;
+use bevy_prototype_lyon::{entity::ShapeBundle, prelude::*};
 
 fn main() {
     App::new()
@@ -59,7 +59,10 @@ fn setup_system(mut commands: Commands) {
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        GeometryBuilder::build_as(&shape),
+        ShapeBundle {
+            path: GeometryBuilder::build_as(&shape),
+            ..default()
+        },
         FillMode::color(Color::CYAN),
         StrokeMode::new(Color::BLACK, 10.0),
         ExampleShape,

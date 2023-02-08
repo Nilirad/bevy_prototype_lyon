@@ -26,7 +26,7 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&shape),
             ..default()
         },
-        FillMode::color(Color::CYAN),
-        StrokeMode::new(Color::BLACK, 10.0),
+        Fill::color(Color::CYAN),
+        Stroke::new(Color::BLACK, 10.0),
     ));
 }

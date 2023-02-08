@@ -29,7 +29,7 @@ use bevy::{
 use lyon_tessellation::{self as tess, BuffersBuilder};
 
 use crate::{
-    draw::{FillMode, StrokeMode},
+    draw::{Fill, Stroke},
     entity::Path,
     render::ShapeMaterialPlugin,
     vertex::{VertexBuffers, VertexConstructor},
@@ -68,13 +68,8 @@ fn mesh_shapes_system(
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
     mut query: Query<
-        (
-            Option<&FillMode>,
-            Option<&StrokeMode>,
-            &Path,
-            &mut Mesh2dHandle,
-        ),
-        Or<(Changed<Path>, Changed<FillMode>, Changed<StrokeMode>)>,
+        (Option<&Fill>, Option<&Stroke>, &Path, &mut Mesh2dHandle),
+        Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
     >,
 ) {
     for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in query.iter_mut() {
@@ -92,7 +87,7 @@ fn mesh_shapes_system(
             fill(
                 &mut fill_tess,
                 &path.0,
-                &FillMode::color(Color::FUCHSIA),
+                &Fill::color(Color::FUCHSIA),
                 &mut buffers,
             );
         }
@@ -105,7 +100,7 @@ fn mesh_shapes_system(
 fn fill(
     tess: &mut ResMut<FillTessellator>,
     path: &tess::path::Path,
-    mode: &FillMode,
+    mode: &Fill,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(
@@ -121,7 +116,7 @@ fn fill(
 fn stroke(
     tess: &mut ResMut<StrokeTessellator>,
     path: &tess::path::Path,
-    mode: &StrokeMode,
+    mode: &Stroke,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(

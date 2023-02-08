@@ -7,12 +7,12 @@ use lyon_tessellation::{FillOptions, StrokeOptions};
 /// vertices.
 #[allow(missing_docs)]
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
-pub struct FillMode {
+pub struct Fill {
     pub options: FillOptions,
     pub color: Color,
 }
 
-impl FillMode {
+impl Fill {
     /// Convenience constructor requiring only the `Color`.
     #[must_use]
     pub fn color(color: Color) -> Self {
@@ -27,12 +27,12 @@ impl FillMode {
 /// generated vertices.
 #[allow(missing_docs)]
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
-pub struct StrokeMode {
+pub struct Stroke {
     pub options: StrokeOptions,
     pub color: Color,
 }
 
-impl StrokeMode {
+impl Stroke {
     /// Constructor that requires a `Color` and a line width.
     #[must_use]
     pub fn new(color: Color, line_width: f32) -> Self {

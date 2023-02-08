@@ -22,6 +22,6 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&line),
             ..default()
         },
-        StrokeMode::new(Color::BLACK, 10.0),
+        Stroke::new(Color::BLACK, 10.0),
     ));
 }

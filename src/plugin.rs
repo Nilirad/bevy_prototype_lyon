@@ -19,7 +19,7 @@ use bevy::{
         system::{Query, ResMut, Resource},
     },
     log::error,
-    prelude::{CoreSet, Deref, DerefMut, IntoSystemConfig, IntoSystemSetConfig, SystemSet},
+    prelude::{Color, CoreSet, Deref, DerefMut, IntoSystemConfig, IntoSystemSetConfig, SystemSet},
     render::{
         mesh::{Indices, Mesh},
         render_resource::PrimitiveTopology,
@@ -29,7 +29,7 @@ use bevy::{
 use lyon_tessellation::{self as tess, BuffersBuilder};
 
 use crate::{
-    draw::{DrawMode, FillMode, StrokeMode},
+    draw::{Fill, Stroke},
     entity::Path,
     render::ShapeMaterialPlugin,
     vertex::{VertexBuffers, VertexConstructor},
@@ -67,25 +67,29 @@ fn mesh_shapes_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<(&DrawMode, &Path, &mut Mesh2dHandle), Or<(Changed<Path>, Changed<DrawMode>)>>,
+    mut query: Query<
+        (Option<&Fill>, Option<&Stroke>, &Path, &mut Mesh2dHandle),
+        Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
+    >,
 ) {
-    for (tess_mode, path, mut mesh) in query.iter_mut() {
+    for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in query.iter_mut() {
         let mut buffers = VertexBuffers::new();
 
-        match tess_mode {
-            DrawMode::Fill(mode) => {
-                fill(&mut fill_tess, &path.0, mode, &mut buffers);
-            }
-            DrawMode::Stroke(mode) => {
-                stroke(&mut stroke_tess, &path.0, mode, &mut buffers);
-            }
-            DrawMode::Outlined {
-                fill_mode,
-                outline_mode,
-            } => {
-                fill(&mut fill_tess, &path.0, fill_mode, &mut buffers);
-                stroke(&mut stroke_tess, &path.0, outline_mode, &mut buffers);
-            }
+        if let Some(fill_mode) = maybe_fill_mode {
+            fill(&mut fill_tess, &path.0, fill_mode, &mut buffers);
+        }
+
+        if let Some(stroke_mode) = maybe_stroke_mode {
+            stroke(&mut stroke_tess, &path.0, stroke_mode, &mut buffers);
+        }
+
+        if (maybe_fill_mode, maybe_stroke_mode) == (None, None) {
+            fill(
+                &mut fill_tess,
+                &path.0,
+                &Fill::color(Color::FUCHSIA),
+                &mut buffers,
+            );
         }
 
         mesh.0 = meshes.add(build_mesh(&buffers));
@@ -96,7 +100,7 @@ fn mesh_shapes_system(
 fn fill(
     tess: &mut ResMut<FillTessellator>,
     path: &tess::path::Path,
-    mode: &FillMode,
+    mode: &Fill,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(
@@ -112,7 +116,7 @@ fn fill(
 fn stroke(
     tess: &mut ResMut<StrokeTessellator>,
     path: &tess::path::Path,
-    mode: &StrokeMode,
+    mode: &Stroke,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(

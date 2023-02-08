@@ -21,12 +21,12 @@ fn setup_system(mut commands: Commands) {
     };
 
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(GeometryBuilder::build_as(
-        &shape,
-        DrawMode::Outlined {
-            fill_mode: FillMode::color(Color::CYAN),
-            outline_mode: StrokeMode::new(Color::BLACK, 10.0),
+    commands.spawn((
+        ShapeBundle {
+            path: GeometryBuilder::build_as(&shape),
+            ..default()
         },
-        Transform::default(),
+        Fill::color(Color::CYAN),
+        Stroke::new(Color::BLACK, 10.0),
     ));
 }

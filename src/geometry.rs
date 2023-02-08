@@ -1,12 +1,8 @@
 //! Types for defining and using geometries.
 
-use bevy::transform::components::Transform;
 use lyon_tessellation::path::path::Builder;
 
-use crate::{
-    draw::DrawMode,
-    entity::{Path, ShapeBundle},
-};
+use crate::entity::Path;
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -79,12 +75,13 @@ impl GeometryBuilder {
     ///     };
     ///     let mut builder = GeometryBuilder::new().add(&line).add(&square);
     ///
-    ///     commands.spawn(builder.build(
-    ///         DrawMode::Outlined {
-    ///             fill_mode: FillMode::color(Color::ORANGE_RED),
-    ///             outline_mode: StrokeMode::new(Color::ORANGE_RED, 10.0),
+    ///     commands.spawn((
+    ///         ShapeBundle {
+    ///             path: builder.build(),
+    ///             ..default()
     ///         },
-    ///         Transform::default(),
+    ///         Fill::color(Color::ORANGE_RED),
+    ///         Stroke::new(Color::ORANGE_RED, 10.0),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
@@ -96,19 +93,14 @@ impl GeometryBuilder {
         self
     }
 
-    /// Returns a [`ShapeBundle`] using the data contained in the path
+    /// Returns a [`Path`] using the data contained in the geometry
     /// builder.
     #[must_use]
-    pub fn build(self, mode: DrawMode, transform: Transform) -> ShapeBundle {
-        ShapeBundle {
-            path: Path(self.0.build()),
-            mode,
-            transform,
-            ..Default::default()
-        }
+    pub fn build(self) -> Path {
+        Path(self.0.build())
     }
 
-    /// Returns a [`ShapeBundle`] with only one geometry.
+    /// Returns a [`Path`] component with only one geometry.
     ///
     /// # Example
     ///
@@ -118,16 +110,18 @@ impl GeometryBuilder {
     /// #
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
-    ///     commands.spawn(GeometryBuilder::build_as(
-    ///         &line,
-    ///         DrawMode::Fill(FillMode::color(Color::ORANGE_RED)),
-    ///         Transform::default(),
+    ///     commands.spawn((
+    ///         ShapeBundle {
+    ///             path: GeometryBuilder::build_as(&line),
+    ///             ..default()
+    ///         },
+    ///         Fill::color(Color::ORANGE_RED),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
-    pub fn build_as(shape: &impl Geometry, mode: DrawMode, transform: Transform) -> ShapeBundle {
-        Self::new().add(shape).build(mode, transform)
+    pub fn build_as(shape: &impl Geometry) -> Path {
+        Self::new().add(shape).build()
     }
 }
 

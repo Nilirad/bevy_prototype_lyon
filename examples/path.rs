@@ -12,14 +12,28 @@ fn main() {
 
 fn setup_system(mut commands: Commands) {
     let mut path_builder = PathBuilder::new();
-    path_builder.move_to(Vec2::ZERO);
-    path_builder.line_to(100.0 * Vec2::ONE);
-    let line = path_builder.build();
+    path_builder.move_to(Vec2::new(0., 0.));
+    path_builder.cubic_bezier_to(
+        Vec2::new(70., 70.),
+        Vec2::new(175., -35.),
+        Vec2::new(0., -140.),
+    );
+    path_builder.cubic_bezier_to(
+        Vec2::new(-175., -35.),
+        Vec2::new(-70., 70.),
+        Vec2::new(0., 0.),
+    );
+    path_builder.close();
+    let path = path_builder.build();
 
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(GeometryBuilder::build_as(
-        &line,
-        DrawMode::Stroke(StrokeMode::new(Color::BLACK, 10.0)),
-        Transform::default(),
+    commands.spawn((
+        ShapeBundle {
+            path,
+            transform: Transform::from_xyz(0., 75., 0.),
+            ..default()
+        },
+        Stroke::new(Color::BLACK, 10.0),
+        Fill::color(Color::RED),
     ));
 }

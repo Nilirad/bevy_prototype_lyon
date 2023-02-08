@@ -3,23 +3,17 @@
 use bevy::{
     ecs::{bundle::Bundle, component::Component},
     prelude::{ComputedVisibility, GlobalTransform, Handle, Transform, Visibility},
-    render::color::Color,
     sprite::Mesh2dHandle,
 };
-use lyon_tessellation::{self as tess, FillOptions};
+use lyon_tessellation::{self as tess};
 
-use crate::{
-    draw::{DrawMode, FillMode},
-    prelude::Geometry,
-    render::ShapeMaterial,
-};
+use crate::{prelude::Geometry, render::ShapeMaterial};
 
 /// A Bevy `Bundle` to represent a shape.
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {
     pub path: Path,
-    pub mode: DrawMode,
     pub mesh: Mesh2dHandle,
     pub material: Handle<ShapeMaterial>,
     pub transform: Transform,
@@ -32,10 +26,6 @@ impl Default for ShapeBundle {
     fn default() -> Self {
         Self {
             path: Path(tess::path::Path::new()),
-            mode: DrawMode::Fill(FillMode {
-                options: FillOptions::default(),
-                color: Color::WHITE,
-            }),
             mesh: Mesh2dHandle::default(),
             material: Handle::<ShapeMaterial>::default(),
             transform: Transform::default(),

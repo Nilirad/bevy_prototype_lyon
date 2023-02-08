@@ -2,8 +2,9 @@
 
 use bevy::{
     ecs::{bundle::Bundle, component::Component},
+    prelude::{ComputedVisibility, GlobalTransform, Handle, Transform, Visibility},
     render::color::Color,
-    sprite::MaterialMesh2dBundle,
+    sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess, FillOptions};
 
@@ -17,10 +18,14 @@ use crate::{
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {
-    #[bundle]
-    pub mesh2d_bundle: MaterialMesh2dBundle<ShapeMaterial>,
     pub path: Path,
     pub mode: DrawMode,
+    pub mesh: Mesh2dHandle,
+    pub material: Handle<ShapeMaterial>,
+    pub transform: Transform,
+    pub global_transform: GlobalTransform,
+    pub visibility: Visibility,
+    pub computed_visibility: ComputedVisibility,
 }
 
 impl Default for ShapeBundle {
@@ -31,7 +36,12 @@ impl Default for ShapeBundle {
                 options: FillOptions::default(),
                 color: Color::WHITE,
             }),
-            mesh2d_bundle: MaterialMesh2dBundle::<ShapeMaterial>::default(),
+            mesh: Mesh2dHandle::default(),
+            material: Handle::<ShapeMaterial>::default(),
+            transform: Transform::default(),
+            global_transform: GlobalTransform::default(),
+            visibility: Visibility::default(),
+            computed_visibility: ComputedVisibility::default(),
         }
     }
 }

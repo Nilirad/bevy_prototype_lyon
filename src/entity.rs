@@ -18,14 +18,14 @@ use crate::{
 #[allow(missing_docs)]
 #[derive(Bundle)]
 pub struct ShapeBundle {
+    pub path: Path,
+    pub mode: DrawMode,
     pub mesh: Mesh2dHandle,
     pub material: Handle<ShapeMaterial>,
     pub transform: Transform,
     pub global_transform: GlobalTransform,
     pub visibility: Visibility,
     pub computed_visibility: ComputedVisibility,
-    pub path: Path,
-    pub mode: DrawMode,
 }
 
 impl Default for ShapeBundle {
@@ -36,8 +36,8 @@ impl Default for ShapeBundle {
                 options: FillOptions::default(),
                 color: Color::WHITE,
             }),
-            material: Handle::<ShapeMaterial>::default(),
             mesh: Mesh2dHandle::default(),
+            material: Handle::<ShapeMaterial>::default(),
             transform: Transform::default(),
             global_transform: GlobalTransform::default(),
             visibility: Visibility::default(),

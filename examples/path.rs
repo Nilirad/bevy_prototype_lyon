@@ -14,14 +14,11 @@ fn setup_system(mut commands: Commands) {
     let mut path_builder = PathBuilder::new();
     path_builder.move_to(Vec2::ZERO);
     path_builder.line_to(100.0 * Vec2::ONE);
-    let line = path_builder.build();
+    let path = path_builder.build();
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        ShapeBundle {
-            path: GeometryBuilder::build_as(&line),
-            ..default()
-        },
+        ShapeBundle { path, ..default() },
         Stroke::new(Color::BLACK, 10.0),
     ));
 }

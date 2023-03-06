@@ -189,7 +189,7 @@ impl Geometry for RoundedPolygon {
             polygon,
             self.radius,
             lyon_algorithms::path::NO_ATTRIBUTES,
-        )
+        );
     }
 }
 

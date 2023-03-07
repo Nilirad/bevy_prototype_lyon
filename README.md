@@ -58,7 +58,7 @@ fn setup_system(mut commands: Commands) {
 }
 ```
 
-Don't forget to check out the [examples](examples/) to learn more!
+Don't forget to check out the [examples](https://github.com/Nilirad/bevy_prototype_lyon/tree/latest/examples) to learn more!
 
 ## Bevy versions supported
 

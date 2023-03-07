@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0
+- Support for Bevy 0.10.
+- Uses original render.
+- Added `RoundedPolygon`.
+- `FillMode` and `StrokeMode` are now components and have been renamed to `Fill` and `Stroke`.
+
 ## 0.7.2
 - Fixed crash when using HDR textures.
 

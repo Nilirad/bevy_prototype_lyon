@@ -16,16 +16,12 @@
 
 Currently Bevy does not support drawing custom shapes in an easy way. This crate uses a variation of Bevy's `SpriteBundle` with custom meshes to draw shapes. The [**lyon**](https://docs.rs/lyon_tessellation) crate is used to generate those custom mesh.
 
-## Changelog
-
-See [CHANGELOG.md].
-
 ## Usage
 
 Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
 
 ```TOML
-bevy_prototype_lyon = "0.7.2"
+bevy_prototype_lyon = "0.8.0"
 ```
 
 Then, you can start by drawing simple shapes:
@@ -36,7 +32,7 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()
-        .insert_resource(Msaa { samples: 4 })
+        .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_startup_system(setup_system)
@@ -51,13 +47,13 @@ fn setup_system(mut commands: Commands) {
     };
 
     commands.spawn(Camera2dBundle::default());
-    commands.spawn(GeometryBuilder::build_as(
-        &shape,
-        DrawMode::Outlined {
-            fill_mode: FillMode::color(Color::CYAN),
-            outline_mode: StrokeMode::new(Color::BLACK, 10.0),
+    commands.spawn((
+        ShapeBundle {
+            path: GeometryBuilder::build_as(&shape),
+            ..default()
         },
-        Transform::default(),
+        Fill::color(Color::CYAN),
+        Stroke::new(Color::BLACK, 10.0),
     ));
 }
 ```
@@ -70,14 +66,15 @@ I strive to support the latest version of Bevy. Support for a version of Bevy is
 
 The following table shows the latest version of `bevy_prototype_lyon` that supports a certain version of Bevy.
 
-|bevy|bevy_prototype_lyon| license        |
-|---|---|----------------|
-|0.9|0.7| MIT/Apache 2.0 |
-|0.8|0.6| MIT/Apache 2.0 |
-|0.7|0.5| MIT/Apache 2.0 |
-|0.6|0.4| MIT/Apache 2.0 |
-|0.5|0.3| MIT            |
-|0.4|0.2| MIT            |
+|bevy|bevy_prototype_lyon|license|
+|---|---|---|
+|0.10|0.8|MIT/Apache 2.0|
+|0.9|0.7|MIT/Apache 2.0|
+|0.8|0.6|MIT/Apache 2.0|
+|0.7|0.5|MIT/Apache 2.0|
+|0.6|0.4|MIT/Apache 2.0|
+|0.5|0.3|MIT           |
+|0.4|0.2|MIT           |
 
 ***
 

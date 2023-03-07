@@ -155,6 +155,44 @@ impl Geometry for Polygon {
     }
 }
 
+#[allow(missing_docs)]
+#[derive(Debug, Clone, PartialEq)]
+pub struct RoundedPolygon {
+    pub points: Vec<Vec2>,
+    pub radius: f32,
+    pub closed: bool,
+}
+
+impl Default for RoundedPolygon {
+    fn default() -> Self {
+        Self {
+            points: Vec::new(),
+            radius: 0.0,
+            closed: true,
+        }
+    }
+}
+
+impl Geometry for RoundedPolygon {
+    fn add_geometry(&self, b: &mut Builder) {
+        let points = self
+            .points
+            .iter()
+            .map(|p| p.to_point())
+            .collect::<Vec<Point>>();
+        let polygon: LyonPolygon<Point> = LyonPolygon {
+            points: points.as_slice(),
+            closed: self.closed,
+        };
+        lyon_algorithms::rounded_polygon::add_rounded_polygon(
+            b,
+            polygon,
+            self.radius,
+            lyon_algorithms::path::NO_ATTRIBUTES,
+        );
+    }
+}
+
 /// The regular polygon feature used to determine the dimensions of the polygon.
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -4,11 +4,7 @@
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 ignore = [
-  "RUSTSEC-2020-0056", # stdweb unmaintained - https://github.com/koute/stdweb/issues/403
-  "RUSTSEC-2021-0047", # security issue - https://github.com/gnzlbg/slice_deque/issues/90
-  "RUSTSEC-2021-0096", # spirv_headers unmaintained
-  "RUSTSEC-2021-0119", # security issue - https://github.com/nix-rust/nix/issues/1541
-  "RUSTSEC-2020-0158", # slice_deque unmaintained - https://github.com/gnzlbg/slice_deque/issues/94
+  "RUSTSEC-2022-0048", # xml-rs unmaintained
 ]
 notice = "deny"
 unmaintained = "deny"

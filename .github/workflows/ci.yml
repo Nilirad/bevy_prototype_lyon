@@ -20,18 +20,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
           components: rustfmt, clippy
-          override: true
       - name: fmt
         if: ${{ matrix.toolchain == 'nightly' && runner.os == 'linux' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-          
+        run: cargo fmt --all -- --check
+
       - name: Install alsa and udev
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
         if: runner.os == 'linux'

@@ -63,7 +63,7 @@ each with their characteristics.
 - `bevy-main`.
   Tracks the `main` branch of `bevy`.
   You should target this branch
-  only if you have to accomodate a breaking change caused by Bevy,
+  only if you have to accommodate a breaking change caused by Bevy,
   or if you want to develop a feature
   not yet supported by the latest release.
 

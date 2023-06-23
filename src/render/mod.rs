@@ -24,7 +24,7 @@ impl Plugin for ShapeMaterialPlugin {
             Shader::from_wgsl
         );
 
-        app.add_plugin(Material2dPlugin::<ShapeMaterial>::default())
+        app.add_plugins(Material2dPlugin::<ShapeMaterial>::default())
             .register_asset_reflect::<ShapeMaterial>();
 
         app.world

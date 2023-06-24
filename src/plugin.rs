@@ -13,7 +13,7 @@
 
 use bevy::{
     prelude::*,
-    render::{mesh::Indices, render_resource::PrimitiveTopology},
+    render::{mesh::Indices, render_asset::RenderAssetUsages, render_resource::PrimitiveTopology},
     sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess, BuffersBuilder};
@@ -127,8 +127,11 @@ fn stroke(
 }
 
 fn build_mesh(buffers: &VertexBuffers) -> Mesh {
-    let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-    mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
+    let mut mesh = Mesh::new(
+        PrimitiveTopology::TriangleList,
+        RenderAssetUsages::RENDER_WORLD,
+    );
+    mesh.insert_indices(Indices::U32(buffers.indices.clone()));
     mesh.insert_attribute(
         Mesh::ATTRIBUTE_POSITION,
         buffers

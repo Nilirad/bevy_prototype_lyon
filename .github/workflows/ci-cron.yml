@@ -1,10 +1,8 @@
-name: CI
+name: CI-cron
 
 on:
-  pull_request:
-    branches: [master, bevy-main]
-  push:
-    branches: [master, bevy-main]
+  schedule:
+    - cron: 0 9 * * *
 
 env:
   CARGO_TERM_COLOR: always
@@ -19,6 +17,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: bevy-main
       
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -27,7 +27,7 @@ jobs:
       - name: fmt
         if: ${{ matrix.toolchain == 'nightly' && runner.os == 'linux' }}
         run: cargo fmt --all -- --check
-
+          
       - name: Install alsa and udev
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
         if: runner.os == 'linux'

@@ -52,7 +52,7 @@ impl Plugin for ShapePlugin {
                 BuildShapes.after(bevy::transform::TransformSystem::TransformPropagate),
             )
             .add_systems(PostUpdate, mesh_shapes_system.in_set(BuildShapes))
-            .add_plugin(ShapeMaterialPlugin);
+            .add_plugins(ShapeMaterialPlugin);
     }
 }
 

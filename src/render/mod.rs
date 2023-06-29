@@ -40,7 +40,7 @@ impl Material2d for ShapeMaterial {
 }
 
 /// A simple `Material2d` that renders with vertex colors.
-#[derive(Default, AsBindGroup, Reflect, FromReflect, Debug, Clone, TypeUuid)]
+#[derive(Default, AsBindGroup, Reflect, Debug, Clone, TypeUuid)]
 #[reflect(Default, Debug)]
 #[uuid = "ab2e068e-0cca-4941-a114-524af2c431bb"]
 pub struct ShapeMaterial {}

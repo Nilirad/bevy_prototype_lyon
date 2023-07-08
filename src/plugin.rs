@@ -73,7 +73,7 @@ fn mesh_shapes_system(
         Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
     >,
 ) {
-    for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in query.iter_mut() {
+    for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in &mut query {
         let mut buffers = VertexBuffers::new();
 
         if let Some(fill_mode) = maybe_fill_mode {

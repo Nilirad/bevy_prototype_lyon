@@ -18,10 +18,10 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ## Usage
 
-Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
+Add `bevy_prototype_lyon` to your package's dependencies:
 
-```TOML
-bevy_prototype_lyon = "0.8.0"
+```shell
+cargo add bevy_prototype_lyon
 ```
 
 Then, you can start by drawing simple shapes:
@@ -34,8 +34,8 @@ fn main() {
     App::new()
         .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins)
-        .add_plugin(ShapePlugin)
-        .add_startup_system(setup_system)
+        .add_plugins(ShapePlugin)
+        .add_systems(Startup, setup_system)
         .run();
 }
 
@@ -68,6 +68,7 @@ The following table shows the latest version of `bevy_prototype_lyon` that suppo
 
 |bevy|bevy_prototype_lyon|license|
 |---|---|---|
+|0.11|0.9|MIT/Apache 2.0|
 |0.10|0.8|MIT/Apache 2.0|
 |0.9|0.7|MIT/Apache 2.0|
 |0.8|0.6|MIT/Apache 2.0|

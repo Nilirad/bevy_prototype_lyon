@@ -7,11 +7,11 @@ fn main() {
     App::new()
         .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins)
-        .add_plugin(ShapePlugin)
-        .add_startup_system(setup_system)
-        .add_system(change_draw_mode_system)
-        .add_system(change_number_of_sides)
-        .add_system(rotate_shape_system)
+        .add_plugins(ShapePlugin)
+        .add_systems(Startup, setup_system)
+        .add_systems(Update, change_draw_mode_system)
+        .add_systems(Update, change_number_of_sides)
+        .add_systems(Update, rotate_shape_system)
         .run();
 }
 

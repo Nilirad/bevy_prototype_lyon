@@ -19,7 +19,9 @@ use bevy::{
         system::{Query, ResMut, Resource},
     },
     log::error,
-    prelude::{Color, CoreSet, Deref, DerefMut, IntoSystemConfig, IntoSystemSetConfig, SystemSet},
+    prelude::{
+        Color, Deref, DerefMut, IntoSystemConfigs, IntoSystemSetConfig, PostUpdate, SystemSet,
+    },
     render::{
         mesh::{Indices, Mesh},
         render_resource::PrimitiveTopology,
@@ -46,17 +48,16 @@ impl Plugin for ShapePlugin {
         app.insert_resource(FillTessellator(fill_tess))
             .insert_resource(StrokeTessellator(stroke_tess))
             .configure_set(
-                BuildShapes
-                    .in_base_set(CoreSet::PostUpdate)
-                    .after(bevy::transform::TransformSystem::TransformPropagate),
+                PostUpdate,
+                BuildShapes.after(bevy::transform::TransformSystem::TransformPropagate),
             )
-            .add_system(mesh_shapes_system.in_set(BuildShapes))
-            .add_plugin(ShapeMaterialPlugin);
+            .add_systems(PostUpdate, mesh_shapes_system.in_set(BuildShapes))
+            .add_plugins(ShapeMaterialPlugin);
     }
 }
 
-/// [`SystemLabel`] for the system that builds the meshes for newly-added
-/// or changed shapes. Resides in [`PostUpdate`](CoreStage::PostUpdate).
+/// [`SystemSet`] for the system that builds the meshes for newly-added
+/// or changed shapes. Resides in [`PostUpdate`] schedule.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemSet)]
 pub struct BuildShapes;
 
@@ -72,7 +73,7 @@ fn mesh_shapes_system(
         Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
     >,
 ) {
-    for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in query.iter_mut() {
+    for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in &mut query {
         let mut buffers = VertexBuffers::new();
 
         if let Some(fill_mode) = maybe_fill_mode {

@@ -68,6 +68,7 @@ The following table shows the latest version of `bevy_prototype_lyon` that suppo
 
 |bevy|bevy_prototype_lyon|license|
 |---|---|---|
+|0.11|0.9|MIT/Apache 2.0|
 |0.10|0.8|MIT/Apache 2.0|
 |0.9|0.7|MIT/Apache 2.0|
 |0.8|0.6|MIT/Apache 2.0|

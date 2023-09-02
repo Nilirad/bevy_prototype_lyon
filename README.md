@@ -18,10 +18,10 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ## Usage
 
-Add the following line in your `cargo.toml` manifest file, under the `[dependencies]` section:
+Add `bevy_prototype_lyon` to your cargo project:
 
-```TOML
-bevy_prototype_lyon = "0.8.0"
+```shell
+cargo add bevy_prototype_lyon
 ```
 
 Then, you can start by drawing simple shapes:

@@ -18,7 +18,7 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ## Usage
 
-Add `bevy_prototype_lyon` to your package's dependencies:
+Add `bevy_prototype_lyon` to your cargo project:
 
 ```shell
 cargo add bevy_prototype_lyon

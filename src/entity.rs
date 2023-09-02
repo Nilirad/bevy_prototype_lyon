@@ -2,7 +2,7 @@
 
 use bevy::{
     ecs::{bundle::Bundle, component::Component},
-    prelude::{ComputedVisibility, GlobalTransform, Handle, Transform, Visibility},
+    prelude::{Handle, SpatialBundle},
     sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess};
@@ -11,33 +11,16 @@ use crate::{prelude::Geometry, render::ShapeMaterial};
 
 /// A Bevy `Bundle` to represent a shape.
 #[allow(missing_docs)]
-#[derive(Bundle)]
+#[derive(Bundle, Default)]
 pub struct ShapeBundle {
     pub path: Path,
     pub mesh: Mesh2dHandle,
     pub material: Handle<ShapeMaterial>,
-    pub transform: Transform,
-    pub global_transform: GlobalTransform,
-    pub visibility: Visibility,
-    pub computed_visibility: ComputedVisibility,
-}
-
-impl Default for ShapeBundle {
-    fn default() -> Self {
-        Self {
-            path: Path(tess::path::Path::new()),
-            mesh: Mesh2dHandle::default(),
-            material: Handle::<ShapeMaterial>::default(),
-            transform: Transform::default(),
-            global_transform: GlobalTransform::default(),
-            visibility: Visibility::default(),
-            computed_visibility: ComputedVisibility::default(),
-        }
-    }
+    pub spatial: SpatialBundle,
 }
 
 #[allow(missing_docs)]
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct Path(pub tess::path::Path);
 
 impl Geometry for Path {

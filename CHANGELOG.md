@@ -1,4 +1,6 @@
 # Changelog
+## Unreleased
+- `ShapeBundle` now contains the `spatial: SpatialBundle` field, which bundles together `Transform`, `GlobalTransform`, `Visibility` and `InheritedVisibility`.
 
 ## 0.9.0
 - Support for Bevy 0.11.

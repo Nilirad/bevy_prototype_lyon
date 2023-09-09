@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_prototype_lyon::prelude::*;
 
 fn main() {
@@ -30,7 +30,7 @@ fn setup_system(mut commands: Commands) {
     commands.spawn((
         ShapeBundle {
             path,
-            spatial: SpatialBundle {
+            mesh: MaterialMesh2dBundle {
                 transform: Transform::from_xyz(0., 75., 0.),
                 ..default()
             },

@@ -1,22 +1,16 @@
 //! Custom Bevy ECS bundle for shapes.
 
-use bevy::{
-    ecs::{bundle::Bundle, component::Component},
-    prelude::{Handle, SpatialBundle},
-    sprite::Mesh2dHandle,
-};
+use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use lyon_tessellation::{self as tess};
 
-use crate::{prelude::Geometry, render::ShapeMaterial};
+use crate::geometry::Geometry;
 
 /// A Bevy `Bundle` to represent a shape.
 #[allow(missing_docs)]
 #[derive(Bundle, Default)]
 pub struct ShapeBundle {
     pub path: Path,
-    pub mesh: Mesh2dHandle,
-    pub material: Handle<ShapeMaterial>,
-    pub spatial: SpatialBundle,
+    pub mesh: MaterialMesh2dBundle<ColorMaterial>,
 }
 
 #[allow(missing_docs)]

@@ -7,7 +7,7 @@ use crate::{geometry::Geometry, plugin::COLOR_MATERIAL_HANDLE};
 
 /// A Bevy `Bundle` to represent a shape.
 #[allow(missing_docs)]
-#[derive(Bundle, Default)]
+#[derive(Bundle)]
 pub struct ShapeBundle {
     pub path: Path,
     pub mesh: Mesh2dHandle,

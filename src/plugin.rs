@@ -49,7 +49,7 @@ impl Plugin for ShapePlugin {
                 color: Color::WHITE,
                 ..default()
             },
-        )
+        );
     }
 }
 

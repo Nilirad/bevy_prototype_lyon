@@ -34,7 +34,6 @@ fn setup_system(mut commands: Commands) {
                 transform: Transform::from_xyz(0., 75., 0.),
                 ..default()
             },
-            ..default()
         },
         Stroke::new(Color::BLACK, 10.0),
         Fill::color(Color::RED),

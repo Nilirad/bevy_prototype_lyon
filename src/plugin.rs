@@ -24,6 +24,9 @@ use crate::{
     vertex::{VertexBuffers, VertexConstructor},
 };
 
+pub(crate) const COLOR_MATERIAL_HANDLE: Handle<ColorMaterial> =
+    Handle::weak_from_u128(0x7CC6_61A1_0CD6_C147_129A_2C01_882D_9580);
+
 /// A plugin that provides resources and a system to draw shapes in Bevy with
 /// less boilerplate.
 pub struct ShapePlugin;
@@ -39,6 +42,14 @@ impl Plugin for ShapePlugin {
                 BuildShapes.after(bevy::transform::TransformSystem::TransformPropagate),
             )
             .add_systems(PostUpdate, mesh_shapes_system.in_set(BuildShapes));
+
+        app.world.resource_mut::<Assets<ColorMaterial>>().insert(
+            COLOR_MATERIAL_HANDLE,
+            ColorMaterial {
+                color: Color::WHITE,
+                ..default()
+            },
+        )
     }
 }
 

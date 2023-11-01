@@ -2,7 +2,9 @@
 
 use bevy::{
     ecs::{bundle::Bundle, component::Component},
-    prelude::{ComputedVisibility, GlobalTransform, Handle, Transform, Visibility},
+    prelude::{
+        GlobalTransform, Handle, InheritedVisibility, Transform, ViewVisibility, Visibility,
+    },
     sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess};
@@ -19,7 +21,8 @@ pub struct ShapeBundle {
     pub transform: Transform,
     pub global_transform: GlobalTransform,
     pub visibility: Visibility,
-    pub computed_visibility: ComputedVisibility,
+    pub inherited_visibility: InheritedVisibility,
+    pub view_visibility: ViewVisibility,
 }
 
 impl Default for ShapeBundle {
@@ -31,7 +34,8 @@ impl Default for ShapeBundle {
             transform: Transform::default(),
             global_transform: GlobalTransform::default(),
             visibility: Visibility::default(),
-            computed_visibility: ComputedVisibility::default(),
+            inherited_visibility: InheritedVisibility::default(),
+            view_visibility: ViewVisibility::default(),
         }
     }
 }

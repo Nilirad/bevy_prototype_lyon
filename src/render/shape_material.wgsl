@@ -1,6 +1,6 @@
-#import bevy_sprite::mesh2d_types  Mesh2d
+#import bevy_sprite::mesh2d_types::Mesh2d
 #import bevy_sprite::mesh2d_view_bindings
-#import bevy_sprite::mesh2d_vertex_output  MeshVertexOutput
+#import bevy_sprite::mesh2d_vertex_output::VertexOutput
 
 @group(1) @binding(1)
 var texture: texture_2d<f32>;
@@ -10,6 +10,6 @@ var texture_sampler: sampler;
 var<uniform> mesh: Mesh2d;
 
 @fragment
-fn fragment(in: MeshVertexOutput) -> @location(0) vec4<f32> {
+fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     return in.color;
 }

@@ -16,7 +16,7 @@ version = "0.9.0"
 bevy = { version = "0.11", default-features = false, features = ["bevy_sprite", "bevy_render", "bevy_core_pipeline", "bevy_asset"] }
 lyon_tessellation = "1"
 lyon_algorithms = "1"
-svgtypes = "0.8"
+svgtypes = "0.12"
 
 [dev-dependencies]
 bevy = { version = "0.11", default-features = false, features = ["x11", "bevy_asset"] }

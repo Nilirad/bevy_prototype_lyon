@@ -18,7 +18,7 @@ Currently Bevy does not support drawing custom shapes in an easy way. This crate
 
 ## Usage
 
-Add `bevy_prototype_lyon` to your package's dependencies:
+Add `bevy_prototype_lyon` to your cargo project:
 
 ```shell
 cargo add bevy_prototype_lyon
@@ -67,15 +67,16 @@ I strive to support the latest version of Bevy. Support for a version of Bevy is
 The following table shows the latest version of `bevy_prototype_lyon` that supports a certain version of Bevy.
 
 |bevy|bevy_prototype_lyon|license|
-|---|---|---|
+|----|---|---|
+|0.12|0.10|MIT/Apache 2.0|
 |0.11|0.9|MIT/Apache 2.0|
 |0.10|0.8|MIT/Apache 2.0|
-|0.9|0.7|MIT/Apache 2.0|
-|0.8|0.6|MIT/Apache 2.0|
-|0.7|0.5|MIT/Apache 2.0|
-|0.6|0.4|MIT/Apache 2.0|
-|0.5|0.3|MIT           |
-|0.4|0.2|MIT           |
+|0.9 |0.7|MIT/Apache 2.0|
+|0.8 |0.6|MIT/Apache 2.0|
+|0.7 |0.5|MIT/Apache 2.0|
+|0.6 |0.4|MIT/Apache 2.0|
+|0.5 |0.3|MIT|
+|0.4 |0.2|MIT|
 
 ***
 

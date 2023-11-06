@@ -30,7 +30,10 @@ fn setup_system(mut commands: Commands) {
     commands.spawn((
         ShapeBundle {
             path,
-            transform: Transform::from_xyz(0., 75., 0.),
+            spatial: SpatialBundle {
+                transform: Transform::from_xyz(0., 75., 0.),
+                ..default()
+            },
             ..default()
         },
         Stroke::new(Color::BLACK, 10.0),

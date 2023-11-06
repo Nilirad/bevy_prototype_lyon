@@ -12,20 +12,8 @@
 //! `ShapeBundle`.
 
 use bevy::{
-    app::{App, Plugin},
-    asset::Assets,
-    ecs::{
-        query::{Changed, Or},
-        system::{Query, ResMut, Resource},
-    },
-    log::error,
-    prelude::{
-        Color, Deref, DerefMut, IntoSystemConfigs, IntoSystemSetConfig, PostUpdate, SystemSet,
-    },
-    render::{
-        mesh::{Indices, Mesh},
-        render_resource::PrimitiveTopology,
-    },
+    prelude::*,
+    render::{mesh::Indices, render_resource::PrimitiveTopology},
     sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess, BuffersBuilder};
@@ -33,9 +21,11 @@ use lyon_tessellation::{self as tess, BuffersBuilder};
 use crate::{
     draw::{Fill, Stroke},
     entity::Path,
-    render::ShapeMaterialPlugin,
     vertex::{VertexBuffers, VertexConstructor},
 };
+
+pub(crate) const COLOR_MATERIAL_HANDLE: Handle<ColorMaterial> =
+    Handle::weak_from_u128(0x7CC6_61A1_0CD6_C147_129A_2C01_882D_9580);
 
 /// A plugin that provides resources and a system to draw shapes in Bevy with
 /// less boilerplate.
@@ -43,16 +33,23 @@ pub struct ShapePlugin;
 
 impl Plugin for ShapePlugin {
     fn build(&self, app: &mut App) {
-        let fill_tess = lyon_tessellation::FillTessellator::new();
-        let stroke_tess = lyon_tessellation::StrokeTessellator::new();
+        let fill_tess = tess::FillTessellator::new();
+        let stroke_tess = tess::StrokeTessellator::new();
         app.insert_resource(FillTessellator(fill_tess))
             .insert_resource(StrokeTessellator(stroke_tess))
-            .configure_set(
+            .configure_sets(
                 PostUpdate,
                 BuildShapes.after(bevy::transform::TransformSystem::TransformPropagate),
             )
-            .add_systems(PostUpdate, mesh_shapes_system.in_set(BuildShapes))
-            .add_plugins(ShapeMaterialPlugin);
+            .add_systems(PostUpdate, mesh_shapes_system.in_set(BuildShapes));
+
+        app.world.resource_mut::<Assets<ColorMaterial>>().insert(
+            COLOR_MATERIAL_HANDLE,
+            ColorMaterial {
+                color: Color::WHITE,
+                ..default()
+            },
+        );
     }
 }
 

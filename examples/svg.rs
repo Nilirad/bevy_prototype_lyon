@@ -12,9 +12,6 @@ fn main() {
 }
 
 #[derive(Component)]
-struct Name(String);
-
-#[derive(Component)]
 struct BlacksmithMarker;
 
 #[derive(Component)]
@@ -25,7 +22,7 @@ fn setup_system(mut commands: Commands) {
 
     commands
         .spawn((
-            Name("Blacksmith".to_owned()),
+            Name::new("Blacksmith"),
             BlacksmithMarker,
             SpatialBundle {
                 transform: Transform::from_translation(Vec3::new(-50., 0., 0.)),
@@ -62,7 +59,7 @@ fn setup_system(mut commands: Commands) {
 
     commands
         .spawn((
-            Name("Shack".to_owned()),
+            Name::new("Shack"),
             ToolShackMarker,
             SpatialBundle {
                 transform: Transform {

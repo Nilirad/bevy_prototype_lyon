@@ -32,7 +32,7 @@ impl ShapePath {
     ///
     /// ```
     /// # use bevy::prelude::*;
-    /// # use bevy_prototype_lyon::prelude::*;
+    /// # use bevy_prototype_lyon::prelude::{RegularPolygon, *};
     /// #
     /// # #[derive(Component)]
     /// # struct Player;
@@ -73,7 +73,7 @@ impl ShapePath {
     ///
     /// ```
     /// # use bevy::prelude::*;
-    /// # use bevy_prototype_lyon::prelude::*;
+    /// # use bevy_prototype_lyon::prelude::{RegularPolygon, *};
     /// #
     /// # #[derive(Component)]
     /// # struct Player;

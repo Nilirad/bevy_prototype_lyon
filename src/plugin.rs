@@ -131,7 +131,7 @@ fn build_mesh(buffers: &VertexBuffers) -> Mesh {
         PrimitiveTopology::TriangleList,
         RenderAssetUsages::RENDER_WORLD,
     );
-    mesh.set_indices(Some(Indices::U32(buffers.indices.clone())));
+    mesh.insert_indices(Indices::U32(buffers.indices.clone()));
     mesh.insert_attribute(
         Mesh::ATTRIBUTE_POSITION,
         buffers

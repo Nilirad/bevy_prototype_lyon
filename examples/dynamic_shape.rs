@@ -1,7 +1,7 @@
 use std::f64::consts::PI;
 
 use bevy::prelude::*;
-use bevy_prototype_lyon::{entity::ShapeBundle, prelude::*};
+use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()

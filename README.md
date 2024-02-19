@@ -67,7 +67,8 @@ I strive to support the latest version of Bevy. Support for a version of Bevy is
 The following table shows the latest version of `bevy_prototype_lyon` that supports a certain version of Bevy.
 
 |bevy|bevy_prototype_lyon|license|
-|----|---|---|
+|---|---|---|
+|0.13|0.11|MIT/Apache 2.0|
 |0.12|0.10|MIT/Apache 2.0|
 |0.11|0.9|MIT/Apache 2.0|
 |0.10|0.8|MIT/Apache 2.0|

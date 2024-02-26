@@ -80,8 +80,8 @@ impl GeometryBuilder {
     ///             path: builder.build(),
     ///             ..default()
     ///         },
-    ///         Fill::color(Color::ORANGE_RED),
-    ///         Stroke::new(Color::ORANGE_RED, 10.0),
+    ///         Fill::color(LegacyColor::ORANGE_RED),
+    ///         Stroke::new(LegacyColor::ORANGE_RED, 10.0),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
@@ -115,7 +115,7 @@ impl GeometryBuilder {
     ///             path: GeometryBuilder::build_as(&line),
     ///             ..default()
     ///         },
-    ///         Fill::color(Color::ORANGE_RED),
+    ///         Fill::color(LegacyColor::ORANGE_RED),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);

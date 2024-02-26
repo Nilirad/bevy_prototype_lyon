@@ -35,7 +35,7 @@ fn setup_system(mut commands: Commands) {
             },
             ..default()
         },
-        Stroke::new(Color::BLACK, 10.0),
-        Fill::color(Color::RED),
+        Stroke::new(LegacyColor::BLACK, 10.0),
+        Fill::color(LegacyColor::RED),
     ));
 }

@@ -33,6 +33,6 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&shape),
             ..default()
         },
-        Fill::color(Color::CYAN),
+        Fill::color(LegacyColor::CYAN),
     ));
 }

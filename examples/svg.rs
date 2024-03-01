@@ -42,7 +42,7 @@ fn setup_system(mut commands: Commands) {
                     }),
                     ..default()
                 },
-                Stroke::new(LegacyColor::BLACK, 4.0),
+                Stroke::new(Color::BLACK, 4.0),
             ));
             parent.spawn((
                 ShapeBundle {
@@ -52,7 +52,7 @@ fn setup_system(mut commands: Commands) {
                     }),
                     ..default()
                 },
-                Stroke::new(LegacyColor::BLACK, 2.5),
+                Stroke::new(Color::BLACK, 2.5),
             ));
         });
 
@@ -83,7 +83,7 @@ fn setup_system(mut commands: Commands) {
                     }),
                     ..default()
                 },
-                Stroke::new(LegacyColor::BLACK, 20.0),
+                Stroke::new(Color::BLACK, 20.0),
             ));
 
             // shack walls
@@ -95,7 +95,7 @@ fn setup_system(mut commands: Commands) {
                     }),
                     ..default()
                 },
-                Stroke::new(LegacyColor::BLACK, 17.5),
+                Stroke::new(Color::BLACK, 17.5),
             ));
         });
 }

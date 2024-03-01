@@ -30,7 +30,7 @@ fn change_draw_mode_system(mut query: Query<(&mut Fill, &mut Stroke)>, time: Res
     let outline_width = 2.0 + time.elapsed_seconds_f64().sin().abs() * 10.0;
 
     for (mut fill_mode, mut stroke_mode) in query.iter_mut() {
-        fill_mode.color = LegacyColor::hsl(hue as f32, 1.0, 0.5);
+        fill_mode.color = Color::hsl(hue as f32, 1.0, 0.5);
         stroke_mode.options.line_width = outline_width as f32;
     }
 }
@@ -62,8 +62,8 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&shape),
             ..default()
         },
-        Fill::color(LegacyColor::CYAN),
-        Stroke::new(LegacyColor::BLACK, 10.0),
+        Fill::color(Color::CYAN),
+        Stroke::new(Color::BLACK, 10.0),
         ExampleShape,
     ));
 }

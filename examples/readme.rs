@@ -1,7 +1,7 @@
 //! This is the example that goes to the README.md file. The README.md should be
 //! updated before every release.
 
-use bevy::prelude::*;
+use bevy::{color::palettes, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 
 fn main() {
@@ -26,7 +26,7 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&shape),
             ..default()
         },
-        Fill::color(Color::CYAN),
-        Stroke::new(Color::BLACK, 10.0),
+        Fill::color(Color::Srgba(palettes::css::CYAN)),
+        Stroke::new(Color::Srgba(palettes::css::BLACK), 10.0),
     ));
 }

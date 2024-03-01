@@ -12,6 +12,7 @@
 //! `ShapeBundle`.
 
 use bevy::{
+    color::palettes,
     prelude::*,
     render::{mesh::Indices, render_asset::RenderAssetUsages, render_resource::PrimitiveTopology},
     sprite::Mesh2dHandle,
@@ -85,7 +86,7 @@ fn mesh_shapes_system(
             fill(
                 &mut fill_tess,
                 &path.0,
-                &Fill::color(Color::FUCHSIA),
+                &Fill::color(Color::Srgba(palettes::css::FUCHSIA)),
                 &mut buffers,
             );
         }

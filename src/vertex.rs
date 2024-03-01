@@ -1,4 +1,4 @@
-use bevy::render::color::LegacyColor;
+use bevy::render::color::Color;
 use lyon_tessellation::{
     self as tess, FillVertex, FillVertexConstructor, StrokeVertex, StrokeVertexConstructor,
 };
@@ -19,7 +19,7 @@ pub struct Vertex {
 /// Zero-sized type used to implement various vertex construction traits from
 /// Lyon.
 pub struct VertexConstructor {
-    pub color: LegacyColor,
+    pub color: Color,
 }
 
 /// Enables the construction of a [`Vertex`] when using a `FillTessellator`.

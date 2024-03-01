@@ -46,7 +46,7 @@ impl Plugin for ShapePlugin {
         app.world.resource_mut::<Assets<ColorMaterial>>().insert(
             COLOR_MATERIAL_HANDLE,
             ColorMaterial {
-                color: LegacyColor::WHITE,
+                color: Color::WHITE,
                 ..default()
             },
         );
@@ -85,7 +85,7 @@ fn mesh_shapes_system(
             fill(
                 &mut fill_tess,
                 &path.0,
-                &Fill::color(LegacyColor::FUCHSIA),
+                &Fill::color(Color::FUCHSIA),
                 &mut buffers,
             );
         }

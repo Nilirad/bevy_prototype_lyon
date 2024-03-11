@@ -63,7 +63,7 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&shape),
             ..default()
         },
-        Fill::color(Color::Srgba(palettes::css::CYAN)),
+        Fill::color(Color::Srgba(palettes::css::DARK_CYAN)),
         Stroke::new(Color::Srgba(palettes::css::BLACK), 10.0),
         ExampleShape,
     ));

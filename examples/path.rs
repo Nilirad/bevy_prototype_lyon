@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{color::palettes, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 
 fn main() {
@@ -36,7 +36,7 @@ fn setup_system(mut commands: Commands) {
             },
             ..default()
         },
-        Stroke::new(Color::BLACK, 10.0),
-        Fill::color(Color::RED),
+        Stroke::new(Color::Srgba(palettes::css::BLACK), 10.0),
+        Fill::color(Color::Srgba(palettes::css::RED)),
     ));
 }

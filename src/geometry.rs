@@ -66,6 +66,7 @@ impl GeometryBuilder {
     /// ```
     /// # use bevy::prelude::*;
     /// # use bevy_prototype_lyon::prelude::*;
+    /// # use bevy::color::palettes;
     /// #
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
@@ -80,8 +81,8 @@ impl GeometryBuilder {
     ///             path: builder.build(),
     ///             ..default()
     ///         },
-    ///         Fill::color(Color::ORANGE_RED),
-    ///         Stroke::new(Color::ORANGE_RED, 10.0),
+    ///         Fill::color(Color::Srgba(palettes::css::ORANGE_RED)),
+    ///         Stroke::new(Color::Srgba(palettes::css::ORANGE_RED), 10.0),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
@@ -107,6 +108,7 @@ impl GeometryBuilder {
     /// ```
     /// # use bevy::prelude::*;
     /// # use bevy_prototype_lyon::prelude::*;
+    /// # use bevy::color::palettes;
     /// #
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
@@ -115,7 +117,7 @@ impl GeometryBuilder {
     ///             path: GeometryBuilder::build_as(&line),
     ///             ..default()
     ///         },
-    ///         Fill::color(Color::ORANGE_RED),
+    ///         Fill::color(Color::Srgba(palettes::css::ORANGE_RED)),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);

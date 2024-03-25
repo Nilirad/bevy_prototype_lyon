@@ -45,7 +45,7 @@ impl Plugin for ShapePlugin {
             .add_systems(PostUpdate, mesh_shapes_system.in_set(BuildShapes));
 
         app.world.resource_mut::<Assets<ColorMaterial>>().insert(
-            COLOR_MATERIAL_HANDLE,
+            &COLOR_MATERIAL_HANDLE,
             ColorMaterial {
                 color: Color::WHITE,
                 ..default()

@@ -13,10 +13,22 @@ version = "0.8.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = ["bevy_sprite", "bevy_render", "bevy_core_pipeline", "bevy_asset"] }
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = [
+	"bevy_sprite",
+	"bevy_render",
+	"bevy_core_pipeline",
+	"bevy_asset",
+] }
 lyon_tessellation = "1"
 lyon_algorithms = "1"
 svgtypes = "0.8"
 
 [dev-dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = ["x11", "bevy_asset"] }
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = [
+	"x11",
+	"bevy_asset",
+	# TODO: Figure out if this will be needed https://github.com/bevyengine/bevy/issues/13728 
+	"ktx2",
+	"zstd",
+	"bevy_pbr",
+] }

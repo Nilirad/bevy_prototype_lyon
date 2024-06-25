@@ -1,4 +1,4 @@
-use bevy::{color::palettes, prelude::*};
+use bevy::{color::palettes::css::*, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 
 fn main() {
@@ -33,6 +33,6 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&shape),
             ..default()
         },
-        Fill::color(Color::Srgba(palettes::css::DARK_CYAN)),
+        Fill::color(DARK_CYAN),
     ));
 }

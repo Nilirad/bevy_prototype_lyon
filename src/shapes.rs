@@ -294,10 +294,10 @@ impl Geometry for Line {
 /// 1) Go to File>Document Properties>General>Display Units and set it to px
 ///
 /// 2) In File>Document Properties>Custom Size>Units set it to px, also, this
-/// size would be used for `svg_doc_size_in_px`
+///    size would be used for `svg_doc_size_in_px`
 ///
 /// 3) In File>Document Properties>Scale>Scale x make sure it is set to 1 User
-/// unit per px
+///    unit per px
 ///
 ///Example exists in the examples folder
 pub struct SvgPathShape {

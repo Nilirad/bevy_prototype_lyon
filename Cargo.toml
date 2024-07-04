@@ -8,12 +8,12 @@ license = "MIT OR Apache-2.0"
 name = "bevy_prototype_lyon"
 readme = "README.md"
 repository = "https://github.com/Nilirad/bevy_prototype_lyon/"
-version = "0.8.0"
+version = "0.12.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = [
+bevy = { version = "0.14", default-features = false, features = [
 	"bevy_sprite",
 	"bevy_render",
 	"bevy_core_pipeline",
@@ -24,11 +24,7 @@ lyon_algorithms = "1"
 svgtypes = "0.8"
 
 [dev-dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = [
+bevy = { version = "0.14", default-features = false, features = [
 	"x11",
 	"bevy_asset",
-	# TODO: Figure out if this will be needed https://github.com/bevyengine/bevy/issues/13728 
-	"ktx2",
-	"zstd",
-	"bevy_pbr",
 ] }

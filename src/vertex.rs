@@ -1,4 +1,4 @@
-use bevy::render::color::Color;
+use bevy::color::{Color, ColorToComponents};
 use lyon_tessellation::{
     self as tess, FillVertex, FillVertexConstructor, StrokeVertex, StrokeVertexConstructor,
 };
@@ -27,7 +27,7 @@ impl FillVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: FillVertex) -> Vertex {
         Vertex {
             position: [vertex.position().x, vertex.position().y],
-            color: self.color.as_linear_rgba_f32(),
+            color: self.color.to_linear().to_f32_array(),
         }
     }
 }
@@ -37,7 +37,7 @@ impl StrokeVertexConstructor<Vertex> for VertexConstructor {
     fn new_vertex(&mut self, vertex: StrokeVertex) -> Vertex {
         Vertex {
             position: [vertex.position().x, vertex.position().y],
-            color: self.color.as_linear_rgba_f32(),
+            color: self.color.to_linear().to_f32_array(),
         }
     }
 }

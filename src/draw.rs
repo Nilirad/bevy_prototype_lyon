@@ -1,6 +1,6 @@
 //! Types for defining shape color and options.
 
-use bevy::{ecs::component::Component, render::color::Color};
+use bevy::{color::Color, ecs::component::Component};
 use lyon_tessellation::{FillOptions, StrokeOptions};
 
 /// Defines the fill options for the lyon tessellator and color of the generated
@@ -15,10 +15,10 @@ pub struct Fill {
 impl Fill {
     /// Convenience constructor requiring only the `Color`.
     #[must_use]
-    pub fn color(color: Color) -> Self {
+    pub fn color(color: impl Into<Color>) -> Self {
         Self {
             options: FillOptions::default(),
-            color,
+            color: color.into(),
         }
     }
 }
@@ -35,19 +35,19 @@ pub struct Stroke {
 impl Stroke {
     /// Constructor that requires a `Color` and a line width.
     #[must_use]
-    pub fn new(color: Color, line_width: f32) -> Self {
+    pub fn new(color: impl Into<Color>, line_width: f32) -> Self {
         Self {
             options: StrokeOptions::default().with_line_width(line_width),
-            color,
+            color: color.into(),
         }
     }
 
     /// Convenience constructor requiring only the `Color`.
     #[must_use]
-    pub fn color(color: Color) -> Self {
+    pub fn color(color: impl Into<Color>) -> Self {
         Self {
             options: StrokeOptions::default(),
-            color,
+            color: color.into(),
         }
     }
 }

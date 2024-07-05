@@ -1,18 +1,16 @@
 # Changelog
+## 0.12.0
+- Support for Bevy 0.14.
+
+## 0.11.0
+- Support for Bevy 0.13.
+
 ## 0.10.0
 - Support for Bevy 0.12.
 - `ShapeBundle` now contains the `spatial: SpatialBundle` field, which bundles together `Transform`, `GlobalTransform`, `Visibility` and `InheritedVisibility`.
 
 ## 0.9.0
 - Support for Bevy 0.11.
-
-## 0.11.0
-- Support for Bevy 0.13
-
-## 0.10.0
-- Support for Bevy 0.12
-
-## 0.9.0
 - `ShapeBundle` now contains the `spatial: SpatialBundle` field,
   which bundles together
   `Transform`,

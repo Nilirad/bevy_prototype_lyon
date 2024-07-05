@@ -1,11 +1,10 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::*, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()
         .insert_resource(Msaa::Sample4)
-        .add_plugins(DefaultPlugins)
-        .add_plugins(ShapePlugin)
+        .add_plugins((DefaultPlugins, ShapePlugin))
         .add_systems(Startup, setup_system)
         .run();
 }
@@ -36,7 +35,7 @@ fn setup_system(mut commands: Commands) {
             },
             ..default()
         },
-        Stroke::new(Color::BLACK, 10.0),
-        Fill::color(Color::RED),
+        Stroke::new(BLACK, 10.0),
+        Fill::color(RED),
     ));
 }

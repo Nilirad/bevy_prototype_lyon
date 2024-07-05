@@ -12,6 +12,7 @@
 //! `ShapeBundle`.
 
 use bevy::{
+    color::palettes,
     prelude::*,
     render::{mesh::Indices, render_asset::RenderAssetUsages, render_resource::PrimitiveTopology},
     sprite::Mesh2dHandle,
@@ -43,13 +44,15 @@ impl Plugin for ShapePlugin {
             )
             .add_systems(PostUpdate, mesh_shapes_system.in_set(BuildShapes));
 
-        app.world.resource_mut::<Assets<ColorMaterial>>().insert(
-            COLOR_MATERIAL_HANDLE,
-            ColorMaterial {
-                color: Color::WHITE,
-                ..default()
-            },
-        );
+        app.world_mut()
+            .resource_mut::<Assets<ColorMaterial>>()
+            .insert(
+                &COLOR_MATERIAL_HANDLE,
+                ColorMaterial {
+                    color: Color::WHITE,
+                    ..default()
+                },
+            );
     }
 }
 
@@ -85,7 +88,7 @@ fn mesh_shapes_system(
             fill(
                 &mut fill_tess,
                 &path.0,
-                &Fill::color(Color::FUCHSIA),
+                &Fill::color(Color::Srgba(palettes::css::FUCHSIA)),
                 &mut buffers,
             );
         }

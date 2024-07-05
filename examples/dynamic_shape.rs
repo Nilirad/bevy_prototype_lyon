@@ -1,13 +1,12 @@
 use std::f64::consts::PI;
 
-use bevy::prelude::*;
+use bevy::{color::palettes::css::*, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()
         .insert_resource(Msaa::Sample4)
-        .add_plugins(DefaultPlugins)
-        .add_plugins(ShapePlugin)
+        .add_plugins((DefaultPlugins, ShapePlugin))
         .add_systems(Startup, setup_system)
         .add_systems(Update, change_draw_mode_system)
         .add_systems(Update, change_number_of_sides)
@@ -63,8 +62,8 @@ fn setup_system(mut commands: Commands) {
             path: GeometryBuilder::build_as(&shape),
             ..default()
         },
-        Fill::color(Color::CYAN),
-        Stroke::new(Color::BLACK, 10.0),
+        Fill::color(DARK_CYAN),
+        Stroke::new(BLACK, 10.0),
         ExampleShape,
     ));
 }

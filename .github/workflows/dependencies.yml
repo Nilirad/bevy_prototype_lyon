@@ -24,9 +24,9 @@ jobs:
   check-advisories:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: bevy-main
+          ref: master
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
@@ -38,9 +38,9 @@ jobs:
   check-bans:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: bevy-main
+          ref: master
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
@@ -52,9 +52,9 @@ jobs:
   check-licenses:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: bevy-main
+          ref: master
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
@@ -66,9 +66,9 @@ jobs:
   check-sources:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: bevy-main
+          ref: master
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable

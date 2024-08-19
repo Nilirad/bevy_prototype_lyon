@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [master, bevy-main]
+    branches: [master]
   push:
-    branches: [master, bevy-main]
+    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
@@ -18,7 +18,7 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - uses: dtolnay/rust-toolchain@master
         with:

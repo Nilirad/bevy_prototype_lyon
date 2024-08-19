@@ -52,21 +52,6 @@ when contributing to `bevy_prototype_lyon`:
   of the changes you have made
   and why they are necessary.
 
-### Branches
-
-We maintain two long term branches,
-each with their characteristics.
-
-- `master`.
-  Tracks the latest Bevy release.
-  You should target this branch by default.
-- `bevy-main`.
-  Tracks the `main` branch of `bevy`.
-  You should target this branch
-  only if you have to accommodate a breaking change caused by Bevy,
-  or if you want to develop a feature
-  not yet supported by the latest release.
-
 ## Reporting Issues
 
 If you encounter any issues,

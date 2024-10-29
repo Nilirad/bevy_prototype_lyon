@@ -6,7 +6,6 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()
-        .insert_resource(Msaa::Sample4)
         .add_plugins((DefaultPlugins, ShapePlugin))
         .add_systems(Startup, setup_system)
         .run();
@@ -19,7 +18,7 @@ fn setup_system(mut commands: Commands) {
         ..shapes::RegularPolygon::default()
     };
 
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn((Camera2d, Msaa::Sample4));
     commands.spawn((
         ShapeBundle {
             path: GeometryBuilder::build_as(&shape),

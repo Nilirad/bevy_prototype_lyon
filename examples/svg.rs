@@ -3,8 +3,6 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()
-        //Added msaa to reduce aliasing
-        .insert_resource(Msaa::Sample4)
         .add_plugins((DefaultPlugins, ShapePlugin))
         .add_systems(Startup, setup_system)
         .run();
@@ -17,16 +15,14 @@ struct BlacksmithMarker;
 struct ToolShackMarker;
 
 fn setup_system(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn((Camera2d, Msaa::Sample4));
 
     commands
         .spawn((
             Name::new("Blacksmith"),
             BlacksmithMarker,
-            SpatialBundle {
-                transform: Transform::from_translation(Vec3::new(-50., 0., 0.)),
-                ..default()
-            },
+            Transform::from_translation(Vec3::new(-50., 0., 0.)),
+            Visibility::default(),
         ))
         //we split our art in this example to two children because our art is made out of 2 paths,
         //one path who's width is 4,
@@ -60,14 +56,12 @@ fn setup_system(mut commands: Commands) {
         .spawn((
             Name::new("Shack"),
             ToolShackMarker,
-            SpatialBundle {
-                transform: Transform {
-                    translation: Vec3::new(375., 0., 0.),
-                    scale: Vec3::new(0.1, 0.1, 1.),
-                    ..Default::default()
-                },
-                ..default()
+            Transform {
+                translation: Vec3::new(375., 0., 0.),
+                scale: Vec3::new(0.1, 0.1, 1.),
+                ..Default::default()
             },
+            Visibility::default(),
         ))
         //we split our art in this example to two children because our art is made out of 2 paths,
         //one path who's width is 4,

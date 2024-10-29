@@ -3,7 +3,6 @@ use bevy_prototype_lyon::prelude::*;
 
 fn main() {
     App::new()
-        .insert_resource(Msaa::Sample4)
         .add_plugins((DefaultPlugins, ShapePlugin))
         .add_systems(Startup, setup_system)
         .run();
@@ -25,14 +24,12 @@ fn setup_system(mut commands: Commands) {
     path_builder.close();
     let path = path_builder.build();
 
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn((Camera2d, Msaa::Sample4));
     commands.spawn((
         ShapeBundle {
             path,
-            spatial: SpatialBundle {
-                transform: Transform::from_xyz(0., 75., 0.),
-                ..default()
-            },
+            transform: Transform::from_xyz(0., 75., 0.),
+            visibility: default(),
             ..default()
         },
         Stroke::new(BLACK, 10.0),

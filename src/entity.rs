@@ -1,6 +1,6 @@
 //! Custom Bevy ECS bundle for shapes.
 
-use bevy::{prelude::*, sprite::Mesh2dHandle};
+use bevy::prelude::*;
 use lyon_tessellation::{self as tess};
 
 use crate::{geometry::Geometry, plugin::COLOR_MATERIAL_HANDLE};
@@ -10,9 +10,10 @@ use crate::{geometry::Geometry, plugin::COLOR_MATERIAL_HANDLE};
 #[derive(Bundle, Clone)]
 pub struct ShapeBundle {
     pub path: Path,
-    pub mesh: Mesh2dHandle,
-    pub material: Handle<ColorMaterial>,
-    pub spatial: SpatialBundle,
+    pub mesh: Mesh2d,
+    pub material: MeshMaterial2d<ColorMaterial>,
+    pub transform: Transform,
+    pub visibility: Visibility,
 }
 
 impl Default for ShapeBundle {
@@ -20,8 +21,9 @@ impl Default for ShapeBundle {
         Self {
             path: default(),
             mesh: default(),
-            material: COLOR_MATERIAL_HANDLE,
-            spatial: default(),
+            material: MeshMaterial2d(COLOR_MATERIAL_HANDLE),
+            transform: default(),
+            visibility: default(),
         }
     }
 }

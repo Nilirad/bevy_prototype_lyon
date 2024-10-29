@@ -1,4 +1,9 @@
 # Changelog
+
+## 0.13.0-rc.1
+- Support for Bevy 0.15.0-rc.2.
+- Removed deprecated `SpatialBundle` from `ShapeBundle`: `Transform` and `Visibility` are now added separately.
+
 ## 0.12.0
 - Support for Bevy 0.14.
 

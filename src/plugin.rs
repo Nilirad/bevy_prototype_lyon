@@ -15,7 +15,6 @@ use bevy::{
     color::palettes,
     prelude::*,
     render::{mesh::Indices, render_asset::RenderAssetUsages, render_resource::PrimitiveTopology},
-    sprite::Mesh2dHandle,
 };
 use lyon_tessellation::{self as tess, BuffersBuilder};
 
@@ -69,7 +68,7 @@ fn mesh_shapes_system(
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
     mut query: Query<
-        (Option<&Fill>, Option<&Stroke>, &Path, &mut Mesh2dHandle),
+        (Option<&Fill>, Option<&Stroke>, &Path, &mut Mesh2d),
         Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
     >,
 ) {

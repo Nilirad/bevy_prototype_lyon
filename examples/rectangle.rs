@@ -12,7 +12,7 @@ fn setup_system(mut commands: Commands) {
     let rect = shapes::Rectangle {
         extents: Vec2::splat(175.0),
         origin: RectangleOrigin::Center,
-        radii: Some(BorderRadii::single(25.0))
+        radii: Some(BorderRadii::single(25.0)),
     };
 
     commands.spawn((Camera2d, Msaa::Sample4));

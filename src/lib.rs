@@ -46,6 +46,6 @@ pub mod prelude {
         geometry::{Geometry, GeometryBuilder},
         path::{PathBuilder, ShapePath},
         plugin::ShapePlugin,
-        shapes::{self, RectangleOrigin, BorderRadii, RegularPolygon, RegularPolygonFeature},
+        shapes::{self, BorderRadii, RectangleOrigin, RegularPolygon, RegularPolygonFeature},
     };
 }

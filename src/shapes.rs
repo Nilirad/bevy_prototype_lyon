@@ -9,8 +9,10 @@ use lyon_tessellation::{
     geom::euclid::default::Size2D,
     math::{point, Angle, Box2D, Point, Vector},
     path::{
-        builder::WithSvg, path::Builder, traits::SvgPathBuilder, ArcFlags, Polygon as LyonPolygon,
-        Winding,
+        builder::{BorderRadii as LyonBorderRadii, WithSvg},
+        path::Builder,
+        traits::SvgPathBuilder,
+        ArcFlags, Polygon as LyonPolygon, Winding,
     },
 };
 use svgtypes::{PathParser, PathSegment};
@@ -38,11 +40,85 @@ impl Default for RectangleOrigin {
     }
 }
 
+/// Radii for the four corners of a rectangle.
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct BorderRadii {
+    /// Radius for the top left corner.
+    pub top_left: f32,
+    /// Radius for the top right corner.
+    pub top_right: f32,
+    /// Radius for the bottom left corner.
+    pub bottom_left: f32,
+    /// Radius for the bottom right corner.
+    pub bottom_right: f32,
+}
+
+impl BorderRadii {
+    /// Use a single radius for all corners.
+    pub fn single(radius: f32) -> Self {
+        Self {
+            top_left: radius,
+            top_right: radius,
+            bottom_left: radius,
+            bottom_right: radius,
+        }
+    }
+
+    /// Use a single radius for the top corners and zero for the bottom corners.
+    pub fn top(radius: f32) -> Self {
+        Self {
+            top_left: radius,
+            top_right: radius,
+            ..Default::default()
+        }
+    }
+
+    /// Use a single radius for the bottom corners and zero for the top corners.
+    pub fn bottom(radius: f32) -> Self {
+        Self {
+            bottom_left: radius,
+            bottom_right: radius,
+            ..Default::default()
+        }
+    }
+
+    /// Use a single radius for the left corners and zero for the right corners.
+    pub fn left(radius: f32) -> Self {
+        Self {
+            top_left: radius,
+            bottom_left: radius,
+            ..Default::default()
+        }
+    }
+
+    /// Use a single radius for the right corners and zero for the left corners.
+    pub fn right(radius: f32) -> Self {
+        Self {
+            top_right: radius,
+            bottom_right: radius,
+            ..Default::default()
+        }
+    }
+}
+
+impl From<BorderRadii> for LyonBorderRadii {
+    fn from(source: BorderRadii) -> Self {
+        // swap top and bottom
+        LyonBorderRadii {
+            top_left: source.bottom_left.abs(),
+            top_right: source.bottom_right.abs(),
+            bottom_left: source.top_left.abs(),
+            bottom_right: source.top_right.abs(),
+        }
+    }
+}
+
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rectangle {
     pub extents: Vec2,
     pub origin: RectangleOrigin,
+    pub radii: Option<BorderRadii>,
 }
 
 impl Default for Rectangle {
@@ -50,6 +126,7 @@ impl Default for Rectangle {
         Self {
             extents: Vec2::ONE,
             origin: RectangleOrigin::default(),
+            radii: None,
         }
     }
 }
@@ -66,11 +143,13 @@ impl Geometry for Rectangle {
                 Point::new(v.x - self.extents.x / 2.0, v.y - self.extents.y / 2.0)
             }
         };
-
-        b.add_rectangle(
-            &Box2D::from_origin_and_size(origin, Size2D::new(self.extents.x, self.extents.y)),
-            Winding::Positive,
-        );
+        let rect =
+            &Box2D::from_origin_and_size(origin, Size2D::new(self.extents.x, self.extents.y));
+        let Some(radii) = self.radii else {
+            b.add_rectangle(rect, Winding::Positive);
+            return;
+        };
+        b.add_rounded_rectangle(rect, &radii.into(), Winding::Positive);
     }
 }
 

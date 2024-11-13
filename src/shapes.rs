@@ -55,6 +55,7 @@ pub struct BorderRadii {
 
 impl BorderRadii {
     /// Use a single radius for all corners.
+    #[must_use]
     pub fn single(radius: f32) -> Self {
         Self {
             top_left: radius,
@@ -65,6 +66,7 @@ impl BorderRadii {
     }
 
     /// Use a single radius for the top corners and zero for the bottom corners.
+    #[must_use]
     pub fn top(radius: f32) -> Self {
         Self {
             top_left: radius,
@@ -74,6 +76,7 @@ impl BorderRadii {
     }
 
     /// Use a single radius for the bottom corners and zero for the top corners.
+    #[must_use]
     pub fn bottom(radius: f32) -> Self {
         Self {
             bottom_left: radius,
@@ -83,6 +86,7 @@ impl BorderRadii {
     }
 
     /// Use a single radius for the left corners and zero for the right corners.
+    #[must_use]
     pub fn left(radius: f32) -> Self {
         Self {
             top_left: radius,
@@ -92,6 +96,7 @@ impl BorderRadii {
     }
 
     /// Use a single radius for the right corners and zero for the left corners.
+    #[must_use]
     pub fn right(radius: f32) -> Self {
         Self {
             top_right: radius,
@@ -104,7 +109,7 @@ impl BorderRadii {
 impl From<BorderRadii> for LyonBorderRadii {
     fn from(source: BorderRadii) -> Self {
         // swap top and bottom
-        LyonBorderRadii {
+        Self {
             top_left: source.bottom_left.abs(),
             top_right: source.bottom_right.abs(),
             bottom_left: source.top_left.abs(),

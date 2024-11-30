@@ -23,7 +23,7 @@ allow = [
   "CC0-1.0",
 ]
 exceptions = [
-    { name = "unicode-ident", allow = ["Unicode-DFS-2016"] },
+    { name = "unicode-ident", allow = ["Unicode-DFS-2016", "Unicode-3.0"] },
 ]
 
 [[licenses.clarify]]

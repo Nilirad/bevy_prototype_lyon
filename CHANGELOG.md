@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.13.0-rc.2
+## 0.13.0
 - Support for Bevy 0.15.0-rc.3.
 - `Rectangle` now supports border radii (see `rectangle.rs` example).
 - Removed deprecated `SpatialBundle` from `ShapeBundle`: `Transform` and `Visibility` are now added separately.

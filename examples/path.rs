@@ -26,12 +26,8 @@ fn setup_system(mut commands: Commands) {
 
     commands.spawn((Camera2d, Msaa::Sample4));
     commands.spawn((
-        ShapeBundle {
-            path,
-            transform: Transform::from_xyz(0., 75., 0.),
-            visibility: default(),
-            ..default()
-        },
+        path,
+        Transform::from_xyz(0., 75., 0.),
         Stroke::new(BLACK, 10.0),
         Fill::color(RED),
     ));

@@ -2,14 +2,6 @@
 //!
 //! The [`ShapePlugin`] provides the creation of shapes with minimal
 //! boilerplate.
-//!
-//! ## How it works
-//! The user spawns a [`ShapeBundle`](crate::entity::ShapeBundle) from a
-//! system in the `UPDATE` stage.
-//!
-//! Then, in [`Stage::Shape`] stage, there is a system
-//! that creates a mesh for each entity that has been spawned as a
-//! `ShapeBundle`.
 
 use bevy::{
     color::palettes,
@@ -20,7 +12,7 @@ use lyon_tessellation::{self as tess, BuffersBuilder};
 
 use crate::{
     draw::{Fill, Stroke},
-    entity::Path,
+    entity::Shape,
     vertex::{VertexBuffers, VertexConstructor},
 };
 
@@ -60,7 +52,8 @@ impl Plugin for ShapePlugin {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemSet)]
 pub struct BuildShapes;
 
-/// Queries all the [`ShapeBundle`]s to mesh them when they are added
+/// Queries all the [`Shape`]s and their related components
+/// to mesh them when they are added
 /// or re-mesh them when they are changed.
 #[allow(clippy::type_complexity)]
 fn mesh_shapes_system(
@@ -68,8 +61,8 @@ fn mesh_shapes_system(
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
     mut query: Query<
-        (Option<&Fill>, Option<&Stroke>, &Path, &mut Mesh2d),
-        Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
+        (Option<&Fill>, Option<&Stroke>, &Shape, &mut Mesh2d),
+        Or<(Changed<Shape>, Changed<Fill>, Changed<Stroke>)>,
     >,
 ) {
     for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in &mut query {

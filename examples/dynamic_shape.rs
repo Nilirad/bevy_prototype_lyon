@@ -34,7 +34,7 @@ fn change_draw_mode_system(mut query: Query<(&mut Fill, &mut Stroke)>, time: Res
     }
 }
 
-fn change_number_of_sides(mut query: Query<&mut Path>, time: Res<Time>) {
+fn change_number_of_sides(mut query: Query<&mut Shape>, time: Res<Time>) {
     let sides = ((time.elapsed_secs_f64() - PI * 2.5).sin() * 2.5 + 5.5).round() as usize;
 
     for mut path in query.iter_mut() {
@@ -57,10 +57,7 @@ fn setup_system(mut commands: Commands) {
 
     commands.spawn((Camera2d, Msaa::Sample4));
     commands.spawn((
-        ShapeBundle {
-            path: GeometryBuilder::build_as(&shape),
-            ..default()
-        },
+        GeometryBuilder::build_as(&shape),
         Fill::color(DARK_CYAN),
         Stroke::new(BLACK, 10.0),
         ExampleShape,

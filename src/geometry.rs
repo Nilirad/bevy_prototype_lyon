@@ -2,7 +2,7 @@
 
 use lyon_tessellation::path::path::Builder;
 
-use crate::entity::Path;
+use crate::entity::Shape;
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -66,7 +66,7 @@ impl GeometryBuilder {
     /// ```
     /// # use bevy::prelude::*;
     /// # use bevy_prototype_lyon::prelude::*;
-    /// # use bevy::color::palettes;
+    /// # use bevy::color::palettes::css::*;
     /// #
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
@@ -77,12 +77,9 @@ impl GeometryBuilder {
     ///     let mut builder = GeometryBuilder::new().add(&line).add(&square);
     ///
     ///     commands.spawn((
-    ///         ShapeBundle {
-    ///             path: builder.build(),
-    ///             ..default()
-    ///         },
-    ///         Fill::color(Color::Srgba(palettes::css::ORANGE_RED)),
-    ///         Stroke::new(Color::Srgba(palettes::css::ORANGE_RED), 10.0),
+    ///         builder.build(),
+    ///         Fill::color(ORANGE_RED),
+    ///         Stroke::new(ORANGE_RED, 10.0),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
@@ -94,14 +91,14 @@ impl GeometryBuilder {
         self
     }
 
-    /// Returns a [`Path`] using the data contained in the geometry
+    /// Returns a [`Shape`] using the data contained in the geometry
     /// builder.
     #[must_use]
-    pub fn build(self) -> Path {
-        Path(self.0.build())
+    pub fn build(self) -> Shape {
+        Shape(self.0.build())
     }
 
-    /// Returns a [`Path`] component with only one geometry.
+    /// Returns a [`Shape`] component with only one geometry.
     ///
     /// # Example
     ///
@@ -113,16 +110,13 @@ impl GeometryBuilder {
     /// fn my_system(mut commands: Commands) {
     ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
     ///     commands.spawn((
-    ///         ShapeBundle {
-    ///             path: GeometryBuilder::build_as(&line),
-    ///             ..default()
-    ///         },
+    ///         GeometryBuilder::build_as(&line),
     ///         Fill::color(Color::Srgba(palettes::css::ORANGE_RED)),
     ///     ));
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
-    pub fn build_as(shape: &impl Geometry) -> Path {
+    pub fn build_as(shape: &impl Geometry) -> Shape {
         Self::new().add(shape).build()
     }
 }

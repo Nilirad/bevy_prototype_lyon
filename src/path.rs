@@ -11,7 +11,7 @@ use lyon_tessellation::{
 };
 
 use crate::{
-    entity::Path,
+    entity::Shape,
     geometry::Geometry,
     utils::{ToPoint, ToVector},
 };
@@ -37,7 +37,7 @@ impl ShapePath {
     /// # #[derive(Component)]
     /// # struct Player;
     /// #
-    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
+    /// fn my_system(mut query: Query<&mut Shape, With<Player>>) {
     ///     let mut path = query.single_mut();
     ///
     ///     let square = shapes::Rectangle {
@@ -61,13 +61,13 @@ impl ShapePath {
         self
     }
 
-    /// Builds the `Path` and returns it.
+    /// Builds the `Shape` and returns it.
     #[must_use]
-    pub fn build(self) -> Path {
-        Path(self.0.build())
+    pub fn build(self) -> Shape {
+        Shape(self.0.build())
     }
 
-    /// Directly builds a `Path` from a `shape`.
+    /// Directly builds a `Shape` from a `Geometry`.
     ///
     /// # Example
     ///
@@ -78,7 +78,7 @@ impl ShapePath {
     /// # #[derive(Component)]
     /// # struct Player;
     /// #
-    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
+    /// fn my_system(mut query: Query<&mut Shape, With<Player>>) {
     ///     let mut path = query.single_mut();
     ///
     ///     let triangle = RegularPolygon {
@@ -91,7 +91,7 @@ impl ShapePath {
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
-    pub fn build_as(shape: &impl Geometry) -> Path {
+    pub fn build_as(shape: &impl Geometry) -> Shape {
         Self::new().add(shape).build()
     }
 }
@@ -112,10 +112,10 @@ impl PathBuilder {
         Self(Builder::new().with_svg())
     }
 
-    /// Returns a finalized [`Path`].
+    /// Returns a finalized [`Shape`].
     #[must_use]
-    pub fn build(self) -> Path {
-        Path(self.0.build())
+    pub fn build(self) -> Shape {
+        Shape(self.0.build())
     }
 
     /// Moves the current point to the given position.

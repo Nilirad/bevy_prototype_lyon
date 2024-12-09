@@ -1,4 +1,5 @@
 //! Custom Bevy ECS bundle for shapes.
+#![expect(deprecated)]
 
 use bevy::prelude::*;
 use lyon_tessellation::{self as tess};
@@ -6,10 +7,11 @@ use lyon_tessellation::{self as tess};
 use crate::{geometry::Geometry, plugin::COLOR_MATERIAL_HANDLE};
 
 /// A Bevy `Bundle` to represent a shape.
+#[deprecated(since = "0.14.0", note = "please use the `Shape` component instead.")]
 #[allow(missing_docs)]
 #[derive(Bundle, Clone)]
 pub struct ShapeBundle {
-    pub path: Path,
+    pub path: Shape,
     pub mesh: Mesh2d,
     pub material: MeshMaterial2d<ColorMaterial>,
     pub transform: Transform,
@@ -30,10 +32,15 @@ impl Default for ShapeBundle {
 
 #[allow(missing_docs)]
 #[derive(Component, Default, Clone)]
-pub struct Path(pub tess::path::Path);
+#[require(Mesh2d, MeshMaterial2d<ColorMaterial>(color_material_handle), Transform, Visibility)]
+pub struct Shape(pub tess::path::Path);
 
-impl Geometry for Path {
+impl Geometry for Shape {
     fn add_geometry(&self, b: &mut tess::path::path::Builder) {
         b.extend_from_paths(&[self.0.as_slice()]);
     }
+}
+
+fn color_material_handle() -> MeshMaterial2d<ColorMaterial> {
+    MeshMaterial2d(COLOR_MATERIAL_HANDLE)
 }

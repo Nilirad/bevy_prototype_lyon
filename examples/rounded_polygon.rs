@@ -27,11 +27,5 @@ fn setup_system(mut commands: Commands) {
     };
 
     commands.spawn((Camera2d, Msaa::Sample4));
-    commands.spawn((
-        ShapeBundle {
-            path: GeometryBuilder::build_as(&shape),
-            ..default()
-        },
-        Fill::color(DARK_CYAN),
-    ));
+    commands.spawn((GeometryBuilder::build_as(&shape), Fill::color(DARK_CYAN)));
 }

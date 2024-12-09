@@ -30,10 +30,15 @@ impl Default for ShapeBundle {
 
 #[allow(missing_docs)]
 #[derive(Component, Default, Clone)]
+#[require(Mesh2d, MeshMaterial2d<ColorMaterial>(color_material_handle), Transform, Visibility)]
 pub struct Shape(pub tess::path::Path);
 
 impl Geometry for Shape {
     fn add_geometry(&self, b: &mut tess::path::path::Builder) {
         b.extend_from_paths(&[self.0.as_slice()]);
     }
+}
+
+fn color_material_handle() -> MeshMaterial2d<ColorMaterial> {
+    MeshMaterial2d(COLOR_MATERIAL_HANDLE)
 }

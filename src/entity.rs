@@ -1,4 +1,5 @@
 //! Custom Bevy ECS bundle for shapes.
+#![expect(deprecated)]
 
 use bevy::prelude::*;
 use lyon_tessellation::{self as tess};
@@ -6,6 +7,7 @@ use lyon_tessellation::{self as tess};
 use crate::{geometry::Geometry, plugin::COLOR_MATERIAL_HANDLE};
 
 /// A Bevy `Bundle` to represent a shape.
+#[deprecated(since = "0.14.0", note = "please use the `Shape` component instead.")]
 #[allow(missing_docs)]
 #[derive(Bundle, Clone)]
 pub struct ShapeBundle {

@@ -42,7 +42,7 @@ pub mod prelude {
 
     pub use crate::{
         draw::{Fill, Stroke},
-        entity::{Path, ShapeBundle},
+        entity::{Shape, ShapeBundle},
         geometry::{Geometry, GeometryBuilder},
         path::{PathBuilder, ShapePath},
         plugin::ShapePlugin,

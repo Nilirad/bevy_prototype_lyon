@@ -11,7 +11,7 @@ use lyon_tessellation::{
 };
 
 use crate::{
-    entity::Path,
+    entity::Shape,
     geometry::Geometry,
     utils::{ToPoint, ToVector},
 };
@@ -63,8 +63,8 @@ impl ShapePath {
 
     /// Builds the `Path` and returns it.
     #[must_use]
-    pub fn build(self) -> Path {
-        Path(self.0.build())
+    pub fn build(self) -> Shape {
+        Shape(self.0.build())
     }
 
     /// Directly builds a `Path` from a `shape`.
@@ -91,7 +91,7 @@ impl ShapePath {
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
-    pub fn build_as(shape: &impl Geometry) -> Path {
+    pub fn build_as(shape: &impl Geometry) -> Shape {
         Self::new().add(shape).build()
     }
 }
@@ -114,8 +114,8 @@ impl PathBuilder {
 
     /// Returns a finalized [`Path`].
     #[must_use]
-    pub fn build(self) -> Path {
-        Path(self.0.build())
+    pub fn build(self) -> Shape {
+        Shape(self.0.build())
     }
 
     /// Moves the current point to the given position.

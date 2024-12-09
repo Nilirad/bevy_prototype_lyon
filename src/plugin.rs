@@ -20,7 +20,7 @@ use lyon_tessellation::{self as tess, BuffersBuilder};
 
 use crate::{
     draw::{Fill, Stroke},
-    entity::Path,
+    entity::Shape,
     vertex::{VertexBuffers, VertexConstructor},
 };
 
@@ -68,8 +68,8 @@ fn mesh_shapes_system(
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
     mut query: Query<
-        (Option<&Fill>, Option<&Stroke>, &Path, &mut Mesh2d),
-        Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
+        (Option<&Fill>, Option<&Stroke>, &Shape, &mut Mesh2d),
+        Or<(Changed<Shape>, Changed<Fill>, Changed<Stroke>)>,
     >,
 ) {
     for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in &mut query {

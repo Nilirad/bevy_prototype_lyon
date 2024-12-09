@@ -2,7 +2,7 @@
 
 use lyon_tessellation::path::path::Builder;
 
-use crate::entity::Path;
+use crate::entity::Shape;
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -97,8 +97,8 @@ impl GeometryBuilder {
     /// Returns a [`Path`] using the data contained in the geometry
     /// builder.
     #[must_use]
-    pub fn build(self) -> Path {
-        Path(self.0.build())
+    pub fn build(self) -> Shape {
+        Shape(self.0.build())
     }
 
     /// Returns a [`Path`] component with only one geometry.
@@ -122,7 +122,7 @@ impl GeometryBuilder {
     /// }
     /// # bevy::ecs::system::assert_is_system(my_system);
     /// ```
-    pub fn build_as(shape: &impl Geometry) -> Path {
+    pub fn build_as(shape: &impl Geometry) -> Shape {
         Self::new().add(shape).build()
     }
 }

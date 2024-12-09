@@ -37,7 +37,7 @@ impl ShapePath {
     /// # #[derive(Component)]
     /// # struct Player;
     /// #
-    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
+    /// fn my_system(mut query: Query<&mut Shape, With<Player>>) {
     ///     let mut path = query.single_mut();
     ///
     ///     let square = shapes::Rectangle {
@@ -61,13 +61,13 @@ impl ShapePath {
         self
     }
 
-    /// Builds the `Path` and returns it.
+    /// Builds the `Shape` and returns it.
     #[must_use]
     pub fn build(self) -> Shape {
         Shape(self.0.build())
     }
 
-    /// Directly builds a `Path` from a `shape`.
+    /// Directly builds a `Shape` from a `Geometry`.
     ///
     /// # Example
     ///
@@ -78,7 +78,7 @@ impl ShapePath {
     /// # #[derive(Component)]
     /// # struct Player;
     /// #
-    /// fn my_system(mut query: Query<&mut Path, With<Player>>) {
+    /// fn my_system(mut query: Query<&mut Shape, With<Player>>) {
     ///     let mut path = query.single_mut();
     ///
     ///     let triangle = RegularPolygon {

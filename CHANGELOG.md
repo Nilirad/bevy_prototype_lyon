@@ -1,7 +1,22 @@
 # Changelog
 
+## 0.14.0
+
+This version uses Bevy's **Required Components**,
+therefore many items have been changed.
+Examples may help migration.
+
+- `Path` component renamed to `Shape`. It is now the central component of a shape entity.
+- `Shape` now includes fill and stroke data.
+- `Fill` and `Stroke` are no longer `Component`s.
+- Deprecated `ShapeBundle` in favor of the `Shape` component.
+- `prelude` no longer exports `ShapeBundle`.
+- Added `ShapeBuilder`: works similarly to `GeometryBuilder`
+- Removed `GeometryBuilder` and `ShapePath`.
+- `PathBuilder` now allows chaining methods.
+
 ## 0.13.0
-- Support for Bevy 0.15.0-rc.3.
+- Support for Bevy 0.15.0.
 - `Rectangle` now supports border radii (see `rectangle.rs` example).
 - Removed deprecated `SpatialBundle` from `ShapeBundle`: `Transform` and `Visibility` are now added separately.
 

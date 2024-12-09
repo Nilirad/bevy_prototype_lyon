@@ -112,7 +112,7 @@ impl PathBuilder {
         Self(Builder::new().with_svg())
     }
 
-    /// Returns a finalized [`Path`].
+    /// Returns a finalized [`Shape`].
     #[must_use]
     pub fn build(self) -> Shape {
         Shape(self.0.build())

@@ -91,14 +91,14 @@ impl GeometryBuilder {
         self
     }
 
-    /// Returns a [`Path`] using the data contained in the geometry
+    /// Returns a [`Shape`] using the data contained in the geometry
     /// builder.
     #[must_use]
     pub fn build(self) -> Shape {
         Shape(self.0.build())
     }
 
-    /// Returns a [`Path`] component with only one geometry.
+    /// Returns a [`Shape`] component with only one geometry.
     ///
     /// # Example
     ///

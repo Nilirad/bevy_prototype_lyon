@@ -1,6 +1,9 @@
 //! Types for defining shape color and options.
 
-use bevy::{color::Color, ecs::component::Component};
+use bevy::{
+    color::{Color, Hsla, Hsva, Hwba, Laba, Lcha, LinearRgba, Oklaba, Oklcha, Srgba, Xyza},
+    ecs::component::Component,
+};
 use lyon_tessellation::{FillOptions, StrokeOptions};
 
 /// Defines the fill options for the lyon tessellator and color of the generated
@@ -29,6 +32,72 @@ impl Default for Fill {
             options: FillOptions::default(),
             color: bevy::color::palettes::css::WHITE.into(),
         }
+    }
+}
+
+impl From<Color> for Fill {
+    fn from(color: Color) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Srgba> for Fill {
+    fn from(color: Srgba) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<LinearRgba> for Fill {
+    fn from(color: LinearRgba) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Hsla> for Fill {
+    fn from(color: Hsla) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Hsva> for Fill {
+    fn from(color: Hsva) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Hwba> for Fill {
+    fn from(color: Hwba) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Laba> for Fill {
+    fn from(color: Laba) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Lcha> for Fill {
+    fn from(color: Lcha) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Oklaba> for Fill {
+    fn from(color: Oklaba) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Oklcha> for Fill {
+    fn from(color: Oklcha) -> Self {
+        Self::color(color)
+    }
+}
+
+impl From<Xyza> for Fill {
+    fn from(color: Xyza) -> Self {
+        Self::color(color)
     }
 }
 
@@ -67,5 +136,71 @@ impl Default for Stroke {
             options: StrokeOptions::default(),
             color: bevy::color::palettes::css::BLACK.into(),
         }
+    }
+}
+
+impl From<(Color, f32)> for Stroke {
+    fn from(value: (Color, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Srgba, f32)> for Stroke {
+    fn from(value: (Srgba, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(LinearRgba, f32)> for Stroke {
+    fn from(value: (LinearRgba, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Hsla, f32)> for Stroke {
+    fn from(value: (Hsla, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Hsva, f32)> for Stroke {
+    fn from(value: (Hsva, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Hwba, f32)> for Stroke {
+    fn from(value: (Hwba, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Laba, f32)> for Stroke {
+    fn from(value: (Laba, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Lcha, f32)> for Stroke {
+    fn from(value: (Lcha, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Oklaba, f32)> for Stroke {
+    fn from(value: (Oklaba, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Oklcha, f32)> for Stroke {
+    fn from(value: (Oklcha, f32)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
+impl From<(Xyza, f32)> for Stroke {
+    fn from(value: (Xyza, f32)) -> Self {
+        Self::new(value.0, value.1)
     }
 }

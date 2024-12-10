@@ -133,3 +133,92 @@ impl Default for GeometryBuilder {
         Self::new()
     }
 }
+
+pub trait ShapeBuilderBase {
+    /// Adds a `Geometry` to the builder.
+    #[must_use]
+    fn add(self, shape: &impl Geometry) -> Self;
+
+    /// Sets the fill mode of the builder.
+    #[must_use]
+    fn fill(self, fill: impl Into<Fill>) -> ReadyShapeBuilder;
+
+    /// Sets the stroke mode of the builder.
+    #[must_use]
+    fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder;
+}
+
+#[derive(Default, Clone)]
+pub struct ShapeBuilder(Builder);
+
+impl ShapeBuilderBase for ShapeBuilder {
+    fn add(mut self, shape: &impl Geometry) -> Self {
+        shape.add_geometry(&mut self.0);
+        self
+    }
+
+    fn fill(self, fill: impl Into<Fill>) -> ReadyShapeBuilder {
+        ReadyShapeBuilder {
+            builder: self.0,
+            fill: Some(fill.into()),
+            stroke: None,
+        }
+    }
+
+    fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder {
+        ReadyShapeBuilder {
+            builder: self.0,
+            fill: None,
+            stroke: Some(stroke.into()),
+        }
+    }
+}
+
+impl ShapeBuilder {
+    /// Constructs a new `ShapeBuilder`.
+    #[must_use]
+    pub fn new() -> Self {
+        Self(Builder::new())
+    }
+
+    /// Constructs a new `ShapeBuilder` with an initial `Geometry`.
+    #[must_use]
+    pub fn with(geometry: &impl Geometry) -> Self {
+        Self::new().add(geometry)
+    }
+}
+
+#[derive(Clone)]
+pub struct ReadyShapeBuilder {
+    pub(crate) builder: Builder,
+    pub(crate) fill: Option<Fill>,
+    pub(crate) stroke: Option<Stroke>,
+}
+
+impl ShapeBuilderBase for ReadyShapeBuilder {
+    fn add(mut self, shape: &impl Geometry) -> Self {
+        shape.add_geometry(&mut self.builder);
+        self
+    }
+
+    fn fill(self, fill: impl Into<Fill>) -> ReadyShapeBuilder {
+        Self {
+            fill: Some(fill.into()),
+            ..self
+        }
+    }
+
+    fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder {
+        Self {
+            stroke: Some(stroke.into()),
+            ..self
+        }
+    }
+}
+impl ReadyShapeBuilder {
+    /// Builds a `Shape` according to the builder's settings.
+    #[allow(clippy::must_use_candidate)]
+    pub fn build(self) -> Shape {
+        Shape::new(self.builder.build(), self.fill, self.stroke)
+    }
+}

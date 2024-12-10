@@ -19,9 +19,10 @@ fn setup_system(mut commands: Commands) {
     };
 
     commands.spawn((Camera2d, Msaa::Sample4));
-    commands.spawn((
-        GeometryBuilder::build_as(&shape),
-        Fill::color(DARK_CYAN),
-        Stroke::new(BLACK, 10.0),
-    ));
+    commands.spawn(
+        ShapeBuilder::with(&shape)
+            .fill(DARK_CYAN)
+            .stroke((BLACK, 10.0))
+            .build(),
+    );
 }

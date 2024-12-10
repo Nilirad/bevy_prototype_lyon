@@ -4,7 +4,6 @@
 //! boilerplate.
 
 use bevy::{
-    color::palettes,
     prelude::*,
     render::{mesh::Indices, render_asset::RenderAssetUsages, render_resource::PrimitiveTopology},
 };
@@ -60,31 +59,21 @@ fn mesh_shapes_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<
-        (Option<&Fill>, Option<&Stroke>, &Shape, &mut Mesh2d),
-        Or<(Changed<Shape>, Changed<Fill>, Changed<Stroke>)>,
-    >,
+    mut query: Query<(&Shape, &mut Mesh2d), Changed<Shape>>,
 ) {
-    for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in &mut query {
+    for (shape, mut mesh) in &mut query {
         let mut buffers = VertexBuffers::new();
-
-        if let Some(fill_mode) = maybe_fill_mode {
-            fill(&mut fill_tess, &path.0, fill_mode, &mut buffers);
+        if let Some(fill_mode) = shape.fill() {
+            fill(&mut fill_tess, shape.path_ref(), fill_mode, &mut buffers);
         }
-
-        if let Some(stroke_mode) = maybe_stroke_mode {
-            stroke(&mut stroke_tess, &path.0, stroke_mode, &mut buffers);
-        }
-
-        if (maybe_fill_mode, maybe_stroke_mode) == (None, None) {
-            fill(
-                &mut fill_tess,
-                &path.0,
-                &Fill::color(Color::Srgba(palettes::css::FUCHSIA)),
+        if let Some(stroke_mode) = shape.stroke() {
+            stroke(
+                &mut stroke_tess,
+                shape.path_ref(),
+                stroke_mode,
                 &mut buffers,
             );
         }
-
         mesh.0 = meshes.add(build_mesh(&buffers));
     }
 }
@@ -93,7 +82,7 @@ fn mesh_shapes_system(
 fn fill(
     tess: &mut ResMut<FillTessellator>,
     path: &tess::path::Path,
-    mode: &Fill,
+    mode: Fill,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(
@@ -109,7 +98,7 @@ fn fill(
 fn stroke(
     tess: &mut ResMut<StrokeTessellator>,
     path: &tess::path::Path,
-    mode: &Stroke,
+    mode: Stroke,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(

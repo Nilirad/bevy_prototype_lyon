@@ -23,6 +23,15 @@ impl Fill {
     }
 }
 
+impl Default for Fill {
+    fn default() -> Self {
+        Self {
+            options: FillOptions::default(),
+            color: bevy::color::palettes::css::WHITE.into(),
+        }
+    }
+}
+
 /// Defines the stroke options for the lyon tessellator and color of the
 /// generated vertices.
 #[allow(missing_docs)]
@@ -48,6 +57,15 @@ impl Stroke {
         Self {
             options: StrokeOptions::default(),
             color: color.into(),
+        }
+    }
+}
+
+impl Default for Stroke {
+    fn default() -> Self {
+        Self {
+            options: StrokeOptions::default(),
+            color: bevy::color::palettes::css::BLACK.into(),
         }
     }
 }

@@ -11,6 +11,7 @@ use lyon_tessellation::{
 };
 
 use crate::{
+    draw::{Fill, Stroke},
     entity::Shape,
     geometry::Geometry,
     utils::{ToPoint, ToVector},
@@ -64,7 +65,11 @@ impl ShapePath {
     /// Builds the `Shape` and returns it.
     #[must_use]
     pub fn build(self) -> Shape {
-        Shape(self.0.build())
+        Shape::new(
+            self.0.build(),
+            Some(Fill::default()),
+            Some(Stroke::default()),
+        )
     }
 
     /// Directly builds a `Shape` from a `Geometry`.
@@ -115,7 +120,11 @@ impl PathBuilder {
     /// Returns a finalized [`Shape`].
     #[must_use]
     pub fn build(self) -> Shape {
-        Shape(self.0.build())
+        Shape::new(
+            self.0.build(),
+            Some(Fill::default()),
+            Some(Stroke::default()),
+        )
     }
 
     /// Moves the current point to the given position.

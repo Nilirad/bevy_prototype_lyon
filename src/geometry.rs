@@ -2,7 +2,10 @@
 
 use lyon_tessellation::path::path::Builder;
 
-use crate::entity::Shape;
+use crate::{
+    draw::{Fill, Stroke},
+    entity::Shape,
+};
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -95,7 +98,11 @@ impl GeometryBuilder {
     /// builder.
     #[must_use]
     pub fn build(self) -> Shape {
-        Shape(self.0.build())
+        Shape::new(
+            self.0.build(),
+            Some(Fill::default()),
+            Some(Stroke::default()),
+        )
     }
 
     /// Returns a [`Shape`] component with only one geometry.

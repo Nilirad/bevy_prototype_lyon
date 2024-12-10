@@ -4,7 +4,11 @@
 use bevy::prelude::*;
 use lyon_tessellation::{self as tess};
 
-use crate::{geometry::Geometry, plugin::COLOR_MATERIAL_HANDLE};
+use crate::{
+    draw::{Fill, Stroke},
+    geometry::Geometry,
+    plugin::COLOR_MATERIAL_HANDLE,
+};
 
 /// A Bevy `Bundle` to represent a shape.
 #[deprecated(since = "0.14.0", note = "please use the `Shape` component instead.")]
@@ -30,14 +34,38 @@ impl Default for ShapeBundle {
     }
 }
 
-#[allow(missing_docs)]
 #[derive(Component, Default, Clone)]
 #[require(Mesh2d, MeshMaterial2d<ColorMaterial>(color_material_handle), Transform, Visibility)]
-pub struct Shape(pub tess::path::Path);
+pub struct Shape {
+    path: tess::path::Path,
+    fill: Option<Fill>,
+    stroke: Option<Stroke>,
+}
+
+impl Shape {
+    pub(crate) fn new(path: tess::path::Path, fill: Option<Fill>, stroke: Option<Stroke>) -> Self {
+        Self { path, fill, stroke }
+    }
+
+    #[allow(clippy::must_use_candidate)]
+    pub fn path_ref(&self) -> &tess::path::Path {
+        &self.path
+    }
+
+    #[allow(clippy::must_use_candidate)]
+    pub fn fill(&self) -> Option<Fill> {
+        self.fill
+    }
+
+    #[allow(clippy::must_use_candidate)]
+    pub fn stroke(&self) -> Option<Stroke> {
+        self.stroke
+    }
+}
 
 impl Geometry for Shape {
     fn add_geometry(&self, b: &mut tess::path::path::Builder) {
-        b.extend_from_paths(&[self.0.as_slice()]);
+        b.extend_from_paths(&[self.path.as_slice()]);
     }
 }
 

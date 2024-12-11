@@ -2,17 +2,8 @@
 //!
 //! The [`ShapePlugin`] provides the creation of shapes with minimal
 //! boilerplate.
-//!
-//! ## How it works
-//! The user spawns a [`ShapeBundle`](crate::entity::ShapeBundle) from a
-//! system in the `UPDATE` stage.
-//!
-//! Then, in [`Stage::Shape`] stage, there is a system
-//! that creates a mesh for each entity that has been spawned as a
-//! `ShapeBundle`.
 
 use bevy::{
-    color::palettes,
     prelude::*,
     render::{mesh::Indices, render_asset::RenderAssetUsages, render_resource::PrimitiveTopology},
 };
@@ -20,7 +11,7 @@ use lyon_tessellation::{self as tess, BuffersBuilder};
 
 use crate::{
     draw::{Fill, Stroke},
-    entity::Path,
+    entity::Shape,
     vertex::{VertexBuffers, VertexConstructor},
 };
 
@@ -60,38 +51,29 @@ impl Plugin for ShapePlugin {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemSet)]
 pub struct BuildShapes;
 
-/// Queries all the [`ShapeBundle`]s to mesh them when they are added
+/// Queries all the [`Shape`]s and their related components
+/// to mesh them when they are added
 /// or re-mesh them when they are changed.
 #[allow(clippy::type_complexity)]
 fn mesh_shapes_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut fill_tess: ResMut<FillTessellator>,
     mut stroke_tess: ResMut<StrokeTessellator>,
-    mut query: Query<
-        (Option<&Fill>, Option<&Stroke>, &Path, &mut Mesh2d),
-        Or<(Changed<Path>, Changed<Fill>, Changed<Stroke>)>,
-    >,
+    mut query: Query<(&Shape, &mut Mesh2d), Changed<Shape>>,
 ) {
-    for (maybe_fill_mode, maybe_stroke_mode, path, mut mesh) in &mut query {
+    for (shape, mut mesh) in &mut query {
         let mut buffers = VertexBuffers::new();
-
-        if let Some(fill_mode) = maybe_fill_mode {
-            fill(&mut fill_tess, &path.0, fill_mode, &mut buffers);
+        if let Some(fill_mode) = shape.fill() {
+            fill(&mut fill_tess, shape.path_ref(), fill_mode, &mut buffers);
         }
-
-        if let Some(stroke_mode) = maybe_stroke_mode {
-            stroke(&mut stroke_tess, &path.0, stroke_mode, &mut buffers);
-        }
-
-        if (maybe_fill_mode, maybe_stroke_mode) == (None, None) {
-            fill(
-                &mut fill_tess,
-                &path.0,
-                &Fill::color(Color::Srgba(palettes::css::FUCHSIA)),
+        if let Some(stroke_mode) = shape.stroke() {
+            stroke(
+                &mut stroke_tess,
+                shape.path_ref(),
+                stroke_mode,
                 &mut buffers,
             );
         }
-
         mesh.0 = meshes.add(build_mesh(&buffers));
     }
 }
@@ -100,7 +82,7 @@ fn mesh_shapes_system(
 fn fill(
     tess: &mut ResMut<FillTessellator>,
     path: &tess::path::Path,
-    mode: &Fill,
+    mode: Fill,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(
@@ -116,7 +98,7 @@ fn fill(
 fn stroke(
     tess: &mut ResMut<StrokeTessellator>,
     path: &tess::path::Path,
-    mode: &Stroke,
+    mode: Stroke,
     buffers: &mut VertexBuffers,
 ) {
     if let Err(e) = tess.tessellate_path(

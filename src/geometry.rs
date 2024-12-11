@@ -2,7 +2,10 @@
 
 use lyon_tessellation::path::path::Builder;
 
-use crate::entity::Path;
+use crate::{
+    draw::{Fill, Stroke},
+    entity::Shape,
+};
 
 /// Structs that implement this trait can be drawn as a shape. See the
 /// [`shapes`](crate::shapes) module for some examples.
@@ -49,86 +52,97 @@ pub trait Geometry {
     fn add_geometry(&self, b: &mut Builder);
 }
 
-/// Allows the creation of shapes using geometries added to a path builder.
-pub struct GeometryBuilder(Builder);
+/// Provides basic functionality common
+/// to [`ShapeBuilder`] and [`ReadyShapeBuilder`].
+pub trait ShapeBuilderBase {
+    /// Adds a `Geometry` to the builder.
+    #[must_use]
+    fn add(self, shape: &impl Geometry) -> Self;
 
-impl GeometryBuilder {
-    /// Creates a new, empty `GeometryBuilder`.
+    /// Sets the fill mode of the builder.
+    #[must_use]
+    fn fill(self, fill: impl Into<Fill>) -> ReadyShapeBuilder;
+
+    /// Sets the stroke mode of the builder.
+    #[must_use]
+    fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder;
+}
+
+/// Provides methods for building a shape.
+#[derive(Default, Clone)]
+pub struct ShapeBuilder(Builder);
+
+impl ShapeBuilderBase for ShapeBuilder {
+    fn add(mut self, shape: &impl Geometry) -> Self {
+        shape.add_geometry(&mut self.0);
+        self
+    }
+
+    fn fill(self, fill: impl Into<Fill>) -> ReadyShapeBuilder {
+        ReadyShapeBuilder {
+            builder: self.0,
+            fill: Some(fill.into()),
+            stroke: None,
+        }
+    }
+
+    fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder {
+        ReadyShapeBuilder {
+            builder: self.0,
+            fill: None,
+            stroke: Some(stroke.into()),
+        }
+    }
+}
+
+impl ShapeBuilder {
+    /// Constructs a new `ShapeBuilder`.
     #[must_use]
     pub fn new() -> Self {
         Self(Builder::new())
     }
 
-    /// Adds a geometry to the path builder.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # use bevy::prelude::*;
-    /// # use bevy_prototype_lyon::prelude::*;
-    /// # use bevy::color::palettes;
-    /// #
-    /// fn my_system(mut commands: Commands) {
-    ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
-    ///     let square = shapes::Rectangle {
-    ///         extents: Vec2::splat(100.0),
-    ///         ..shapes::Rectangle::default()
-    ///     };
-    ///     let mut builder = GeometryBuilder::new().add(&line).add(&square);
-    ///
-    ///     commands.spawn((
-    ///         ShapeBundle {
-    ///             path: builder.build(),
-    ///             ..default()
-    ///         },
-    ///         Fill::color(Color::Srgba(palettes::css::ORANGE_RED)),
-    ///         Stroke::new(Color::Srgba(palettes::css::ORANGE_RED), 10.0),
-    ///     ));
-    /// }
-    /// # bevy::ecs::system::assert_is_system(my_system);
-    /// ```
-    #[allow(clippy::should_implement_trait)]
+    /// Constructs a new `ShapeBuilder` with an initial `Geometry`.
     #[must_use]
-    pub fn add(mut self, shape: &impl Geometry) -> Self {
-        shape.add_geometry(&mut self.0);
-        self
-    }
-
-    /// Returns a [`Path`] using the data contained in the geometry
-    /// builder.
-    #[must_use]
-    pub fn build(self) -> Path {
-        Path(self.0.build())
-    }
-
-    /// Returns a [`Path`] component with only one geometry.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # use bevy::prelude::*;
-    /// # use bevy_prototype_lyon::prelude::*;
-    /// # use bevy::color::palettes;
-    /// #
-    /// fn my_system(mut commands: Commands) {
-    ///     let line = shapes::Line(Vec2::ZERO, Vec2::new(10.0, 0.0));
-    ///     commands.spawn((
-    ///         ShapeBundle {
-    ///             path: GeometryBuilder::build_as(&line),
-    ///             ..default()
-    ///         },
-    ///         Fill::color(Color::Srgba(palettes::css::ORANGE_RED)),
-    ///     ));
-    /// }
-    /// # bevy::ecs::system::assert_is_system(my_system);
-    /// ```
-    pub fn build_as(shape: &impl Geometry) -> Path {
-        Self::new().add(shape).build()
+    pub fn with(geometry: &impl Geometry) -> Self {
+        Self::new().add(geometry)
     }
 }
 
-impl Default for GeometryBuilder {
-    fn default() -> Self {
-        Self::new()
+/// Provides methods for building a shape.
+///
+/// This struct can only be obtained by using [`ShapeBuilder`].
+#[derive(Clone)]
+pub struct ReadyShapeBuilder {
+    pub(crate) builder: Builder,
+    pub(crate) fill: Option<Fill>,
+    pub(crate) stroke: Option<Stroke>,
+}
+
+impl ShapeBuilderBase for ReadyShapeBuilder {
+    fn add(mut self, shape: &impl Geometry) -> Self {
+        shape.add_geometry(&mut self.builder);
+        self
+    }
+
+    fn fill(self, fill: impl Into<Fill>) -> ReadyShapeBuilder {
+        Self {
+            fill: Some(fill.into()),
+            ..self
+        }
+    }
+
+    fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder {
+        Self {
+            stroke: Some(stroke.into()),
+            ..self
+        }
+    }
+}
+impl ReadyShapeBuilder {
+    /// Builds a `Shape` according to the builder's settings.
+    #[allow(clippy::must_use_candidate)]
+    pub fn build(self) -> Shape {
+        Shape::new(self.builder.build(), self.fill, self.stroke)
     }
 }

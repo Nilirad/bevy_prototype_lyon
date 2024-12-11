@@ -30,26 +30,18 @@ fn setup_system(mut commands: Commands) {
         //the art style was approximated from https://www.kenney.nl/assets/cartography-pack
         .with_children(|parent| {
             let svg_doc_size = Vec2::new(512., 512.);
-            parent.spawn((
-                ShapeBundle {
-                    path: GeometryBuilder::build_as(&shapes::SvgPathShape {
-                        svg_path_string: BLACKSMITH_OUTLINE.to_owned(),
-                        svg_doc_size_in_px: svg_doc_size.to_owned(),
-                    }),
-                    ..default()
-                },
-                Stroke::new(Color::BLACK, 4.0),
-            ));
-            parent.spawn((
-                ShapeBundle {
-                    path: GeometryBuilder::build_as(&shapes::SvgPathShape {
-                        svg_path_string: BLACKSMITH_DETAIL.to_owned(),
-                        svg_doc_size_in_px: svg_doc_size.to_owned(),
-                    }),
-                    ..default()
-                },
-                Stroke::new(Color::BLACK, 2.5),
-            ));
+
+            let svg = shapes::SvgPathShape {
+                svg_path_string: BLACKSMITH_OUTLINE.to_owned(),
+                svg_doc_size_in_px: svg_doc_size.to_owned(),
+            };
+            parent.spawn(ShapeBuilder::with(&svg).stroke((Color::BLACK, 4.0)).build());
+
+            let svg = shapes::SvgPathShape {
+                svg_path_string: BLACKSMITH_DETAIL.to_owned(),
+                svg_doc_size_in_px: svg_doc_size.to_owned(),
+            };
+            parent.spawn(ShapeBuilder::with(&svg).stroke((Color::BLACK, 2.5)).build());
         });
 
     commands
@@ -69,28 +61,27 @@ fn setup_system(mut commands: Commands) {
         //the art style was approximated from https://www.kenney.nl/assets/cartography-pack
         .with_children(|parent| {
             let svg_doc_size = Vec2::new(1000., 1000.);
-            parent.spawn((
-                ShapeBundle {
-                    path: GeometryBuilder::build_as(&shapes::SvgPathShape {
-                        svg_path_string: SHACK.to_owned(),
-                        svg_doc_size_in_px: svg_doc_size.to_owned(),
-                    }),
-                    ..default()
-                },
-                Stroke::new(Color::BLACK, 20.0),
-            ));
+
+            let svg = shapes::SvgPathShape {
+                svg_path_string: SHACK.to_owned(),
+                svg_doc_size_in_px: svg_doc_size.to_owned(),
+            };
+            parent.spawn(
+                ShapeBuilder::with(&svg)
+                    .stroke((Color::BLACK, 20.0))
+                    .build(),
+            );
 
             // shack walls
-            parent.spawn((
-                ShapeBundle {
-                    path: GeometryBuilder::build_as(&shapes::SvgPathShape {
-                        svg_path_string: SHACK_WALLS.to_owned(),
-                        svg_doc_size_in_px: svg_doc_size.to_owned(),
-                    }),
-                    ..default()
-                },
-                Stroke::new(Color::BLACK, 17.5),
-            ));
+            let svg = shapes::SvgPathShape {
+                svg_path_string: SHACK_WALLS.to_owned(),
+                svg_doc_size_in_px: svg_doc_size.to_owned(),
+            };
+            parent.spawn(
+                ShapeBuilder::with(&svg)
+                    .stroke((Color::BLACK, 17.5))
+                    .build(),
+            );
         });
 }
 

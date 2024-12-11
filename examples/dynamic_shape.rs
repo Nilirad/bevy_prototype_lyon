@@ -23,12 +23,6 @@ fn rotate_shape_system(mut query: Query<&mut Transform, With<ExampleShape>>, tim
     }
 }
 
-// NOTE: `Fill` and `Stroke` are no longer supposed to be components,
-// therefore they should not be queried for.
-// Instead, query the `Shape` component, and edit the `fill` and `stroke`
-// fields. NOTE: Fuse `change_draw_mode_system` and `change_number_of_sides`
-// systems into a single `redraw_shape` system.
-// This new system uses `ShapePath` to redefine
 fn redraw_shape(mut query: Query<&mut Shape, With<ExampleShape>>, time: Res<Time>) {
     let hue = (time.elapsed_secs_f64() * 50.0) % 360.0;
     let color = Color::hsl(hue as f32, 1.0, 0.5);

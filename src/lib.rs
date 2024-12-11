@@ -44,7 +44,7 @@ pub mod prelude {
         draw::{Fill, Stroke},
         entity::Shape,
         geometry::{Geometry, ShapeBuilder, ShapeBuilderBase},
-        path::{PathBuilder, ShapePath},
+        path::PathBuilder,
         plugin::ShapePlugin,
         shapes::{self, BorderRadii, RectangleOrigin, RegularPolygon, RegularPolygonFeature},
     };

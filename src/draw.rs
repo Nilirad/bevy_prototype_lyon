@@ -1,15 +1,12 @@
 //! Types for defining shape color and options.
 
-use bevy::{
-    color::{Color, Hsla, Hsva, Hwba, Laba, Lcha, LinearRgba, Oklaba, Oklcha, Srgba, Xyza},
-    ecs::component::Component,
-};
+use bevy::color::{Color, Hsla, Hsva, Hwba, Laba, Lcha, LinearRgba, Oklaba, Oklcha, Srgba, Xyza};
 use lyon_tessellation::{FillOptions, StrokeOptions};
 
 /// Defines the fill options for the lyon tessellator and color of the generated
 /// vertices.
 #[allow(missing_docs)]
-#[derive(Component, Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Fill {
     pub options: FillOptions,
     pub color: Color,
@@ -104,7 +101,7 @@ impl From<Xyza> for Fill {
 /// Defines the stroke options for the lyon tessellator and color of the
 /// generated vertices.
 #[allow(missing_docs)]
-#[derive(Component, Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Stroke {
     pub options: StrokeOptions,
     pub color: Color,

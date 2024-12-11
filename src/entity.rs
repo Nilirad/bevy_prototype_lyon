@@ -2,6 +2,7 @@
 #![expect(deprecated)]
 
 use bevy::prelude::*;
+use lyon_algorithms::path::Builder;
 use lyon_tessellation::{self as tess};
 
 use crate::{
@@ -69,8 +70,8 @@ impl Shape {
     }
 }
 
-impl Geometry for Shape {
-    fn add_geometry(&self, b: &mut tess::path::path::Builder) {
+impl Geometry<Builder> for Shape {
+    fn add_geometry(&self, b: &mut Builder) {
         b.extend_from_paths(&[self.path.as_slice()]);
     }
 }

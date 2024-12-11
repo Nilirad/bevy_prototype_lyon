@@ -52,6 +52,8 @@ pub trait Geometry {
     fn add_geometry(&self, b: &mut Builder);
 }
 
+/// Provides basic functionality common
+/// to [`ShapeBuilder`] and [`ReadyShapeBuilder`].
 pub trait ShapeBuilderBase {
     /// Adds a `Geometry` to the builder.
     #[must_use]
@@ -66,6 +68,7 @@ pub trait ShapeBuilderBase {
     fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder;
 }
 
+/// Provides methods for building a shape.
 #[derive(Default, Clone)]
 pub struct ShapeBuilder(Builder);
 
@@ -106,6 +109,9 @@ impl ShapeBuilder {
     }
 }
 
+/// Provides methods for building a shape.
+///
+/// This struct can only be obtained by using [`ShapeBuilder`].
 #[derive(Clone)]
 pub struct ReadyShapeBuilder {
     pub(crate) builder: Builder,

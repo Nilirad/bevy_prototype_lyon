@@ -34,6 +34,9 @@ impl Default for ShapeBundle {
     }
 }
 
+/// `Component` describing a geometric shape.
+///
+/// It can be constructed using `ShapeBuilder`.
 #[derive(Component, Default, Clone)]
 #[require(Mesh2d, MeshMaterial2d<ColorMaterial>(color_material_handle), Transform, Visibility)]
 pub struct Shape {
@@ -47,16 +50,19 @@ impl Shape {
         Self { path, fill, stroke }
     }
 
+    /// Returns the reference to the path of the shape.
     #[allow(clippy::must_use_candidate)]
     pub fn path_ref(&self) -> &tess::path::Path {
         &self.path
     }
 
+    /// Returns the fill options of the shape.
     #[allow(clippy::must_use_candidate)]
     pub fn fill(&self) -> Option<Fill> {
         self.fill
     }
 
+    /// Returns the stroke options of the shape.
     #[allow(clippy::must_use_candidate)]
     pub fn stroke(&self) -> Option<Stroke> {
         self.stroke

@@ -3,71 +3,89 @@
 use bevy::math::Vec2;
 use lyon_tessellation::{
     geom::Angle,
-    path::{
-        builder::WithSvg,
-        path::{Builder, BuilderImpl},
-    },
+    path::{builder::WithSvg, path::BuilderImpl},
 };
 
 use crate::{
-    draw::{Fill, Stroke},
-    entity::Shape,
+    prelude::Geometry,
     utils::{ToPoint, ToVector},
 };
 
-/// A SVG-like path builder.
-pub struct PathBuilder {
-    builder: WithSvg<BuilderImpl>,
-    fill: Option<Fill>,
-    stroke: Option<Stroke>,
+/// Describes an atomic action defining a [`Path`].
+#[allow(missing_docs)]
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum Action {
+    MoveTo(Vec2),
+    LineTo(Vec2),
+    QuadraticBezierTo {
+        ctrl: Vec2,
+        to: Vec2,
+    },
+    CubicBezierTo {
+        ctrl1: Vec2,
+        ctrl2: Vec2,
+        to: Vec2,
+    },
+    Arc {
+        center: Vec2,
+        radii: Vec2,
+        sweep_angle: f32,
+        x_rotation: f32,
+    },
+    Close,
 }
 
-impl PathBuilder {
-    /// Returns a new, empty `PathBuilder`.
+#[derive(Default, Clone, PartialEq, Debug)]
+/// A custom, SVG-like `Path`.
+pub struct ShapePath {
+    actions: Vec<Action>,
+}
+
+impl ShapePath {
+    /// Creates a new `Path`.
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            builder: Builder::new().with_svg(),
-            fill: None,
-            stroke: None,
-        }
-    }
-
-    /// Returns a finalized [`Shape`].
-    #[must_use]
-    pub fn build(self) -> Shape {
-        Shape::new(self.builder.build(), self.fill, self.stroke)
-    }
-
-    /// Sets the fill mode of the path.
-    #[must_use]
-    pub fn fill(self, fill: impl Into<Fill>) -> Self {
-        Self {
-            fill: Some(fill.into()),
-            ..self
-        }
-    }
-
-    /// Sets the stroke mode of the path.
-    #[must_use]
-    pub fn stroke(self, stroke: impl Into<Stroke>) -> Self {
-        Self {
-            stroke: Some(stroke.into()),
-            ..self
-        }
+        Self::default()
     }
 
     /// Moves the current point to the given position.
     #[must_use]
     pub fn move_to(mut self, to: Vec2) -> Self {
-        self.builder.move_to(to.to_point());
+        self.actions.push(Action::MoveTo(to));
         self
     }
 
     /// Adds to the path a line from the current position to the given one.
     #[must_use]
     pub fn line_to(mut self, to: Vec2) -> Self {
-        self.builder.line_to(to.to_point());
+        self.actions.push(Action::LineTo(to));
+        self
+    }
+
+    /// Adds a quadratic bezier to the path.
+    #[must_use]
+    pub fn quadratic_bezier_to(mut self, ctrl: Vec2, to: Vec2) -> Self {
+        self.actions.push(Action::QuadraticBezierTo { ctrl, to });
+        self
+    }
+
+    /// Adds a cubic bezier to the path.
+    #[must_use]
+    pub fn cubic_bezier_to(mut self, ctrl1: Vec2, ctrl2: Vec2, to: Vec2) -> Self {
+        self.actions
+            .push(Action::CubicBezierTo { ctrl1, ctrl2, to });
+        self
+    }
+
+    /// Adds an arc to the path.
+    #[must_use]
+    pub fn arc(mut self, center: Vec2, radii: Vec2, sweep_angle: f32, x_rotation: f32) -> Self {
+        self.actions.push(Action::Arc {
+            center,
+            radii,
+            sweep_angle,
+            x_rotation,
+        });
         self
     }
 
@@ -75,48 +93,47 @@ impl PathBuilder {
     /// the starting location.
     #[must_use]
     pub fn close(mut self) -> Self {
-        self.builder.close();
+        self.actions.push(Action::Close);
         self
     }
+}
 
-    /// Adds a quadratic bezier to the path.
-    #[must_use]
-    pub fn quadratic_bezier_to(mut self, ctrl: Vec2, to: Vec2) -> Self {
-        self.builder
-            .quadratic_bezier_to(ctrl.to_point(), to.to_point());
-        self
+impl Geometry<WithSvg<BuilderImpl>> for ShapePath {
+    fn add_geometry(&self, b: &mut WithSvg<BuilderImpl>) {
+        for action in &self.actions {
+            match_action(*action, b);
+        }
     }
+}
 
-    /// Adds a cubic bezier to the path.
-    #[must_use]
-    pub fn cubic_bezier_to(mut self, ctrl1: Vec2, ctrl2: Vec2, to: Vec2) -> Self {
-        self.builder
-            .cubic_bezier_to(ctrl1.to_point(), ctrl2.to_point(), to.to_point());
-        self
-    }
-
-    /// Adds an arc to the path.
-    #[must_use]
-    pub fn arc(mut self, center: Vec2, radii: Vec2, sweep_angle: f32, x_rotation: f32) -> Self {
-        self.builder.arc(
+fn match_action(action: Action, b: &mut WithSvg<BuilderImpl>) {
+    match action {
+        Action::MoveTo(to) => {
+            b.move_to(to.to_point());
+        }
+        Action::LineTo(to) => {
+            b.line_to(to.to_point());
+        }
+        Action::QuadraticBezierTo { ctrl, to } => {
+            b.quadratic_bezier_to(ctrl.to_point(), to.to_point());
+        }
+        Action::CubicBezierTo { ctrl1, ctrl2, to } => {
+            b.cubic_bezier_to(ctrl1.to_point(), ctrl2.to_point(), to.to_point());
+        }
+        Action::Arc {
+            center,
+            radii,
+            sweep_angle,
+            x_rotation,
+        } => b.arc(
             center.to_point(),
             radii.to_vector(),
             Angle::radians(sweep_angle),
             Angle::radians(x_rotation),
-        );
-        self
-    }
+        ),
 
-    /// Returns the path's current position.
-    #[allow(clippy::must_use_candidate)]
-    pub fn current_position(&self) -> Vec2 {
-        let p = self.builder.current_position();
-        Vec2::new(p.x, p.y)
-    }
-}
-
-impl Default for PathBuilder {
-    fn default() -> Self {
-        Self::new()
-    }
+        Action::Close => {
+            b.close();
+        }
+    };
 }

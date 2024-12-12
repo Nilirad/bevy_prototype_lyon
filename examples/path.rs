@@ -9,9 +9,7 @@ fn main() {
 }
 
 fn setup_system(mut commands: Commands) {
-    let shape = PathBuilder::new()
-        .fill(RED)
-        .stroke((BLACK, 10.0))
+    let path = ShapePath::new()
         .move_to(Vec2::new(0., 0.))
         .cubic_bezier_to(
             Vec2::new(70., 70.),
@@ -23,9 +21,14 @@ fn setup_system(mut commands: Commands) {
             Vec2::new(-70., 70.),
             Vec2::new(0., 0.),
         )
-        .close()
-        .build();
+        .close();
 
     commands.spawn((Camera2d, Msaa::Sample4));
-    commands.spawn((shape, Transform::from_xyz(0., 75., 0.)));
+    commands.spawn((
+        ShapeBuilder::with(&path)
+            .fill(RED)
+            .stroke((BLACK, 10.0))
+            .build(),
+        Transform::from_xyz(0., 75., 0.),
+    ));
 }

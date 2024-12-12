@@ -3,6 +3,7 @@
 ## 0.14.0
 
 This version uses Bevy's **Required Components**,
+along with other changes,
 therefore many items have been changed.
 Examples may help migration.
 
@@ -12,8 +13,10 @@ Examples may help migration.
 - Deprecated `ShapeBundle` in favor of the `Shape` component.
 - `prelude` no longer exports `ShapeBundle`.
 - Added `ShapeBuilder`: works similarly to `GeometryBuilder`
-- Removed `GeometryBuilder` and `ShapePath`.
-- `PathBuilder` now allows chaining methods.
+- Removed `GeometryBuilder` and `PathBuilder`.
+- `ShapePath` now works similarly to `PathBuilder`,
+  but implements `Geometry`,
+  so it has to be used with `ShapeBuilder`.
 
 ## 0.13.0
 - Support for Bevy 0.15.0.

@@ -136,7 +136,7 @@ impl Default for Rectangle {
     }
 }
 
-impl Geometry for Rectangle {
+impl Geometry<Builder> for Rectangle {
     fn add_geometry(&self, b: &mut Builder) {
         let origin = match self.origin {
             RectangleOrigin::Center => Point::new(-self.extents.x / 2.0, -self.extents.y / 2.0),
@@ -174,7 +174,7 @@ impl Default for Circle {
     }
 }
 
-impl Geometry for Circle {
+impl Geometry<Builder> for Circle {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_circle(self.center.to_point(), self.radius, Winding::Positive);
     }
@@ -196,7 +196,7 @@ impl Default for Ellipse {
     }
 }
 
-impl Geometry for Ellipse {
+impl Geometry<Builder> for Ellipse {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_ellipse(
             self.center.to_point(),
@@ -223,7 +223,7 @@ impl Default for Polygon {
     }
 }
 
-impl Geometry for Polygon {
+impl Geometry<Builder> for Polygon {
     fn add_geometry(&self, b: &mut Builder) {
         let points = self
             .points
@@ -257,7 +257,7 @@ impl Default for RoundedPolygon {
     }
 }
 
-impl Geometry for RoundedPolygon {
+impl Geometry<Builder> for RoundedPolygon {
     fn add_geometry(&self, b: &mut Builder) {
         let points = self
             .points
@@ -320,7 +320,7 @@ impl Default for RegularPolygon {
     }
 }
 
-impl Geometry for RegularPolygon {
+impl Geometry<Builder> for RegularPolygon {
     fn add_geometry(&self, b: &mut Builder) {
         // -- Implementation details **PLEASE KEEP UPDATED** --
         // - `step`: angle between two vertices.
@@ -357,7 +357,7 @@ impl Geometry for RegularPolygon {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Line(pub Vec2, pub Vec2);
 
-impl Geometry for Line {
+impl Geometry<Builder> for Line {
     fn add_geometry(&self, b: &mut Builder) {
         b.add_polygon(LyonPolygon {
             points: &[self.0.to_point(), self.1.to_point()],
@@ -411,7 +411,7 @@ fn get_point_after_offset(x: f64, y: f64, offset_x: f32, offset_y: f32) -> Point
 fn get_corrected_relative_vector(x: f64, y: f64) -> Vector {
     Vector::new(x as f32, get_y_in_bevy_orientation(y))
 }
-impl Geometry for SvgPathShape {
+impl Geometry<Builder> for SvgPathShape {
     #[allow(clippy::too_many_lines)]
     fn add_geometry(&self, b: &mut Builder) {
         let builder = Builder::new();

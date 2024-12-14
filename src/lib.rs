@@ -43,7 +43,7 @@ pub mod prelude {
     pub use crate::{
         draw::{Fill, Stroke},
         entity::Shape,
-        geometry::{Geometry, ReadyShapeBuilderTrait, ShapeBuilder, ShapeBuilderBase},
+        geometry::{Geometry, ShapeBuilder, ShapeBuilderBase},
         path::ShapePath,
         plugin::ShapePlugin,
         shapes::{self, BorderRadii, RectangleOrigin, RegularPolygon, RegularPolygonFeature},

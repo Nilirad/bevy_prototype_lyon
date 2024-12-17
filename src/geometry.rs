@@ -1,6 +1,6 @@
 //! Types for defining and using geometries.
 
-use lyon_algorithms::path::{builder::WithSvg, BuilderImpl};
+use lyon_algorithms::path::{builder::WithSvg, traits::Build, BuilderImpl};
 use lyon_tessellation::path::path::Builder;
 
 use crate::{
@@ -144,21 +144,12 @@ impl<GenericBuilder> ShapeBuilderBase<GenericBuilder> for ReadyShapeBuilder<Gene
     }
 }
 
-/// Generalizes the implementation of the `build` method
-/// over multiple Lyon builders.
-pub trait ReadyShapeBuilderTrait {
-    /// Builds a `Shape` according to the builder's settings.
-    fn build(self) -> Shape;
-}
-
-impl ReadyShapeBuilderTrait for ReadyShapeBuilder<Builder> {
-    fn build(self) -> Shape {
-        Shape::new(self.builder.build(), self.fill, self.stroke)
-    }
-}
-
-impl ReadyShapeBuilderTrait for ReadyShapeBuilder<WithSvg<BuilderImpl>> {
-    fn build(self) -> Shape {
+impl<GenericBuilder> ReadyShapeBuilder<GenericBuilder>
+where
+    GenericBuilder: Build<PathType = lyon_tessellation::path::Path>,
+{
+    /// Builds the path according to builder settings.
+    pub fn build(self) -> Shape {
         Shape::new(self.builder.build(), self.fill, self.stroke)
     }
 }

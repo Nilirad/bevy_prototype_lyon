@@ -1,4 +1,8 @@
-//! Types for defining and using geometries.
+//! Types for defining `Shapes`.
+//!
+//! This module contains the central [`Geometry`] trait,
+//! plus a couple of builders and associated traits.
+//! To build any shape, start with [`ShapeBuilder`].
 
 use lyon_algorithms::path::{builder::WithSvg, traits::Build, BuilderImpl};
 use lyon_tessellation::path::path::Builder;
@@ -8,8 +12,10 @@ use crate::{
     entity::Shape,
 };
 
-/// Structs that implement this trait can be drawn as a shape. See the
-/// [`shapes`](crate::shapes) module for some examples.
+/// Interface for defining the geometry of a shape.
+///
+/// Structs that implement this trait can be drawn as a shape.
+/// See the [`shapes`](crate::shapes) module for some examples.
 ///
 /// # Implementation example
 ///
@@ -53,10 +59,9 @@ pub trait Geometry<GenericBuilder> {
     fn add_geometry(&self, b: &mut GenericBuilder);
 }
 
-/// Provides basic functionality common
-/// to [`ShapeBuilder`] and [`ReadyShapeBuilder`].
+/// Interface for functionality common to any [`Shape`] builder.
 pub trait ShapeBuilderBase<GenericBuilder> {
-    /// Adds a `Geometry` to the builder.
+    /// Adds a [`Geometry`] to the builder.
     #[must_use]
     fn add(self, shape: &impl Geometry<GenericBuilder>) -> Self;
 
@@ -69,7 +74,13 @@ pub trait ShapeBuilderBase<GenericBuilder> {
     fn stroke(self, stroke: impl Into<Stroke>) -> ReadyShapeBuilder<GenericBuilder>;
 }
 
-/// Provides methods for building a shape.
+/// Provides methods for building a [`Shape`].
+///
+/// This struct won't build a `Shape` directly:
+/// [`fill`] or [`stroke`] must be used first.
+///
+/// [`fill`]: Self::fill
+/// [`stroke`]: Self::stroke
 #[derive(Default, Clone)]
 pub struct ShapeBuilder<GenericBuilder>(GenericBuilder);
 
@@ -106,14 +117,14 @@ where
         Self(GenericBuilder::new())
     }
 
-    /// Constructs a new `ShapeBuilder` with an initial `Geometry`.
+    /// Constructs a new `ShapeBuilder` with an initial [`Geometry`].
     #[must_use]
     pub fn with(geometry: &impl Geometry<GenericBuilder>) -> Self {
         Self::new().add(geometry)
     }
 }
 
-/// Provides methods for building a shape.
+/// Provides methods for building a [`Shape`].
 ///
 /// This struct can only be obtained by using [`ShapeBuilder`].
 #[derive(Clone)]
@@ -148,13 +159,13 @@ impl<GenericBuilder> ReadyShapeBuilder<GenericBuilder>
 where
     GenericBuilder: Build<PathType = lyon_tessellation::path::Path>,
 {
-    /// Builds the path according to builder settings.
+    /// Builds a [`Shape`] according to builder settings.
     pub fn build(self) -> Shape {
         Shape::new(self.builder.build(), self.fill, self.stroke)
     }
 }
 
-/// Extends `lyon` path builders with analogous methods
+/// Groups analogous methods of different `lyon` builders
 /// under the same interface.
 pub trait LyonPathBuilderExt {
     /// Creates a new path builder.

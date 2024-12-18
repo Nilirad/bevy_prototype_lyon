@@ -1,10 +1,11 @@
+//! Tools for drawing line segments.
+
 use bevy::math::Vec2;
 use lyon_tessellation::path::{path::Builder, Polygon as LyonPolygon};
 
 use crate::{geometry::Geometry, utils::ToPoint};
 
-/// A simple line segment, specified by two points.
-#[allow(missing_docs)]
+/// A line segment, specified by two points.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Line(pub Vec2, pub Vec2);
 

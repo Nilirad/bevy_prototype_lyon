@@ -1,3 +1,5 @@
+//! Tools for drawing ellipses.
+
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::Angle,
@@ -9,10 +11,12 @@ use crate::{
     utils::{ToPoint, ToVector},
 };
 
-#[allow(missing_docs)]
+/// A shape similar to a circle under a non-uniform scaling.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ellipse {
+    /// The horizontal and vertical radii.
     pub radii: Vec2,
+    /// The midpoint of the horizontal and vertical axes.
     pub center: Vec2,
 }
 

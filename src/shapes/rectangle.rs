@@ -1,3 +1,5 @@
+//! Tools for drawing rectangles.
+
 use bevy::math::Vec2;
 use lyon_tessellation::{
     geom::euclid::default::Size2D,
@@ -7,15 +9,20 @@ use lyon_tessellation::{
 
 use crate::geometry::Geometry;
 
-/// Defines where the origin, or pivot of the `Rectangle` should be positioned.
-#[allow(missing_docs)]
+/// Defines the frame of reference for the extents of a [`Rectangle`].
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RectangleOrigin {
+    /// The extents of the rectangle are drawn relative to the center.
     Center,
+    /// The extents of the rectangle are drawn from the bottom-left corner.
     BottomLeft,
+    /// The extents of the rectangle are drawn from the bottom-right corner.
     BottomRight,
+    /// The extents of the rectangle are drawn from the top-right corner.
     TopRight,
+    /// The extents of the rectangle are drawn from the top-left corner.
     TopLeft,
+    /// The extents of the rectangle are drawn relative to a custom point.
     CustomCenter(Vec2),
 }
 
@@ -25,7 +32,7 @@ impl Default for RectangleOrigin {
     }
 }
 
-/// Radii for the four corners of a rectangle.
+/// Radii for arcs rounding the corners of a [`Rectangle`].
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct BorderRadii {
     /// Radius for the top left corner.
@@ -103,11 +110,14 @@ impl From<BorderRadii> for LyonBorderRadii {
     }
 }
 
-#[allow(missing_docs)]
+/// A quadrilateral with all internal right angles.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rectangle {
+    /// The width and the height.
     pub extents: Vec2,
+    /// The frame of reference for the `extents`.
     pub origin: RectangleOrigin,
+    /// Radii to round the corners of the rectangle with arcs.
     pub radii: Option<BorderRadii>,
 }
 

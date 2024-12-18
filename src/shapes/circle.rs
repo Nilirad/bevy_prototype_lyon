@@ -1,12 +1,18 @@
+//! Tools for drawing circles.
+
 use bevy::math::Vec2;
 use lyon_tessellation::path::{path::Builder, Winding};
 
 use crate::{geometry::Geometry, utils::ToPoint};
 
-#[allow(missing_docs)]
+/// A shape where all points are equidistant from a fixed point.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Circle {
+    /// The distance from the [`center`] of any point of the circumference.
+    ///
+    /// [`center`]: Self::center
     pub radius: f32,
+    /// Point equidistant from all points of the circumference.
     pub center: Vec2,
 }
 

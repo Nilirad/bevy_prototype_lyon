@@ -1,3 +1,5 @@
+//! Tools for drawing polygons.
+
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{point, Point},
@@ -6,10 +8,21 @@ use lyon_tessellation::{
 
 use crate::{geometry::Geometry, utils::ToPoint};
 
-#[allow(missing_docs)]
+/// An arbitrary polygon or polyline.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
+    /// The vertices of a polygon.
+    ///
+    /// Each vertex is connected to the next.
+    /// The last vertex is connected to the first,
+    /// if [`closed`] is `true`.
+    ///
+    /// [`closed`]: Self::closed
     pub points: Vec<Vec2>,
+    /// Whether the last vertex is connected to the first.
+    ///
+    /// If `true`, the shape is a *polygon*.
+    /// If `false`, the shape is a *polygonal line* (also called *polyline*).
     pub closed: bool,
 }
 
@@ -38,11 +51,21 @@ impl Geometry<Builder> for Polygon {
     }
 }
 
-#[allow(missing_docs)]
+/// An arbitrary polygon, or polyline, with rounded vertices.
 #[derive(Debug, Clone, PartialEq)]
 pub struct RoundedPolygon {
+    /// The vertices of a polygon.
+    ///
+    /// Each vertex is connected to the next.
+    /// The last vertex is connected to the first,
+    /// if `closed` is true.
     pub points: Vec<Vec2>,
+    /// The radius of the arc used to round the corners of the vertices.
     pub radius: f32,
+    /// Whether the last vertex is connected to the first.
+    ///
+    /// If `true`, the shape is a *polygon*.
+    /// If `false`, the shape is a *polygonal line* (also called *polyline*).
     pub closed: bool,
 }
 
@@ -76,8 +99,7 @@ impl Geometry<Builder> for RoundedPolygon {
     }
 }
 
-/// The regular polygon feature used to determine the dimensions of the polygon.
-#[allow(missing_docs)]
+/// The geometric property used to define a [`RegularPolygon`].
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RegularPolygonFeature {
     /// The radius of the polygon's circumcircle.
@@ -88,11 +110,19 @@ pub enum RegularPolygonFeature {
     SideLength(f32),
 }
 
-#[allow(missing_docs)]
+/// A polygon with all sides and angles equal.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RegularPolygon {
+    /// The number of sides.
+    ///
+    /// # Panics
+    ///
+    /// Attempting to draw a `RegularPolygon` with a value less than `3`
+    /// will result in a panic.
     pub sides: usize,
+    /// The point equidistant from all its vertices.
     pub center: Vec2,
+    /// The geometric property used to define the polygon.
     pub feature: RegularPolygonFeature,
 }
 

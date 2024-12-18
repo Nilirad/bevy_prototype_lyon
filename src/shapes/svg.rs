@@ -1,3 +1,5 @@
+//! Tools for drawing shapes from SVG strings.
+
 use bevy::math::Vec2;
 use lyon_tessellation::{
     math::{Angle, Point, Vector},
@@ -7,32 +9,37 @@ use svgtypes::{PathParser, PathSegment};
 
 use crate::geometry::Geometry;
 
-///An easy way to display svg paths as a shape, takes an svg path string and a
-///document size(Vec2).
+/// Defines a geometric shape from an SVG path.
 ///
-///For documentation on svg paths: <https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths>
+/// # Requirements
 ///
-///Make sure that your units are pixels(px) and that the transform of the \<g\>
-///in your svg document is set to transform="translate(0,0)" so as to not
-///offset the coordinates of the paths
+/// All units must be in pixels.
+/// See the documentation for each field for more details.
 ///
-///In inkscape for example, to turn your units into pixels, you:
-/// 1) Go to File>Document Properties>General>Display Units and set it to px
+/// In Inkscape, to turn units into pixels:
 ///
-/// 2) In File>Document Properties>Custom Size>Units set it to px, also, this
-///    size would be used for `svg_doc_size_in_px`
+/// 1) Go to
+///    `File > Document Properties > General > Display Units`,
+///    and set it to `px`.
 ///
-/// 3) In File>Document Properties>Scale>Scale x make sure it is set to 1 User
-///    unit per px
+/// 2) Go to
+///    `File > Document Properties > Custom Size > Units`,
+///    and set it to `px`.
+///    The same size should also be used for `svg_doc_size_in_px`.
 ///
-///Example exists in the examples folder
+/// 3) Go to
+///    `File > Document Properties > Scale > Scale x`,
+///    and make sure it is set to `1 User unit per px`.
 pub struct SvgPathShape {
-    ///The document size of the svg art, make sure the units are in pixels
+    /// The size of the SVG document.
+    ///
+    /// Units must be in pixels.
     pub svg_doc_size_in_px: Vec2,
-    ///The string that describes the path, make sure the units are in pixels
-    ///and that the transform of the \<g\> in your svg document is set to
-    ///transform="translate(0,0)" so as to not offset the coordinates of the
-    ///paths
+    /// The string containing the SVG path.
+    ///
+    /// Any `<g>` element must have its `transform` attribute set to
+    /// `transform="translate(0,0)"`
+    /// to avoid unwanted offsets in the coordinates of the path.
     pub svg_path_string: String,
 }
 fn get_y_in_bevy_orientation(y: f64) -> f32 {

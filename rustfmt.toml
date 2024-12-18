@@ -5,4 +5,4 @@ newline_style = "Unix"
 reorder_impl_items = true
 unstable_features = true
 use_field_init_shorthand = true
-wrap_comments = true
+wrap_comments = false

@@ -41,9 +41,12 @@ impl Default for ShapeBundle {
 #[derive(Component, Default, Clone)]
 #[require(Mesh2d, MeshMaterial2d<ColorMaterial>(color_material_handle), Transform, Visibility)]
 pub struct Shape {
-    path: tess::path::Path,
-    fill: Option<Fill>,
-    stroke: Option<Stroke>,
+    /// Geometry of a shape.
+    pub path: tess::path::Path,
+    /// Fill data, changes are propagated to the mesh.
+    pub fill: Option<Fill>,
+    /// Stroke data, changes are propagated to the mesh.
+    pub stroke: Option<Stroke>,
 }
 
 impl Shape {

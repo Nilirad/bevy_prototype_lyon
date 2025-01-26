@@ -37,7 +37,7 @@ fn rotate_shape_by_size(mut query: Query<(&mut Transform, &Shape)>, time: Res<Ti
     let delta = time.delta_secs();
 
     for (mut transform, shape) in query.iter_mut() {
-        transform.rotate(Quat::from_rotation_z(200. / get_max_x(shape) * delta));
+        transform.rotate(Quat::from_rotation_z(200.0 / get_max_x(shape) * delta));
     }
 }
 
@@ -87,7 +87,7 @@ fn setup_system(mut commands: Commands) {
             .fill(DARK_CYAN)
             .stroke((BLACK, 10.0))
             .build(),
-        Transform::default().with_translation(Vec3::new(0., 0., 2.)),
+        Transform::default().with_translation(Vec3::new(0.0, 0.0, 2.0)),
         TriangleShape,
     ));
     commands.spawn((
@@ -95,7 +95,7 @@ fn setup_system(mut commands: Commands) {
             .fill(DARK_CYAN)
             .stroke((BLACK, 10.0))
             .build(),
-        Transform::default().with_translation(Vec3::new(0., 0., 1.)),
+        Transform::default().with_translation(Vec3::new(0.0, 0.0, 1.0)),
         HexagonShape,
     ));
     commands.spawn((ShapeBuilder::with(&big_square)

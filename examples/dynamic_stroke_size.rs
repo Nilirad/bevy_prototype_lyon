@@ -16,7 +16,7 @@ fn main() {
         .run();
 }
 
-// Marker traits to uniquely identify entities.
+// Marker structs to uniquely identify entities.
 #[derive(Component)]
 struct HexagonShape;
 #[derive(Component)]

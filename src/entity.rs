@@ -54,24 +54,6 @@ impl Shape {
     pub(crate) fn new(path: tess::path::Path, fill: Option<Fill>, stroke: Option<Stroke>) -> Self {
         Self { path, fill, stroke }
     }
-
-    /// Returns the reference to the path of the shape.
-    #[allow(clippy::must_use_candidate)]
-    pub fn path_ref(&self) -> &tess::path::Path {
-        &self.path
-    }
-
-    /// Returns the fill options of the shape.
-    #[allow(clippy::must_use_candidate)]
-    pub fn fill(&self) -> Option<Fill> {
-        self.fill
-    }
-
-    /// Returns the stroke options of the shape.
-    #[allow(clippy::must_use_candidate)]
-    pub fn stroke(&self) -> Option<Stroke> {
-        self.stroke
-    }
 }
 
 impl Geometry<Builder> for Shape {

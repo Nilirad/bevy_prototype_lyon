@@ -63,16 +63,11 @@ fn mesh_shapes_system(
 ) {
     for (shape, mut mesh) in &mut query {
         let mut buffers = VertexBuffers::new();
-        if let Some(fill_mode) = shape.fill() {
-            fill(&mut fill_tess, shape.path_ref(), fill_mode, &mut buffers);
+        if let Some(fill_mode) = shape.fill {
+            fill(&mut fill_tess, &shape.path, fill_mode, &mut buffers);
         }
-        if let Some(stroke_mode) = shape.stroke() {
-            stroke(
-                &mut stroke_tess,
-                shape.path_ref(),
-                stroke_mode,
-                &mut buffers,
-            );
+        if let Some(stroke_mode) = shape.stroke {
+            stroke(&mut stroke_tess, &shape.path, stroke_mode, &mut buffers);
         }
         mesh.0 = meshes.add(build_mesh(&buffers));
     }

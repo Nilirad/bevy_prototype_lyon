@@ -40,33 +40,19 @@ impl Default for ShapeBundle {
 /// It can be constructed using `ShapeBuilder`.
 #[derive(Component, Default, Clone)]
 #[require(Mesh2d, MeshMaterial2d<ColorMaterial>(color_material_handle), Transform, Visibility)]
+#[non_exhaustive]
 pub struct Shape {
-    path: tess::path::Path,
-    fill: Option<Fill>,
-    stroke: Option<Stroke>,
+    /// Geometry of a shape.
+    pub path: tess::path::Path,
+    /// Fill data, changes are propagated to the mesh.
+    pub fill: Option<Fill>,
+    /// Stroke data, changes are propagated to the mesh.
+    pub stroke: Option<Stroke>,
 }
 
 impl Shape {
     pub(crate) fn new(path: tess::path::Path, fill: Option<Fill>, stroke: Option<Stroke>) -> Self {
         Self { path, fill, stroke }
-    }
-
-    /// Returns the reference to the path of the shape.
-    #[allow(clippy::must_use_candidate)]
-    pub fn path_ref(&self) -> &tess::path::Path {
-        &self.path
-    }
-
-    /// Returns the fill options of the shape.
-    #[allow(clippy::must_use_candidate)]
-    pub fn fill(&self) -> Option<Fill> {
-        self.fill
-    }
-
-    /// Returns the stroke options of the shape.
-    #[allow(clippy::must_use_candidate)]
-    pub fn stroke(&self) -> Option<Stroke> {
-        self.stroke
     }
 }
 

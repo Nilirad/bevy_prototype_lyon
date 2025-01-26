@@ -40,6 +40,7 @@ impl Default for ShapeBundle {
 /// It can be constructed using `ShapeBuilder`.
 #[derive(Component, Default, Clone)]
 #[require(Mesh2d, MeshMaterial2d<ColorMaterial>(color_material_handle), Transform, Visibility)]
+#[non_exhaustive]
 pub struct Shape {
     /// Geometry of a shape.
     pub path: tess::path::Path,

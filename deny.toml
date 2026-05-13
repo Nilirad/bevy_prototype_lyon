@@ -21,6 +21,7 @@ allow = [
   "0BSD",
   "BSD-2-Clause",
   "CC0-1.0",
+  "Unicode-3.0",
 ]
 exceptions = [
   { name = "unicode-ident", allow = [

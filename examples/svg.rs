@@ -8,39 +8,40 @@ fn main() {
         .run();
 }
 
-fn setup_system(mut commands: Commands) {
-    commands.spawn((Camera2d, Msaa::Sample4));
+// The tolerance for tesselating curves, in the same units as the svg path
+const CURVE_TOLERANCE: f32 = 0.01;
 
-    // The tolerance for tesselating curves, in the same units as the svg path
-    let tolerance = 0.01;
-    // Equivalent ot the "svg viewport"
+fn chat_icon() -> Shape {
+    // Equivalent to the "svg viewport"
     let svg_doc_size_in_px = Vec2::new(24., 24.);
 
     let icon_fill = Fill {
-        options: FillOptions::tolerance(tolerance),
+        options: FillOptions::tolerance(CURVE_TOLERANCE),
         color: color::palettes::tailwind::GRAY_50.into(),
     };
+
+    ShapeBuilder::with(&shapes::SvgPathShape {
+        svg_path_string: CHAT_CODE.to_owned(),
+        svg_doc_size_in_px,
+    })
+    .fill(icon_fill)
+    .build()
+}
+
+// A composite shape made of multiple SVG paths
+fn planet_icon() -> impl Scene {
+    // Equivalent to the "svg viewport"
+    let svg_doc_size_in_px = Vec2::new(24., 24.);
+
+    let icon_fill = Fill {
+        options: FillOptions::tolerance(CURVE_TOLERANCE),
+        color: color::palettes::tailwind::GRAY_50.into(),
+    };
+
     let icon_fill_grey = Fill {
-        options: FillOptions::tolerance(tolerance),
+        options: FillOptions::tolerance(CURVE_TOLERANCE),
         color: color::palettes::tailwind::GRAY_400.into(),
     };
-    let scale = Vec2::splat(10.).extend(1.);
-
-    commands.spawn((
-        ShapeBuilder::with(&shapes::SvgPathShape {
-            svg_path_string: CHAT_CODE.to_owned(),
-            svg_doc_size_in_px,
-        })
-        .fill(icon_fill)
-        .build(),
-        Transform {
-            translation: Vec3::new(-200., 0., 0.),
-            scale,
-            ..Default::default()
-        },
-    ));
-
-    // A composite shape made of multiple SVG paths
 
     let planet_shape = ShapeBuilder::with(&shapes::SvgPathShape {
         svg_path_string: PLANET.to_owned(),
@@ -56,15 +57,35 @@ fn setup_system(mut commands: Commands) {
     .fill(icon_fill_grey)
     .build();
 
+    bsn! {
+        template_value(planet_shape)
+        Children [
+            template_value(planet_mid_shape)
+        ]
+    }
+}
+
+fn setup_system(mut commands: Commands) {
+    commands.spawn((Camera2d, Msaa::Sample4));
+
+    let scale = Vec2::splat(10.).extend(1.);
+
     commands.spawn((
-        planet_shape,
+        chat_icon(),
+        Transform {
+            translation: Vec3::new(-200., 0., 0.),
+            scale,
+            ..Default::default()
+        },
+    ));
+
+    commands.spawn_scene(bsn! {
+        planet_icon()
         Transform {
             translation: Vec3::new(200., 0., 0.),
             scale,
-            ..default()
-        },
-        children![planet_mid_shape],
-    ));
+        }
+    });
 }
 
 // SVG paths by 480 Design under the CC BY 4.0 license

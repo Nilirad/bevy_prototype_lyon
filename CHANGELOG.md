@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.0
+
+* Upgrade to Bevy 0.19 by @rparrett in <https://github.com/rparrett/bevy_prototype_lyon/pull/298>
+
 ## 0.16.0
 
 * Fix inverted SVG arc sweep by @rparrett in <https://github.com/rparrett/bevy_prototype_lyon/pull/294>
